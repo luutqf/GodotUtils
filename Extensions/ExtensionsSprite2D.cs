@@ -4,6 +4,11 @@ using Godot;
 
 public static class ExtensionsSprite2D
 {
+    /// <summary>
+    /// GetSize 方法简单地返回 Sprite2D 对象的纹理尺寸，这个尺寸来自纹理自身的大小。
+    /// </summary>
+    /// <param name="sprite"></param>
+    /// <returns></returns>
     public static Vector2 GetSize(this Sprite2D sprite) => sprite.Texture.GetSize();
 
     /// <summary>
@@ -11,7 +16,8 @@ public static class ExtensionsSprite2D
     /// Gets the actual pixel size of the sprite. All rows and columns 
     /// consisting of transparent pixels are subtracted from the size.
     /// </para>
-    /// 
+    /// GetPixelSize 方法计算 Sprite2D 对象实际的像素尺寸，考虑了透明像素行和列的剔除。
+    /// 具体的尺寸通过调用 GetPixelWidth 和 GetPixelHeight 方法计算得出，这是为了动态创建碰撞形状时能获得准确的非透明区域的尺寸。
     /// <para>
     /// This is useful to know if dynamically creating collision
     /// shapes at runtime.
@@ -68,6 +74,12 @@ public static class ExtensionsSprite2D
         return (int)(pixelHeight * sprite.Scale.Y);
     }
 
+    /// <summary>
+    /// GetPixelBottomY 方法检查 Sprite2D 对象纹理底部的透明像素行数。它通过检查纹理中心列自底向上的每个像素直到找到第一个不透明像素。
+    /// 这个方法可能按照注释所述不会适用于所有的 Sprite2D 对象，但适用于特定情况（如示例中所述的忍者）。
+    /// </summary>
+    /// <param name="sprite"></param>
+    /// <returns></returns>
     public static int GetPixelBottomY(this Sprite2D sprite)
     {
         Image img = sprite.Texture.GetImage();

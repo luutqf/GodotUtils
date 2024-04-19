@@ -8,6 +8,7 @@ public partial class GLinkButton : LinkButton
     {
         Text = text;
         Uri = text;
+        //按钮在垂直方向上缩小并居中。
         SizeFlagsVertical = Control.SizeFlags.ShrinkCenter;
         SetFontSize(fontSize);
     }

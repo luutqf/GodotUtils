@@ -4,6 +4,7 @@ using Godot;
 
 /*
  * Attach this script to a child node of the Camera node
+ * 将此脚本附加到Camera节点的子节点
  */
 public partial class CameraController : Node
 {
@@ -11,6 +12,7 @@ public partial class CameraController : Node
     [Export]
     float speed = 100;
 
+    //默认的缩放增量
     [ExportGroup("Zoom")]
     [Export(PropertyHint.Range, "0.02, 0.16")]
     float zoomIncrementDefault = 0.02f;
@@ -18,18 +20,27 @@ public partial class CameraController : Node
     [Export(PropertyHint.Range, "0.01, 10")]
     float minZoom = 0.01f;
 
+    //摄像机能够进行的最小和最大缩放值。
     [Export(PropertyHint.Range, "0.1, 10")]
     float maxZoom = 1.0f;
 
+    //缩放当中的线性插值的平滑系数。
     [Export(PropertyHint.Range, "0.01, 1")]
     float smoothFactor = 0.25f;
 
+    //用于调节在每一帧中摄像机的缩放比例。
     float zoomIncrement = 0.02f;
+    
+    //目标缩放值。
     float targetZoom;
 
-    // Panning
+    // Panning 平移的初始位置。
     Vector2 initialPanPosition;
+    
+    //是否正在进行平移的标志。
     bool panning;
+    
+    //存储Camera2D类型的节点引用。
     Camera2D camera;
 
     public override void _Ready()
@@ -45,6 +56,7 @@ public partial class CameraController : Node
         targetZoom = camera.Zoom.X;
     }
 
+    //在主循环的每一帧中执行。负责处理WASD/箭头键位的摄像机移动和处理平移。
     public override void _Process(double delta)
     {
         // Not sure if the below code should be in _PhysicsProcess or _Process
@@ -71,6 +83,7 @@ public partial class CameraController : Node
         camera.Position += dir.Normalized() * speed;
     }
 
+    //在物理帧中执行。控制缩放的增量（防止缩放速度过快）和执行平滑的缩放插值。
     public override void _PhysicsProcess(double delta)
     {
         // Prevent zoom from becoming too fast when zooming out
@@ -95,6 +108,7 @@ public partial class CameraController : Node
         HandleZoom(@event);
     }
 
+    //处理平移逻辑，当左键点击时开始平移，当释放时结束平移。
     void HandlePan(InputEventMouseButton @event)
     {
         // Left click to start panning the camera
@@ -113,6 +127,7 @@ public partial class CameraController : Node
             panning = false;
     }
 
+    //处理缩放逻辑，使用鼠标滚轮进行缩放，并且保证缩放值在指定的最小和最大范围内。
     void HandleZoom(InputEventMouseButton @event)
     {
         // Not sure why or if this is required

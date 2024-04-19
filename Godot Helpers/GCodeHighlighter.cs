@@ -2,6 +2,9 @@
 
 using Godot;
 
+/// <summary>
+/// 使用方法是TextEdit.SyntaxHighlighter 赋值
+/// </summary>
 public partial class GCodeHighlighter : CodeHighlighter
 {
     public GCodeHighlighter()

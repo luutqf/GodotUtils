@@ -1,4 +1,7 @@
-﻿namespace GodotUtils;
+﻿using System;
+using System.Collections.Generic;
+
+namespace GodotUtils;
 
 public class ServiceProvider
 {
@@ -13,6 +16,7 @@ public class ServiceProvider
     /// <summary>
     /// Add a Node that exists within the game tree. For example UIItemNotification
     /// exists within the game tree.
+    /// 添加一个存在于游戏树中的节点。例如，UIItemNotification存在于游戏树中。
     /// </summary>
     public virtual Service Add(object instance, bool persistent = false)
     {
@@ -29,6 +33,7 @@ public class ServiceProvider
     /// <summary>
     /// Add a object that does not exist within the game tree. For example
     /// the Logger class does not extend from Node.
+    /// 添加一个不存在于游戏树中的对象。例如，Logger类不会从Node扩展。
     /// </summary>
     public Service Add<T>() where T : new()
     {

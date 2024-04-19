@@ -3,15 +3,15 @@
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
-    <Authors>valk</Authors>
+    <Authors>luufery</Authors>
     <PackageTags>godot; godot4;</PackageTags>
-    <PackageId>Valks$(AssemblyName)</PackageId>
+    <PackageId>luufery$(AssemblyName)</PackageId>
     <Title>Valks Godot Utils</Title>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	<PackageLicenseFile>LICENSE</PackageLicenseFile>
 	<PackageReadmeFile>README.md</PackageReadmeFile>
 	<Description>A utils library for Godot 4 C#</Description>
-	<RepositoryUrl>https://github.com/Valks-Games/GodotUtils</RepositoryUrl>
+	<RepositoryUrl>https://github.com/luutqf/GodotUtils</RepositoryUrl>
 	<Version>1.0.1</Version>
   </PropertyGroup>
   <ItemGroup>

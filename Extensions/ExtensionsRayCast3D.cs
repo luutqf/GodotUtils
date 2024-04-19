@@ -1,4 +1,6 @@
-﻿namespace GodotUtils;
+﻿using System.Collections.Generic;
+
+namespace GodotUtils;
 
 using Godot;
 

@@ -8,6 +8,7 @@ using TransType = Godot.Tween.TransitionType;
 /*
  * Create a path from a set of points with options to add curvature and
  * animate the attached sprite.
+ * 创建一个路径从一组点与选项添加曲率和动画附加的精灵。
  */
 public partial class GPath : Path2D
 {
@@ -17,20 +18,36 @@ public partial class GPath : Path2D
         set => pathFollow.Rotates = value;
     }
 
+    //一个 PathFollow2D 对象，用于在路径上跟随和导航。
     PathFollow2D pathFollow;
+    
+    //存储定义路径的点的数组。
     Vector2[] points;
+    
+    //一个 Sprite2D 对象，可以被附加到路径上。
     Sprite2D sprite;
 
+    //一个 GTween 对象，用于执行动画。
     GTween tween;
+    
+    //存储每个点的补间（Tween）值的数组。
     float[] tweenValues;
+    
     int tweenIndex;
+    
+    //分别定义动画的变换类型和缓动类型。
     TransType transType = TransType.Sine;
     EaseType easeType = EaseType.Out;
+    
+    //动画播放速度
     double animSpeed;
+    
+    //定义绘制路径线条的颜色、宽度和虚线样式。
     Color color;
     float width;
     int dashes;
 
+    //构造函数接受一系列点、颜色、宽度、虚线数量和动画速度作为参数。这些参数被用来初始化路径和 PathFollow2D 对象，并将点添加到路径的曲线上。
     public GPath(Vector2[] points, Color color, int width = 5, int dashes = 0, double animSpeed = 1)
     {
         this.points = points;
@@ -51,6 +68,7 @@ public partial class GPath : Path2D
         CalculateTweenValues();
     }
 
+    //重写 Godot 的 _Draw 方法，在视图上绘制路径。路径可以是直线或虚线，取决于 dashes 属性。
     public override void _Draw()
     {
         Vector2[] points = Curve.GetBakedPoints();
@@ -64,8 +82,10 @@ public partial class GPath : Path2D
         }
     }
 
+    //设置 pathFollow 对象的进度，基于 tweenValues。
     public void SetLevelProgress(int v) => pathFollow.Progress = tweenValues[v - 1];
 
+    // 使路径上的对象向目标索引处的位置动画化移动
     public void AnimateTo(int targetIndex)
     {
         if (targetIndex > tweenIndex)
@@ -74,6 +94,7 @@ public partial class GPath : Path2D
             AnimateBackwards(tweenIndex - targetIndex);
     }
 
+    //分别向前或向后动画化 pathFollow 对象。这取决于目标索引相对于当前索引的位置。
     public int AnimateForwards(int step = 1)
     {
         tweenIndex = Mathf.Min(tweenIndex + step, tweenValues.Count() - 1);
@@ -88,6 +109,7 @@ public partial class GPath : Path2D
         return tweenIndex;
     }
 
+    // 在路径上添加一个 Sprite2D 对象。
     public void AddSprite(Sprite2D sprite)
     {
         this.sprite = sprite;
@@ -97,6 +119,7 @@ public partial class GPath : Path2D
     /// <summary>
     /// Add curves to the path. The curve distance is how far each curve is pushed
     /// out.
+    /// 为路径添加曲线。这通过计算新的曲线点并插入到原有点之间来实现。
     /// </summary>
     public void AddCurves(int curveSize = 50, int curveDistance = 50)
     {
@@ -146,6 +169,7 @@ public partial class GPath : Path2D
         CalculateTweenValues();
     }
 
+    //计算每个点的补间值，这些值用于控制 pathFollow 对象的动画。
     void CalculateTweenValues()
     {
         tweenValues = new float[points.Length];
@@ -153,6 +177,7 @@ public partial class GPath : Path2D
             tweenValues[i] = Curve.GetClosestOffset(points[i]);
     }
 
+    //执行动画，根据 transType、easeType 和动画方向进行调整。
     void Animate(bool forwards)
     {
         tween = new(this);
@@ -160,6 +185,7 @@ public partial class GPath : Path2D
             CalculateDuration(forwards)).SetTrans(transType).SetEase(easeType);
     }
 
+    //计算动画的持续时间，基于剩余距离、动画速度和剩余等级图标的数量。
     double CalculateDuration(bool forwards)
     {
         // The remaining distance left to go from the current sprites progress
