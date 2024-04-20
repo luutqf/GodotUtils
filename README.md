@@ -21,7 +21,7 @@ An ever expanding utils library for Godot 4 C#. This is the library I am using a
 ## Install
 Add this as a submodule to your GitHub repo
 ```
-git submodule add https://github.com/Valks-Games/GodotUtils GodotUtils
+git submodule add https://github.com/luutqf/GodotUtils GodotUtils
 ```
 
 Add the following to your `.csproj`
