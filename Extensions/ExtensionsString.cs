@@ -2,6 +2,7 @@ using Godot;
 
 namespace GodotUtils;
 
+using Godot;
 using System;
 using System.Globalization;
 using System.Linq;

@@ -3,6 +3,9 @@ using System;
 
 namespace GodotUtils;
 
+using Godot;
+using System;
+
 public partial class XTimer : Node
 {
     public event Action Timeout;

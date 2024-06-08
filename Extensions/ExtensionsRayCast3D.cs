@@ -3,6 +3,7 @@
 namespace GodotUtils;
 
 using Godot;
+using System.Collections.Generic;
 
 public static class ExtensionsRayCast3D
 {

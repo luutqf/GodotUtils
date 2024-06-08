@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 public static class ExtensionsPrint
@@ -31,6 +32,12 @@ public static class ExtensionsPrint
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             ContractResolver = new IgnorePropsResolver() // ignore all Godot props
         });
+
+    /// <summary>
+    /// Similar to the PrintFull() function except the contents are printed with GD.Print()
+    /// </summary>
+    public static void GDPrintFull(this object v) =>
+        GD.Print(v.PrintFull());
 
     /// <summary>
     /// Used when doing JsonConvert.SerializeObject to ignore Godot properties
