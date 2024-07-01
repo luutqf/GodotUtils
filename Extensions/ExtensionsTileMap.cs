@@ -10,6 +10,7 @@ public static class ExtensionsTileMap
     //这个方法允许一次性启用 TileMap 中的多个图层。它通过接受一个或多个图层索引（通过参数 layers），
     //并计算出一个用于 PhysicsLayerCollisionLayer 和 PhysicsLayerCollisionMask 的掩码值。
     //这个方法使用自定义的 GUMath.UIntPow 函数以 2 的幂形式计算图层的值，这对于处理物理图层尤其有用。
+    [Obsolete("Obsolete")]
     public static void EnableLayers(this TileMap tileMap, params uint[] layers)
     {
         uint result = 0;
@@ -35,8 +36,10 @@ public static class ExtensionsTileMap
     /// To get the tile the player is standing on see RayCast2D.GetTileData(...)
     /// </para>
     /// </summary>
+    [Obsolete("Obsolete")]
     public static Variant GetTileData(this TileMap tilemap, Vector2 pos, string layerName)
     {
+        if (tilemap == null) throw new ArgumentNullException(nameof(tilemap));
         Vector2I tilePos = tilemap.LocalToMap(tilemap.ToLocal(pos));
 
         TileData tileData = tilemap.GetCellTileData(0, tilePos);
@@ -53,8 +56,10 @@ public static class ExtensionsTileMap
     /// <param name="tilemap"></param>
     /// <param name="pos"></param>
     /// <returns></returns>
+    [Obsolete("Obsolete")]
     public static bool InTileMap(this TileMap tilemap, Vector2 pos)
     {
+        if (tilemap == null) throw new ArgumentNullException(nameof(tilemap));
         Vector2I tilePos = tilemap.LocalToMap(tilemap.ToLocal(pos));
 
         return tilemap.GetCellSourceId(0, tilePos) != -1;
@@ -67,8 +72,10 @@ public static class ExtensionsTileMap
     /// <param name="pos"></param>
     /// <param name="layer"></param>
     /// <returns></returns>
+    [Obsolete("Obsolete")]
     public static string GetTileName(this TileMap tilemap, Vector2 pos, int layer = 0)
     {
+        if (tilemap == null) throw new ArgumentNullException(nameof(tilemap));
         if (!tilemap.TileExists(pos))
             return "";
 
@@ -83,9 +90,11 @@ public static class ExtensionsTileMap
     }
 
     //检查给定位置是否存在瓦片。这是通过检查该位置的 SourceId 是否不等于 -1 来实现的，如果是则说明位置上有瓦片存在。
+    [Obsolete("Obsolete")]
     public static bool TileExists(this TileMap tilemap, Vector2 pos, int layer = 0) =>
         tilemap.GetCellSourceId(layer, tilemap.LocalToMap(pos)) != -1;
 
+    [Obsolete("Obsolete")]
     static int GetCurrentTileId(this TileMap tilemap, Vector2 pos)
     {
         Vector2I cellPos = tilemap.LocalToMap(pos);

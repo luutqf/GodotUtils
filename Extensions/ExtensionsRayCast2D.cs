@@ -23,6 +23,7 @@ public static class ExtensionsRayCast2D
     /// 该方法检查射线是否碰撞，并且碰撞对象是否为 TileMap 类型。
     /// 如果是，它将获取碰撞点，并将此点转换为瓷砖坐标，然后获取该位置的瓷砖数据。此方法对于想要检测玩家脚下所站瓷砖类型的情况非常有用。
     /// </summary>
+    [Obsolete("Obsolete")]
     public static Variant GetTileData(this RayCast2D raycast, string layerName)
     {
         if (!raycast.IsColliding() || raycast.GetCollider() is not TileMap tileMap)

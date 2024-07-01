@@ -1,8 +1,6 @@
 namespace GodotUtils;
 
 using Godot;
-using Godot;
-using GodotUtils;
 
 public static class GVector2
 {
