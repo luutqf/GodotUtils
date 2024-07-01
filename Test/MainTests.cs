@@ -1,5 +1,6 @@
 using NUnit.Framework;
 
+// ReSharper disable once CheckNamespace
 namespace GodotUtils.Test;
 
 public class MainTests
