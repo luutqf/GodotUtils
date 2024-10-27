@@ -1,5 +1,5 @@
 ## What is this?
-An ever expanding utils library for Godot 4 C#. This is the library I am using across all my games, now open source for everyone else to enjoy as well.
+An ever expanding utils library for Redot C#. This is the library I am using across all my games, now open source for everyone else to enjoy as well.
 
 ## Features
 - [Extensions](https://github.com/ValksGodotTools/GodotUtils/tree/main/Extensions)
