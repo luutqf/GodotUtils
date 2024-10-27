@@ -2,7 +2,7 @@ using Godot;
 
 namespace RedotUtils;
 
-public class GColor
+public class RColor
 {
     /// <summary>
     /// <para>Create a color from HSV (Hue, Saturation, Value)</para>

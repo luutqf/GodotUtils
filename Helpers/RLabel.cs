@@ -2,9 +2,9 @@ using Godot;
 
 namespace RedotUtils;
 
-public partial class GLabel : Label
+public partial class RLabel : Label
 {
-    public GLabel(string text = "", int fontSize = 16)
+    public RLabel(string text = "", int fontSize = 16)
     {
         Text = text;
         HorizontalAlignment = HorizontalAlignment.Center;
@@ -12,13 +12,13 @@ public partial class GLabel : Label
         SetFontSize(fontSize);
     }
 
-    public GLabel SetTransparent()
+    public RLabel SetTransparent()
     {
         SelfModulate = new Color(1, 1, 1, 0);
         return this;
     }
 
-    public GLabel SetFontSize(int v)
+    public RLabel SetFontSize(int v)
     {
         AddThemeFontSizeOverride("font_size", v);
         return this;

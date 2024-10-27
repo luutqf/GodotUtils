@@ -8,7 +8,7 @@ namespace RedotUtils;
  * Create a path from a set of points with options to add curvature and
  * animate the attached sprite.
  */
-public partial class GPath : Path2D
+public partial class RPath : Path2D
 {
     public bool Rotates
     {
@@ -19,7 +19,7 @@ public partial class GPath : Path2D
     private PathFollow2D _pathFollow;
     private Vector2[] _points;
     private Sprite2D _sprite;
-    private GTween _tween;
+    private RTween _tween;
     private float[] _tweenValues;
     private int _tweenIndex;
     private TransType _transType = TransType.Sine;
@@ -29,12 +29,12 @@ public partial class GPath : Path2D
     private float _width;
     private int _dashes;
 
-    public GPath(Vector2[] points, Color color, int width = 5, int dashes = 0, double animSpeed = 1)
+    public RPath(Vector2[] points, Color color, int width = 5, int dashes = 0, double animSpeed = 1)
     {
         _points = points;
         Curve = new Curve2D();
         _pathFollow = new PathFollow2D { Rotates = false };
-        _tween = new GTween(_pathFollow);
+        _tween = new RTween(_pathFollow);
         AddChild(_pathFollow);
 
         _color = color;

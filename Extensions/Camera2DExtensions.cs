@@ -17,7 +17,7 @@ public static class Camera2DExtensions
 
         if (smoothEnabled)
         {
-            GTween.Delay(camera, 0.01, () => camera.PositionSmoothingEnabled = true);
+            RTween.Delay(camera, 0.01, () => camera.PositionSmoothingEnabled = true);
         }
     }
 }

@@ -2,9 +2,9 @@ using Godot;
 
 namespace RedotUtils;
 
-public partial class GCodeHighlighter : CodeHighlighter
+public partial class RCodeHighlighter : CodeHighlighter
 {
-    public GCodeHighlighter()
+    public RCodeHighlighter()
     {
         NumberColor = new Color("FFB6FF");
         SymbolColor = new Color("a8b1d6");

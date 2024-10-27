@@ -6,7 +6,7 @@ namespace RedotUtils;
 /// <summary>
 /// A custom wrapper for Godot's ColorPickerButton with additional functionality.
 /// </summary>
-public class GColorPickerButton
+public class RColorPickerButton
 {
     /// <summary>
     /// Event triggered when the color is changed.
@@ -21,7 +21,7 @@ public class GColorPickerButton
     /// <summary>
     /// Initializes a new instance of the GColorPickerButton class with the default color (black).
     /// </summary>
-    public GColorPickerButton() : this(Colors.Black)
+    public RColorPickerButton() : this(Colors.Black)
     {
 
     }
@@ -30,7 +30,7 @@ public class GColorPickerButton
     /// Initializes a new instance of the GColorPickerButton class with the specified initial color.
     /// </summary>
     /// <param name="initialColor">The initial color of the ColorPickerButton.</param>
-    public GColorPickerButton(Color initialColor)
+    public RColorPickerButton(Color initialColor)
     {
         Control = new()
         {

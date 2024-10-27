@@ -2,9 +2,9 @@ using Godot;
 
 namespace RedotUtils;
 
-public partial class GLinkButton : LinkButton
+public partial class RLinkButton : LinkButton
 {
-    public GLinkButton(string text, int fontSize = 16)
+    public RLinkButton(string text, int fontSize = 16)
     {
         Text = text;
         Uri = text;

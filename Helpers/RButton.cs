@@ -2,9 +2,9 @@ using Godot;
 
 namespace RedotUtils;
 
-public partial class GButton : Button
+public partial class RButton : Button
 {
-    public GButton(string text)
+    public RButton(string text)
     {
         Text = text;
     }

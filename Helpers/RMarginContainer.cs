@@ -2,10 +2,10 @@ using Godot;
 
 namespace RedotUtils;
 
-public partial class GMarginContainer : MarginContainer
+public partial class RMarginContainer : MarginContainer
 {
-    public GMarginContainer(int padding = 5) => SetMarginAll(5);
-    public GMarginContainer(int left, int right, int top, int bottom)
+    public RMarginContainer(int padding = 5) => SetMarginAll(5);
+    public RMarginContainer(int left, int right, int top, int bottom)
     {
         SetMarginLeft(left);
         SetMarginRight(right);

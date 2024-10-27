@@ -2,7 +2,7 @@ using Godot;
 
 namespace RedotUtils;
 
-public class GAudioPlayer
+public class RAudioPlayer
 {
     /// <summary>
     /// <para>
@@ -50,7 +50,7 @@ public class GAudioPlayer
 
     public AudioStreamPlayer StreamPlayer { get; }
 
-    public GAudioPlayer(Node parent, bool deleteOnFinished = false)
+    public RAudioPlayer(Node parent, bool deleteOnFinished = false)
     {
         StreamPlayer = new AudioStreamPlayer();
 

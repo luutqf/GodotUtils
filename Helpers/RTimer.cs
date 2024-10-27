@@ -4,13 +4,13 @@ using Timer = Godot.Timer;
 
 namespace RedotUtils;
 
-public class GTimer
+public class RTimer
 {
     public event Action Timeout;
 
     private Timer _timer;
 
-    public GTimer(Node node, double milliseconds, bool looping)
+    public RTimer(Node node, double milliseconds, bool looping)
     {
         _timer = new Timer();
         _timer.ProcessCallback = Timer.TimerProcessCallback.Physics;
