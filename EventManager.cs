@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 
-namespace GodotUtils;
+namespace RedotUtils;
 
 /// <summary>
 /// This class was created to attempt to simplify the process of creating C# events for gamedev.

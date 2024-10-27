@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System;
 
-namespace GodotUtils;
+namespace RedotUtils;
 
 public static partial class StringExtensions
 {

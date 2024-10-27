@@ -2,7 +2,7 @@ using Godot;
 using System;
 using Timer = Godot.Timer;
 
-namespace GodotUtils;
+namespace RedotUtils;
 
 public class GTimer
 {

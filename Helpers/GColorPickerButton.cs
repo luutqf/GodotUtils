@@ -1,7 +1,7 @@
 ﻿using Godot;
 using System;
 
-namespace GodotUtils;
+namespace RedotUtils;
 
 /// <summary>
 /// A custom wrapper for Godot's ColorPickerButton with additional functionality.

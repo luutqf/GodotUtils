@@ -2,7 +2,7 @@ using Godot;
 using static Godot.Tween;
 using System;
 
-namespace GodotUtils;
+namespace RedotUtils;
 
 public class GTween
 {

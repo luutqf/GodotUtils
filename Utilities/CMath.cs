@@ -1,4 +1,4 @@
-﻿namespace GodotUtils;
+﻿namespace RedotUtils;
 
 public static class CMath
 {

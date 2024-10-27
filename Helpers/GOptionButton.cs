@@ -1,7 +1,7 @@
 ﻿using Godot;
 using System;
 
-namespace GodotUtils;
+namespace RedotUtils;
 
 /// <summary>
 /// Represents a custom OptionButton that allows adding items and handling item selection events.

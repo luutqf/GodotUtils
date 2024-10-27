@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-namespace GodotUtils;
+namespace RedotUtils;
 
 public partial class XTimer : Node
 {

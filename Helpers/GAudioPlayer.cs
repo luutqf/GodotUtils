@@ -1,6 +1,6 @@
 using Godot;
 
-namespace GodotUtils;
+namespace RedotUtils;
 
 public class GAudioPlayer
 {

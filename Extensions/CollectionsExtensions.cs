@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System;
 
-namespace GodotUtils;
+namespace RedotUtils;
 
 public static class CollectionExtensions
 {

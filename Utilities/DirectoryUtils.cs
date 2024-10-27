@@ -2,7 +2,7 @@ using Godot;
 using System.IO;
 using System;
 
-namespace GodotUtils;
+namespace RedotUtils;
 
 public static class DirectoryUtils
 {

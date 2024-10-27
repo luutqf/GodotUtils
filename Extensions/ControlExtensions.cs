@@ -1,7 +1,7 @@
 using Godot;
 using Layout = Godot.Control.LayoutPreset;
 
-namespace GodotUtils;
+namespace RedotUtils;
 
 public static class ControlExtensions
 {

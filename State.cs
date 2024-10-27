@@ -1,6 +1,6 @@
 using System;
 
-namespace GodotUtils;
+namespace RedotUtils;
 
 public class State(string name = "")
 {

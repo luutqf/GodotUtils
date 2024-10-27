@@ -1,6 +1,6 @@
 using Godot;
 
-namespace GodotUtils;
+namespace RedotUtils;
 
 public static class Camera2DExtensions
 {

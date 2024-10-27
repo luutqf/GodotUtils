@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace GodotUtils;
+namespace RedotUtils;
 
 public static class DictionaryExtensions
 {

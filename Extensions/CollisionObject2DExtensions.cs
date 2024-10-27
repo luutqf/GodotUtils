@@ -1,6 +1,6 @@
 using Godot;
 
-namespace GodotUtils;
+namespace RedotUtils;
 
 public static class CollisionObject2DExtensions
 {

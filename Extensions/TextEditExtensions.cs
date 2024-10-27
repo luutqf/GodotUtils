@@ -2,7 +2,7 @@ using Godot;
 using System.Collections.Generic;
 using System;
 
-namespace GodotUtils;
+namespace RedotUtils;
 
 public static class TextEditExtensions
 {

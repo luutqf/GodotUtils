@@ -1,7 +1,7 @@
 using Godot;
 using System.Runtime.InteropServices;
 
-namespace GodotUtils;
+namespace RedotUtils;
 
 /// <summary>
 /// This script is like the Godot OS class in a way
