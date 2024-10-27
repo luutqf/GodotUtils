@@ -3,7 +3,7 @@ An ever expanding utils library for Redot C#. This is the library I am using acr
 
 ## Features
 - [Extensions](https://github.com/ValksGodotTools/GodotUtils/tree/main/Extensions)
-- [Godot Helper Classes](https://github.com/ValksGodotTools/GodotUtils/tree/main/Godot%20Helpers)
+- [Redot Helper Classes](https://github.com/ValksGodotTools/GodotUtils/tree/main/Godot%20Helpers)
 - [Netcode](https://github.com/ValksGodotTools/GodotUtils/tree/main/Netcode) ([multiplater template](https://github.com/ValksGodotTools/Multiplayer))
 - [2D Platformer Scripts](https://github.com/ValksGodotTools/GodotUtils/tree/main/World2D/Platformer)
 - [2D Top Down Scripts](https://github.com/ValksGodotTools/GodotUtils/tree/main/World2D/TopDown)
