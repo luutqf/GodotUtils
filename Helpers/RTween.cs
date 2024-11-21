@@ -4,13 +4,43 @@ using System;
 
 namespace RedotUtils;
 
+public class RShaderTween : RTween
+{
+    private ShaderMaterial _animatingShaderMaterial;
+
+    public RShaderTween(Node2D node) : base(node)
+    {
+        _animatingShaderMaterial = node.Material as ShaderMaterial;
+
+        if (_animatingShaderMaterial == null)
+        {
+            throw new Exception("Animating shader material has not been set. Make sure the node has a shader material");
+        }
+    }
+
+    /// <summary>
+    /// Animates a specified <paramref name="shaderParam"/>. All tweens use the Sine transition by default.
+    /// 
+    /// <code>
+    /// tween.AnimateShader("blend_intensity", 1.0f, 2.0);
+    /// </code>
+    /// </summary>
+    public RShaderTween AnimateShader(string shaderParam, Variant finalValue, double duration)
+    {
+        _tweener = _tween
+            .TweenProperty(_animatingShaderMaterial, $"shader_parameter/{shaderParam}", finalValue, duration)
+            .SetTrans(TransitionType.Sine);
+
+        return this;
+    }
+}
+
 public class RTween
 {
-    private PropertyTweener _tweener;
-    private Tween _tween;
+    protected PropertyTweener _tweener;
+    protected Tween _tween;
     private Node _node;
     private string _animatingProperty;
-    private ShaderMaterial _animatingShaderMaterial;
 
     public RTween(Node node)
     {
@@ -56,28 +86,6 @@ public class RTween
     }
 
     /// <summary>
-    /// Animates a specified <paramref name="shaderParam"/>. All tweens use the Sine transition by default.
-    /// 
-    /// <code>
-    /// tween.SetAnimatingShaderMaterial(shaderMaterial);
-    /// tween.AnimateShader("blend_intensity", 1.0f, 2.0);
-    /// </code>
-    /// </summary>
-    public RTween AnimateShader(string shaderParam, Variant finalValue, double duration)
-    {
-        if (_animatingShaderMaterial == null)
-        {
-            throw new Exception("Animating shader material has not been set");
-        }
-
-        _tweener = _tween
-            .TweenProperty(_animatingShaderMaterial, $"shader_parameter/{shaderParam}", finalValue, duration)
-            .SetTrans(TransitionType.Sine);
-
-        return this;
-    }
-
-    /// <summary>
     /// Animates a specified <paramref name="property"/>. All tweens use the 
     /// Sine transition by default.
     /// 
@@ -105,20 +113,6 @@ public class RTween
     public RTween SetAnimatingProp(string property)
     {
         _animatingProperty = property;
-        return this;
-    }
-
-    /// <summary>
-    /// Sets the <paramref name="shaderMaterial"/> to be animated on
-    /// 
-    /// <code>
-    /// tween.SetAnimatingShaderMaterial(shaderMaterial);
-    /// tween.AnimateShader("blend_intensity", 1.0f, 2.0);
-    /// </code>
-    /// </summary>
-    public RTween SetAnimatingShaderMaterial(ShaderMaterial shaderMaterial)
-    {
-        _animatingShaderMaterial = shaderMaterial;
         return this;
     }
 
