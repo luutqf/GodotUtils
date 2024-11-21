@@ -21,18 +21,17 @@ public class RTween
         _tween = node.CreateTween();
 
         // This helps to prevent the camera from lagging behind the players movement
-        _tween.SetProcessMode(Tween.TweenProcessMode.Physics);
+        _tween.SetProcessMode(TweenProcessMode.Physics);
     }
 
     /// <summary>
-    /// Creates a delay of <paramref name="duration"/> seconds followed by a
-    /// <paramref name="callback"/>
+    /// A delay in <paramref name="seconds"/> followed by a <paramref name="callback"/>
     /// </summary>
-    public static RTween Delay(Node node, double duration, Action callback)
+    public static RTween Delay(Node node, double seconds, Action callback)
     {
         RTween tween = new(node);
 
-        tween.Delay(duration)
+        tween.Delay(seconds)
             .Callback(callback);
 
         return tween;
@@ -73,7 +72,7 @@ public class RTween
 
         _tweener = _tween
             .TweenProperty(_animatingShaderMaterial, $"shader_parameter/{shaderParam}", finalValue, duration)
-            .SetTrans(Tween.TransitionType.Sine);
+            .SetTrans(TransitionType.Sine);
 
         return this;
     }
@@ -90,7 +89,7 @@ public class RTween
     {
         _tweener = _tween
             .TweenProperty(_node, property, finalValue, duration)
-            .SetTrans(Tween.TransitionType.Sine);
+            .SetTrans(TransitionType.Sine);
 
         return this;
     }
@@ -176,9 +175,9 @@ public class RTween
         return this;
     }
 
-    public RTween Delay(double duration)
+    public RTween Delay(double seconds)
     {
-        _tween.TweenCallback(Callable.From(() => { /* Empty Action */ })).SetDelay(duration);
+        _tween.TweenCallback(Callable.From(() => { /* Empty Action */ })).SetDelay(seconds);
         return this;
     }
 
@@ -274,4 +273,3 @@ public class RTween
         return this;
     }
 }
-
