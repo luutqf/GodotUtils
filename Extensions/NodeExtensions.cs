@@ -87,6 +87,11 @@ public static class NodeExtensions
     {
         return FindNode<T>(node.GetChildren(), recursive) != null;
     }
+    
+    public static T GetComponent<T>(this Node node, bool recursive = true) where T : Node
+    {
+        return GetNode<T>(node, recursive);
+    }
 
     /// <summary>
     /// Find a child node of type T
@@ -158,7 +163,7 @@ public static class NodeExtensions
 
     public static void AddChildDeferred(this Node node, Node child)
     {
-        node.CallDeferred(Godot.Node.MethodName.AddChild, child);
+        node.CallDeferred(Node.MethodName.AddChild, child);
     }
 
     /// <summary>
