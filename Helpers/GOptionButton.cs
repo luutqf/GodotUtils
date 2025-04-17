@@ -1,12 +1,12 @@
 ﻿using Godot;
 using System;
 
-namespace RedotUtils;
+namespace GodotUtils;
 
 /// <summary>
 /// Represents a custom OptionButton that allows adding items and handling item selection events.
 /// </summary>
-public class ROptionButton : GOptionButtonBase
+public class GOptionButton : GOptionButtonBase
 {
     /// <summary>
     /// Event triggered when an item is selected from the OptionButton.
@@ -14,10 +14,10 @@ public class ROptionButton : GOptionButtonBase
     public event Action<int> OnItemSelected;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ROptionButton"/> class with the specified items.
+    /// Initializes a new instance of the <see cref="GOptionButton"/> class with the specified items.
     /// </summary>
     /// <param name="items">The items to add to the OptionButton.</param>
-    public ROptionButton(params string[] items) : base()
+    public GOptionButton(params string[] items) : base()
     {
         foreach (string item in items)
         {

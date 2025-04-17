@@ -1,8 +1,8 @@
 using Godot;
 
-namespace RedotUtils;
+namespace GodotUtils;
 
-public static class RWindow
+public static class GWindow
 {
     public static void SetTitle(string title)
     {

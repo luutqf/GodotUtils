@@ -2,13 +2,13 @@ using EaseType = Godot.Tween.EaseType;
 using Godot;
 using TransType = Godot.Tween.TransitionType;
 
-namespace RedotUtils;
+namespace GodotUtils;
 
 /*
  * Create a path from a set of points with options to add curvature and
  * animate the attached sprite.
  */
-public partial class RPath : Path2D
+public partial class GPath : Path2D
 {
     public bool Rotates
     {
@@ -29,7 +29,7 @@ public partial class RPath : Path2D
     private float _width;
     private int _dashes;
 
-    public RPath(Vector2[] points, Color color, int width = 5, int dashes = 0, double animSpeed = 1)
+    public GPath(Vector2[] points, Color color, int width = 5, int dashes = 0, double animSpeed = 1)
     {
         _points = points;
         Curve = new Curve2D();

@@ -2,15 +2,15 @@ using Godot;
 using System;
 using Timer = Godot.Timer;
 
-namespace RedotUtils;
+namespace GodotUtils;
 
-public class RTimer
+public class GTimer
 {
     public event Action Timeout;
 
     private Timer _timer;
 
-    public RTimer(Node node, double milliseconds, bool looping)
+    public GTimer(Node node, double milliseconds, bool looping)
     {
         _timer = new Timer();
         _timer.ProcessCallback = Timer.TimerProcessCallback.Physics;

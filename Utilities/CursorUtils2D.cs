@@ -1,7 +1,7 @@
 ﻿using Godot;
 using System.Collections.Generic;
 
-namespace RedotUtils;
+namespace GodotUtils;
 
 /// <summary>
 /// Utility class for handling cursor-related operations in a 2D Godot scene.

@@ -1,4 +1,4 @@
-﻿namespace RedotUtils;
+﻿namespace GodotUtils;
 
 public static class DoubleExtensions
 {

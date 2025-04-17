@@ -1,8 +1,8 @@
 using Godot;
 
-namespace RedotUtils;
+namespace GodotUtils;
 
-public static class RVector2
+public static class GVector2
 {
     /// <summary>
     /// Returns a random vector between 0 and 1 (inclusive) for X and Y.

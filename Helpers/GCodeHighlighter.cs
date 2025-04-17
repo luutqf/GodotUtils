@@ -1,10 +1,10 @@
 using Godot;
 
-namespace RedotUtils;
+namespace GodotUtils;
 
-public partial class RCodeHighlighter : CodeHighlighter
+public partial class GCodeHighlighter : CodeHighlighter
 {
-    public RCodeHighlighter()
+    public GCodeHighlighter()
     {
         NumberColor = new Color("FFB6FF");
         SymbolColor = new Color("a8b1d6");

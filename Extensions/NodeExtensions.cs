@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
 
-namespace RedotUtils;
+namespace GodotUtils;
 
 public static class NodeExtensions
 {

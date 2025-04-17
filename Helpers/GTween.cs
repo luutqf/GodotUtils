@@ -2,13 +2,13 @@ using Godot;
 using static Godot.Tween;
 using System;
 
-namespace RedotUtils;
+namespace GodotUtils;
 
-public class RShaderTween : RTween
+public class GShaderTween : RTween
 {
     private ShaderMaterial _animatingShaderMaterial;
 
-    public RShaderTween(Node2D node) : base(node)
+    public GShaderTween(Node2D node) : base(node)
     {
         _animatingShaderMaterial = node.Material as ShaderMaterial;
 
@@ -25,7 +25,7 @@ public class RShaderTween : RTween
     /// tween.AnimateShader("blend_intensity", 1.0f, 2.0);
     /// </code>
     /// </summary>
-    public RShaderTween AnimateShader(string shaderParam, Variant finalValue, double duration)
+    public GShaderTween AnimateShader(string shaderParam, Variant finalValue, double duration)
     {
         _tweener = _tween
             .TweenProperty(_animatingShaderMaterial, $"shader_parameter/{shaderParam}", finalValue, duration)

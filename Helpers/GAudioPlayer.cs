@@ -1,8 +1,8 @@
 using Godot;
 
-namespace RedotUtils;
+namespace GodotUtils;
 
-public class RAudioPlayer
+public class GAudioPlayer
 {
     /// <summary>
     /// <para>
@@ -50,7 +50,7 @@ public class RAudioPlayer
 
     public AudioStreamPlayer StreamPlayer { get; }
 
-    public RAudioPlayer(Node parent, bool deleteOnFinished = false)
+    public GAudioPlayer(Node parent, bool deleteOnFinished = false)
     {
         StreamPlayer = new AudioStreamPlayer();
 

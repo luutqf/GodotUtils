@@ -1,8 +1,8 @@
 using Godot;
 
-namespace RedotUtils;
+namespace GodotUtils;
 
-public static class RInput
+public static class GInput
 {
     public static bool IsMovingLeft()
     {

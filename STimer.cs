@@ -3,7 +3,7 @@ using System.Timers;
 using System;
 using Timer = System.Timers.Timer;
 
-namespace RedotUtils;
+namespace GodotUtils;
 
 /// <summary>
 /// If for whatever reason a Timer is needed on a non-Godot thread, this is what you should use.

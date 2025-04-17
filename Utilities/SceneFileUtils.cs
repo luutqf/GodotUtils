@@ -2,7 +2,7 @@ using Godot;
 using System.IO;
 using System.Text.RegularExpressions;
 
-namespace RedotUtils;
+namespace GodotUtils;
 
 public static partial class SceneFileUtils
 {

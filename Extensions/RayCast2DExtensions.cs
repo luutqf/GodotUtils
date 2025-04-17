@@ -1,6 +1,6 @@
 using Godot;
 
-namespace RedotUtils;
+namespace GodotUtils;
 
 public static class RayCast2DExtensions
 {

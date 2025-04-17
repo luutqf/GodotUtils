@@ -6,7 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System;
 
-namespace RedotUtils;
+namespace GodotUtils;
 
 /// <summary>
 /// Provides extension methods for printing objects and collections in a formatted manner.
