@@ -15,7 +15,7 @@ public static class AnimationTreeExtensions
     {
         tree.SetParam($"conditions/{path}", value);
 
-        new RTween(tree)
+        new GTween(tree)
             .Delay(0.1)
             .Callback(() => tree.SetParam($"conditions/{path}", !value));
     }

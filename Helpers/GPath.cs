@@ -19,7 +19,7 @@ public partial class GPath : Path2D
     private PathFollow2D _pathFollow;
     private Vector2[] _points;
     private Sprite2D _sprite;
-    private RTween _tween;
+    private GTween _tween;
     private float[] _tweenValues;
     private int _tweenIndex;
     private TransType _transType = TransType.Sine;
@@ -34,7 +34,7 @@ public partial class GPath : Path2D
         _points = points;
         Curve = new Curve2D();
         _pathFollow = new PathFollow2D { Rotates = false };
-        _tween = new RTween(_pathFollow);
+        _tween = new GTween(_pathFollow);
         AddChild(_pathFollow);
 
         _color = color;

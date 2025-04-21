@@ -4,7 +4,7 @@ using System;
 
 namespace GodotUtils;
 
-public class GShaderTween : RTween
+public class GShaderTween : GTween
 {
     private ShaderMaterial _animatingShaderMaterial;
 
@@ -35,14 +35,14 @@ public class GShaderTween : RTween
     }
 }
 
-public class RTween
+public class GTween
 {
     protected PropertyTweener _tweener;
     protected Tween _tween;
     private Node _node;
     private string _animatingProperty;
 
-    public RTween(Node node)
+    public GTween(Node node)
     {
         _node = node;
 
@@ -57,9 +57,9 @@ public class RTween
     /// <summary>
     /// A delay in <paramref name="seconds"/> followed by a <paramref name="callback"/>
     /// </summary>
-    public static RTween Delay(Node node, double seconds, Action callback)
+    public static GTween Delay(Node node, double seconds, Action callback)
     {
-        RTween tween = new(node);
+        GTween tween = new(node);
 
         tween.Delay(seconds)
             .Callback(callback);
@@ -75,7 +75,7 @@ public class RTween
     /// tween.AnimateProp(Colors.Transparent, 0.5);
     /// </code>
     /// </summary>
-    public RTween AnimateProp(Variant finalValue, double duration)
+    public GTween AnimateProp(Variant finalValue, double duration)
     {
         if (string.IsNullOrWhiteSpace(_animatingProperty))
         {
@@ -93,7 +93,7 @@ public class RTween
     /// tween.Animate(ColorRect.PropertyName.Color, Colors.Transparent, 0.5);
     /// </code>
     /// </summary>
-    public RTween Animate(string property, Variant finalValue, double duration)
+    public GTween Animate(string property, Variant finalValue, double duration)
     {
         _tweener = _tween
             .TweenProperty(_node, property, finalValue, duration)
@@ -110,13 +110,13 @@ public class RTween
     /// tween.AnimateProp(Colors.Transparent, 0.5);
     /// </code>
     /// </summary>
-    public RTween SetAnimatingProp(string property)
+    public GTween SetAnimatingProp(string property)
     {
         _animatingProperty = property;
         return this;
     }
 
-    public RTween SetProcessMode(TweenProcessMode mode)
+    public GTween SetProcessMode(TweenProcessMode mode)
     {
         _tween = _tween.SetProcessMode(mode);
         return this;
@@ -125,7 +125,7 @@ public class RTween
     /// <summary>
     /// Sets the animation to repeat
     /// </summary>
-    public RTween Loop(int loops = 0)
+    public GTween Loop(int loops = 0)
     {
         _tween = _tween.SetLoops(loops);
         return this;
@@ -143,7 +143,7 @@ public class RTween
     /// <para>All <see cref="Tweener"/>s in the example will run at the same time.</para>
     /// <para>You can make the <see cref="Tween"/> parallel by default by using <see cref="Tween.SetParallel(bool)"/>.</para>
     /// </summary>
-    public RTween Parallel()
+    public GTween Parallel()
     {
         _tween = _tween.Parallel();
         return this;
@@ -157,19 +157,19 @@ public class RTween
     /// tween.Animate(...)
     /// </code></para>
     /// </summary>
-    public RTween SetParallel(bool parallel = true)
+    public GTween SetParallel(bool parallel = true)
     {
         _tween = _tween.SetParallel(parallel);
         return this;
     }
 
-    public RTween Callback(Action callback)
+    public GTween Callback(Action callback)
     {
         _tween.TweenCallback(Callable.From(callback));
         return this;
     }
 
-    public RTween Delay(double seconds)
+    public GTween Delay(double seconds)
     {
         _tween.TweenCallback(Callable.From(() => { /* Empty Action */ })).SetDelay(seconds);
         return this;
@@ -178,7 +178,7 @@ public class RTween
     /// <summary>
     /// A <paramref name="callback"/> is executed when the tween has finished
     /// </summary>
-    public RTween Finished(Action callback)
+    public GTween Finished(Action callback)
     {
         _tween.Finished += callback;
         return this;
@@ -187,7 +187,7 @@ public class RTween
     /// <summary>
     /// If the tween is looping, this can be used to stop it
     /// </summary>
-    public RTween Stop()
+    public GTween Stop()
     {
         _tween.Stop();
         return this;
@@ -196,7 +196,7 @@ public class RTween
     /// <summary>
     /// Pause the tween
     /// </summary>
-    public RTween Pause()
+    public GTween Pause()
     {
         _tween.Pause();
         return this;
@@ -205,7 +205,7 @@ public class RTween
     /// <summary>
     /// If the tween was paused with Pause(), resume it with Resume()
     /// </summary>
-    public RTween Resume()
+    public GTween Resume()
     {
         _tween.Play();
         return this;
@@ -214,39 +214,39 @@ public class RTween
     /// <summary>
     /// Kill the tween
     /// </summary>
-    public RTween Kill()
+    public GTween Kill()
     {
         _tween?.Kill();
         return this;
     }
 
-    public RTween SetTrans(TransitionType transType)
+    public GTween SetTrans(TransitionType transType)
     {
         return UpdateTweener(nameof(SetTrans), () => _tweener.SetTrans(transType));
     }
 
-    public RTween SetEase(EaseType easeType)
+    public GTween SetEase(EaseType easeType)
     {
         return UpdateTweener(nameof(SetEase), () => _tweener.SetEase(easeType));
     }
 
-    public RTween TransLinear() => SetTrans(TransitionType.Linear);
-    public RTween TransBack() => SetTrans(TransitionType.Back);
-    public RTween TransSine() => SetTrans(TransitionType.Sine);
-    public RTween TransBounce() => SetTrans(TransitionType.Bounce);
-    public RTween TransCirc() => SetTrans(TransitionType.Circ);
-    public RTween TransCubic() => SetTrans(TransitionType.Cubic);
-    public RTween TransElastic() => SetTrans(TransitionType.Elastic);
-    public RTween TransExpo() => SetTrans(TransitionType.Expo);
-    public RTween TransQuad() => SetTrans(TransitionType.Quad);
-    public RTween TransQuart() => SetTrans(TransitionType.Quart);
-    public RTween TransQuint() => SetTrans(TransitionType.Quint);
-    public RTween TransSpring() => SetTrans(TransitionType.Spring);
+    public GTween TransLinear() => SetTrans(TransitionType.Linear);
+    public GTween TransBack() => SetTrans(TransitionType.Back);
+    public GTween TransSine() => SetTrans(TransitionType.Sine);
+    public GTween TransBounce() => SetTrans(TransitionType.Bounce);
+    public GTween TransCirc() => SetTrans(TransitionType.Circ);
+    public GTween TransCubic() => SetTrans(TransitionType.Cubic);
+    public GTween TransElastic() => SetTrans(TransitionType.Elastic);
+    public GTween TransExpo() => SetTrans(TransitionType.Expo);
+    public GTween TransQuad() => SetTrans(TransitionType.Quad);
+    public GTween TransQuart() => SetTrans(TransitionType.Quart);
+    public GTween TransQuint() => SetTrans(TransitionType.Quint);
+    public GTween TransSpring() => SetTrans(TransitionType.Spring);
 
-    public RTween EaseIn() => SetEase(EaseType.In);
-    public RTween EaseOut() => SetEase(EaseType.Out);
-    public RTween EaseInOut() => SetEase(EaseType.InOut);
-    public RTween EaseOutIn() => SetEase(EaseType.OutIn);
+    public GTween EaseIn() => SetEase(EaseType.In);
+    public GTween EaseOut() => SetEase(EaseType.Out);
+    public GTween EaseInOut() => SetEase(EaseType.InOut);
+    public GTween EaseOutIn() => SetEase(EaseType.OutIn);
 
     /// <summary>
     /// Checks if the tween is still playing
@@ -256,7 +256,7 @@ public class RTween
         return _tween.IsRunning();
     }
 
-    private RTween UpdateTweener(string methodName, Action action)
+    private GTween UpdateTweener(string methodName, Action action)
     {
         if (_tweener == null)
         {
