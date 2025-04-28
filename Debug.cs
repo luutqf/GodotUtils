@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace GodotUtils;
 
@@ -7,7 +8,7 @@ namespace GodotUtils;
 // weird, it does not work and this code is useless but I will leave it here in case anyone else figures it out.
 internal static class Debug
 {
-    internal static void Assert(bool condition, string message)
+    internal static void Assert(bool condition, [CallerArgumentExpression(nameof(condition))] string message = "")
     {
 #if DEBUG
         if (condition)
