@@ -59,13 +59,6 @@ public class GTween
     /// </summary>
     public static GTween Delay(Node node, double seconds, Action callback)
     {
-        // Not needed but good for performance
-        if (seconds == 0)
-        {
-            callback.Invoke();
-            return null;
-        }
-
         GTween tween = new(node);
 
         tween.Delay(seconds)
