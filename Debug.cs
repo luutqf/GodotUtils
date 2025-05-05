@@ -15,7 +15,9 @@ public static class Debug
         {
             string scriptName = Path.GetFileName(node?.GetScript().As<Script>().ResourcePath);
 
-            node.QueueFree();
+            node.SetPhysicsProcess(false);
+            node.SetProcess(false);
+
             throw new Exception($"Value cannot be null. (Parameter '{paramName}' in {scriptName})");
         }
     }
