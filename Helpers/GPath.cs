@@ -84,14 +84,14 @@ public partial class GPath : Path2D
     public int AnimateForwards(int step = 1)
     {
         _tweenIndex = Mathf.Min(_tweenIndex + step, _tweenValues.Length - 1);
-        Animate(true);
+        Animate();
         return _tweenIndex;
     }
 
     public int AnimateBackwards(int step = 1)
     {
         _tweenIndex = Mathf.Max(_tweenIndex - step, 0);
-        Animate(false);
+        Animate();
         return _tweenIndex;
     }
 
@@ -172,14 +172,14 @@ public partial class GPath : Path2D
         }
     }
 
-    private void Animate(bool forwards)
+    private void Animate()
     {
-        _tween = new(this);
+        _tween = new GTween(this);
         _tween.Animate(PathFollow2D.PropertyName.Progress, _tweenValues[_tweenIndex],
-            CalculateDuration(forwards)).SetTrans(_transType).SetEase(_easeType);
+            CalculateDuration()).SetTrans(_transType).SetEase(_easeType);
     }
 
-    private double CalculateDuration(bool forwards)
+    private double CalculateDuration()
     {
         // The remaining distance left to go from the current sprites progress
         float remainingDistance = Mathf.Abs(
@@ -190,11 +190,11 @@ public partial class GPath : Path2D
         // Dynamically calculate the start index
         for (int i = 0; i < _tweenValues.Length; i++)
         {
-            if (_pathFollow.Progress <= _tweenValues[i])
-            {
-                startIndex = i;
-                break;
-            }
+            if (_pathFollow.Progress > _tweenValues[i])
+                continue;
+
+            startIndex = i;
+            break;
         }
 
         // The number of level icons left to pass

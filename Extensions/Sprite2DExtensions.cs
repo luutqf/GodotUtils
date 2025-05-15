@@ -90,9 +90,9 @@ public static class Sprite2DExtensions
         // The -2 offset that is
         int diff = 0;
 
-        for (int y = (int)size.Y - 1; y >= 0; y--)
+        for (int y = size.Y - 1; y >= 0; y--)
         {
-            if (img.GetPixel((int)size.X / 2, y).A != 0)
+            if (img.GetPixel(size.X / 2, y).A != 0)
             {
                 break;
             }

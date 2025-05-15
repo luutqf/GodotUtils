@@ -8,7 +8,7 @@ public partial class GLinkButton : LinkButton
     {
         Text = text;
         Uri = text;
-        SizeFlagsVertical = Control.SizeFlags.ShrinkCenter;
+        SizeFlagsVertical = SizeFlags.ShrinkCenter;
         SetFontSize(fontSize);
     }
 

@@ -4,7 +4,7 @@ namespace GodotUtils;
 
 public partial class GMarginContainer : MarginContainer
 {
-    public GMarginContainer(int padding = 5) => SetMarginAll(5);
+    public GMarginContainer(int padding = 5) => SetMarginAll(padding);
     public GMarginContainer(int left, int right, int top, int bottom)
     {
         SetMarginLeft(left);
@@ -15,7 +15,7 @@ public partial class GMarginContainer : MarginContainer
 
     public void SetMarginAll(int padding)
     {
-        foreach (string margin in new string[] { "left", "right", "top", "bottom" })
+        foreach (string margin in new[] { "left", "right", "top", "bottom" })
         {
             AddThemeConstantOverride($"margin_{margin}", padding);
         }

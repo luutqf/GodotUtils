@@ -17,7 +17,7 @@ public class GOptionButton : GOptionButtonBase
     /// Initializes a new instance of the <see cref="GOptionButton"/> class with the specified items.
     /// </summary>
     /// <param name="items">The items to add to the OptionButton.</param>
-    public GOptionButton(params string[] items) : base()
+    public GOptionButton(params string[] items)
     {
         foreach (string item in items)
         {
@@ -51,14 +51,14 @@ public class GOptionButtonEnum : GOptionButtonBase
     /// </summary>
     public event Action<object> OnItemSelected;
 
-    private Type _enumType;
+    private readonly Type _enumType;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GOptionButtonEnum"/> class with the specified enum type.
     /// </summary>
     /// <param name="enumType">The enum type to bind to the OptionButton.</param>
     /// <exception cref="ArgumentException">Thrown if the provided type is not an enum.</exception>
-    public GOptionButtonEnum(Type enumType) : base()
+    public GOptionButtonEnum(Type enumType)
     {
         if (!enumType.IsEnum)
         {

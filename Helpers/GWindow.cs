@@ -11,7 +11,7 @@ public static class GWindow
 
     public static Vector2 GetCenter()
     {
-        return new(GetWidth() / 2, GetHeight() / 2);
+        return new Vector2(GetWidth() / 2f, GetHeight() / 2f);
     }
 
     public static int GetWidth()
