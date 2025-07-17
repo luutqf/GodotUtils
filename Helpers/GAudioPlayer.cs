@@ -16,7 +16,7 @@ public class GAudioPlayer
     /// </summary>
     public float Volume
     {
-        get => StreamPlayer.VolumeDb.Remap(-40, 0, 0, 100);
+        get => Internal.VolumeDb.Remap(-40, 0, 0, 100);
         set
         {
             float v = value.Remap(0, 100, -40, 0);
@@ -26,45 +26,45 @@ public class GAudioPlayer
                 v = -80;
             }
 
-            StreamPlayer.VolumeDb = v;
+            Internal.VolumeDb = v;
         }
     }
 
     public bool Playing
     {
-        get => StreamPlayer.Playing;
-        set => StreamPlayer.Playing = value;
+        get => Internal.Playing;
+        set => Internal.Playing = value;
     }
 
     public AudioStream Stream
     {
-        get => StreamPlayer.Stream;
-        set => StreamPlayer.Stream = value;
+        get => Internal.Stream;
+        set => Internal.Stream = value;
     }
 
     public float Pitch
     {
-        get => StreamPlayer.PitchScale;
-        set => StreamPlayer.PitchScale = value;
+        get => Internal.PitchScale;
+        set => Internal.PitchScale = value;
     }
 
-    public AudioStreamPlayer StreamPlayer { get; }
+    public AudioStreamPlayer Internal { get; }
 
     public GAudioPlayer(Node parent, bool deleteOnFinished = false)
     {
-        StreamPlayer = new AudioStreamPlayer();
+        Internal = new AudioStreamPlayer();
 
         if (deleteOnFinished)
         {
-            StreamPlayer.Finished += () => StreamPlayer.QueueFree();
+            Internal.Finished += () => Internal.QueueFree();
         }
 
-        parent.AddChild(StreamPlayer);
+        parent.AddChild(Internal);
     }
 
     public void Play()
     {
-        StreamPlayer.Play();
+        Internal.Play();
     }
 }
 

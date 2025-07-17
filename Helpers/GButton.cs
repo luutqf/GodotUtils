@@ -2,11 +2,15 @@ using Godot;
 
 namespace GodotUtils;
 
-public partial class GButton : Button
+public partial class GButton
 {
-    public GButton(string text)
+    public Button Internal { get; } = new();
+
+    public GButton(Node parent, string text)
     {
-        Text = text;
+        Internal.Text = text;
+
+        parent.AddChild(Internal);
     }
 }
 

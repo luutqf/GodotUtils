@@ -6,7 +6,7 @@ namespace GodotUtils;
 /// <summary>
 /// This script is like the Godot OS class in a way
 /// </summary>
-public static class GOS
+public static class EditorUtils
 {
     // Read up on feature tags https://docs.godotengine.org/en/latest/tutorials/export/feature_tags.html
     public static bool IsExportedRelease()

@@ -21,13 +21,13 @@ public class GOptionButton : GOptionButtonBase
     {
         foreach (string item in items)
         {
-            Control.AddItem(item);
+            Internal.AddItem(item);
         }
 
-        Control.ItemSelected += item =>
+        Internal.ItemSelected += item =>
         {
             OnItemSelected?.Invoke((int)item);
-            Control.ReleaseFocus();
+            Internal.ReleaseFocus();
         };
     }
 
@@ -37,7 +37,7 @@ public class GOptionButton : GOptionButtonBase
     /// <param name="index">The index of the item to select.</param>
     public void Select(int index)
     {
-        Control.Select(index);
+        Internal.Select(index);
     }
 }
 
@@ -69,14 +69,14 @@ public class GOptionButtonEnum : GOptionButtonBase
 
         foreach (object item in Enum.GetValues(enumType))
         {
-            Control.AddItem(item.ToString().AddSpaceBeforeEachCapital());
+            Internal.AddItem(item.ToString().AddSpaceBeforeEachCapital());
         }
 
-        Control.ItemSelected += item =>
+        Internal.ItemSelected += item =>
         {
             object selectedValue = Enum.GetValues(enumType).GetValue(item);
             OnItemSelected?.Invoke(selectedValue);
-            Control.ReleaseFocus();
+            Internal.ReleaseFocus();
         };
     }
 
@@ -87,7 +87,7 @@ public class GOptionButtonEnum : GOptionButtonBase
     public void Select(object initialValue)
     {
         int selectedIndex = Array.IndexOf(Enum.GetValues(_enumType), initialValue);
-        Control.Select(selectedIndex);
+        Internal.Select(selectedIndex);
     }
 }
 
@@ -99,14 +99,14 @@ public abstract class GOptionButtonBase
     /// <summary>
     /// Gets the underlying OptionButton control.
     /// </summary>
-    public OptionButton Control { get; }
+    public OptionButton Internal { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GOptionButtonBase"/> class.
     /// </summary>
     public GOptionButtonBase()
     {
-        Control = new OptionButton
+        Internal = new OptionButton
         {
             Alignment = HorizontalAlignment.Center
         };

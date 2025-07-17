@@ -2,11 +2,14 @@ using Godot;
 
 namespace GodotUtils;
 
-public partial class GPadding : Control
+public partial class GPadding
 {
-    public GPadding(int paddingX = 0, int paddingY = 0)
+    public Control Internal { get; } = new();
+
+    public GPadding(Node parent, int paddingX = 0, int paddingY = 0)
     {
-        CustomMinimumSize = new Vector2(paddingX, paddingY);
+        Internal.CustomMinimumSize = new Vector2(paddingX, paddingY);
+
+        parent.AddChild(Internal);
     }
 }
-

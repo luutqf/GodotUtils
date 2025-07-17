@@ -16,7 +16,7 @@ public class GColorPickerButton
     /// <summary>
     /// The underlying ColorPickerButton control.
     /// </summary>
-    public ColorPickerButton Control { get; }
+    public ColorPickerButton Internal { get; }
 
     /// <summary>
     /// Initializes a new instance of the GColorPickerButton class with the default color (black).
@@ -32,19 +32,19 @@ public class GColorPickerButton
     /// <param name="initialColor">The initial color of the ColorPickerButton.</param>
     public GColorPickerButton(Color initialColor)
     {
-        Control = new()
+        Internal = new()
         {
             CustomMinimumSize = Vector2.One * 30
         };
 
-        Control.ColorChanged += color =>
+        Internal.ColorChanged += color =>
         {
             OnColorChanged?.Invoke(color);
         };
 
-        Control.PickerCreated += () =>
+        Internal.PickerCreated += () =>
         {
-            ColorPicker picker = Control.GetPicker();
+            ColorPicker picker = Internal.GetPicker();
 
             picker.Color = initialColor;
 
@@ -63,6 +63,6 @@ public class GColorPickerButton
             };
         };
 
-        Control.PopupClosed += Control.ReleaseFocus;
+        Internal.PopupClosed += Internal.ReleaseFocus;
     }
 }

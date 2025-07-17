@@ -2,43 +2,40 @@ using Godot;
 
 namespace GodotUtils;
 
-public partial class GMarginContainer : MarginContainer
+public partial class GMarginContainer
 {
-    public GMarginContainer(int padding = 5) => SetMarginAll(padding);
-    public GMarginContainer(int left, int right, int top, int bottom)
+    public MarginContainer Internal { get; } = new();
+
+    public GMarginContainer(Node parent, int padding = 5) : this(parent, padding, padding, padding, padding) { }
+
+    public GMarginContainer(Node parent, int left, int right, int top, int bottom)
     {
         SetMarginLeft(left);
         SetMarginRight(right);
         SetMarginTop(top);
         SetMarginBottom(bottom);
-    }
 
-    public void SetMarginAll(int padding)
-    {
-        foreach (string margin in new[] { "left", "right", "top", "bottom" })
-        {
-            AddThemeConstantOverride($"margin_{margin}", padding);
-        }
+        parent.AddChild(Internal);
     }
 
     public void SetMarginLeft(int padding)
     {
-        AddThemeConstantOverride("margin_left", padding);
+        Internal.AddThemeConstantOverride("margin_left", padding);
     }
 
     public void SetMarginRight(int padding)
     {
-        AddThemeConstantOverride("margin_right", padding);
+        Internal.AddThemeConstantOverride("margin_right", padding);
     }
 
     public void SetMarginTop(int padding)
     {
-        AddThemeConstantOverride("margin_top", padding);
+        Internal.AddThemeConstantOverride("margin_top", padding);
     }
 
     public void SetMarginBottom(int padding)
     {
-        AddThemeConstantOverride("margin_bottom", padding);
+        Internal.AddThemeConstantOverride("margin_bottom", padding);
     }
 }
 

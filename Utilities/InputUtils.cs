@@ -2,7 +2,7 @@ using Godot;
 
 namespace GodotUtils;
 
-public static class GInput
+public static class InputUtils
 {
     public static bool IsMovingLeft()
     {

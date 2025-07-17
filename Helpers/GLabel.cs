@@ -2,25 +2,29 @@ using Godot;
 
 namespace GodotUtils;
 
-public partial class GLabel : Label
+public partial class GLabel
 {
-    public GLabel(string text = "", int fontSize = 16)
+    public Label Internal { get; } = new();
+
+    public GLabel(Node parent, string text = "", int fontSize = 16)
     {
-        Text = text;
-        HorizontalAlignment = HorizontalAlignment.Center;
-        VerticalAlignment = VerticalAlignment.Center;
+        Internal.Text = text;
+        Internal.HorizontalAlignment = HorizontalAlignment.Center;
+        Internal.VerticalAlignment = VerticalAlignment.Center;
         SetFontSize(fontSize);
+
+        parent.AddChild(Internal);
     }
 
     public GLabel SetTransparent()
     {
-        SelfModulate = new Color(1, 1, 1, 0);
+        Internal.SelfModulate = new Color(1, 1, 1, 0);
         return this;
     }
 
     public GLabel SetFontSize(int v)
     {
-        AddThemeFontSizeOverride("font_size", v);
+        Internal.AddThemeFontSizeOverride("font_size", v);
         return this;
     }
 }

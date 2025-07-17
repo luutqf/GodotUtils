@@ -2,7 +2,7 @@ using Godot;
 
 namespace GodotUtils;
 
-public static class GVector2
+public static class VectorUtils
 {
     /// <summary>
     /// Returns a random vector between 0 and 1 (inclusive) for X and Y.

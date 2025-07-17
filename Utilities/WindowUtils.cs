@@ -2,7 +2,7 @@ using Godot;
 
 namespace GodotUtils;
 
-public static class GWindow
+public static class WindowUtils
 {
     public static void SetTitle(string title)
     {

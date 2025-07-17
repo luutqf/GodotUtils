@@ -2,19 +2,23 @@ using Godot;
 
 namespace GodotUtils;
 
-public partial class GLinkButton : LinkButton
+public partial class GLinkButton
 {
-    public GLinkButton(string text, int fontSize = 16)
+    public LinkButton Internal { get; } = new();
+
+    public GLinkButton(Node parent, string text, int fontSize = 16)
     {
-        Text = text;
-        Uri = text;
-        SizeFlagsVertical = SizeFlags.ShrinkCenter;
+        Internal.Text = text;
+        Internal.Uri = text;
+        Internal.SizeFlagsVertical = Control.SizeFlags.ShrinkCenter;
         SetFontSize(fontSize);
+
+        parent.AddChild(Internal);
     }
 
     public void SetFontSize(int v)
     {
-        AddThemeFontSizeOverride("font_size", v);
+        Internal.AddThemeFontSizeOverride("font_size", v);
     }
 }
 
