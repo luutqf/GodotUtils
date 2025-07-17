@@ -47,4 +47,14 @@ public static class GMath
     {
         return RandRange(0, Mathf.Pi * 2);
     }
+
+    public static float GetAngle(Vector2 to, Vector2 from)
+    {
+        return (to - from).Normalized().Angle();
+    }
+
+    public static float GetAngleDiff(float to, float from)
+    {
+        return Mathf.Wrap(from - to, -Mathf.Pi, Mathf.Pi);
+    }
 }
