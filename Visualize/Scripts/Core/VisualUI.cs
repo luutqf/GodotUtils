@@ -14,15 +14,22 @@ namespace GodotUtils.Visualize;
 /// </summary>
 public static class VisualUI
 {
-    public const float VISUAL_UI_SCALE_FACTOR = 0.6f;
+    public const float VisualUiScaleFactor = 0.6f;
 
-    private const int MIN_SCROLL_VIEW_SIZE = 250;
+    private const string PathIcons = "res://addons/Framework/GodotUtils/Visualize/Icons";
+    private const double ReleaseFocusOnPressDelay = 0.1;
+    private const int MinScrollViewDistance = 250;
+    private const int TitleFontSize = 20;
+    private const int MemberFontSize = 18;
+    private const int FontOutlineSize = 6;
+    private const int MinButtonSize = 25;
+    private const int MaxSecondsToWaitForInitialValues = 3;
 
-    private const string PATH_ICONS = "res://addons/Framework/GodotUtils/Visualize/Icons";
-
-    private static Texture2D _eyeOpen = GD.Load<Texture2D>($"{PATH_ICONS}/EyeOpen.png");
-    private static Texture2D _eyeClosed = GD.Load<Texture2D>($"{PATH_ICONS}/EyeClosed.png");
-    private static Texture2D _wrench = GD.Load<Texture2D>($"{PATH_ICONS}/Wrench.png");
+    private static Texture2D _eyeOpen = GD.Load<Texture2D>($"{PathIcons}/EyeOpen.png");
+    private static Texture2D _eyeClosed = GD.Load<Texture2D>($"{PathIcons}/EyeClosed.png");
+    private static Texture2D _wrench = GD.Load<Texture2D>($"{PathIcons}/Wrench.png");
+    private static Color Green = new(0.8f, 1, 0.8f);
+    private static Color Pink = new(1.0f, 0.75f, 0.8f);
 
     /// <summary>
     /// Creates the visual panel for a specified visual node.
@@ -40,11 +47,11 @@ public static class VisualUI
         panelContainer.MouseFilter = MouseFilterEnum.Ignore;
         panelContainer.Name = "Main Panel";
 
-        VBoxContainer mutableMembers = CreateColoredVBox(0.8f, 1, 0.8f);
+        VBoxContainer mutableMembers = CreateColoredVBox(Green);
         mutableMembers.MouseFilter =  MouseFilterEnum.Ignore;
         mutableMembers.Name = "Mutable Members";
 
-        VBoxContainer readonlyMembers = CreateColoredVBox(1.0f, 0.75f, 0.8f);
+        VBoxContainer readonlyMembers = CreateColoredVBox(Pink);
         readonlyMembers.MouseFilter = MouseFilterEnum.Ignore;
         readonlyMembers.Name = "Readonly Members";
 
@@ -67,7 +74,7 @@ public static class VisualUI
         ScrollContainer scrollContainer = new();
         scrollContainer.HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled;
         scrollContainer.VerticalScrollMode = ScrollContainer.ScrollMode.ShowNever;
-        scrollContainer.CustomMinimumSize = new Vector2(0, MIN_SCROLL_VIEW_SIZE);
+        scrollContainer.CustomMinimumSize = new Vector2(0, MinScrollViewDistance);
         scrollContainer.MouseFilter = MouseFilterEnum.Ignore;
 
         // Make them hidden by default
@@ -120,7 +127,7 @@ public static class VisualUI
             baseButton.Pressed += () =>
             {
                 _ = new GTween(baseButton)
-                    .Delay(0.1)
+                    .Delay(ReleaseFocusOnPressDelay)
                     .Callback(() => baseButton.ReleaseFocus());
             };
         }
@@ -144,10 +151,10 @@ public static class VisualUI
             Visible = true,
             LabelSettings = new LabelSettings
             {
-                FontSize = 20,
+                FontSize = TitleFontSize,
                 FontColor = Colors.LightSkyBlue,
                 OutlineColor = Colors.Black,
-                OutlineSize = 6,
+                OutlineSize = FontOutlineSize,
             }
         };
 
@@ -204,7 +211,7 @@ public static class VisualUI
             Flat = true,
             ExpandIcon = true,
             SelfModulate = color,
-            CustomMinimumSize = Vector2.One * 25,
+            CustomMinimumSize = Vector2.One * MinButtonSize,
             TextureFilter = CanvasItem.TextureFilterEnum.Nearest
         };
 
@@ -216,11 +223,11 @@ public static class VisualUI
     /// <summary>
     /// Creates a colored VBoxContainer with specified RGB values.
     /// </summary>
-    private static VBoxContainer CreateColoredVBox(float r, float g, float b)
+    private static VBoxContainer CreateColoredVBox(Color color)
     {
         return new VBoxContainer
         {
-            Modulate = new Color(r, g, b)
+            Modulate = color
         };
     }
     
@@ -233,7 +240,7 @@ public static class VisualUI
         {
             // Ensure this info is rendered above all game elements
             Name = name,
-            Scale = Vector2.One * VISUAL_UI_SCALE_FACTOR,
+            Scale = Vector2.One * VisualUiScaleFactor,
             ZIndex = (int)RenderingServer.CanvasItemZMax
         };
 
@@ -247,7 +254,9 @@ public static class VisualUI
     /// </summary>
     private static void TryGetMemberInfo(Node node, string visualMember, out PropertyInfo property, out FieldInfo field, out object initialValue)
     {
-        property = node.GetType().GetProperty(visualMember, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
+        BindingFlags memberTypes = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
+
+        property = node.GetType().GetProperty(visualMember, memberTypes);
         field = null;
         initialValue = null;
 
@@ -257,7 +266,7 @@ public static class VisualUI
         }
         else
         {
-            field = node.GetType().GetField(visualMember, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
+            field = node.GetType().GetField(visualMember, memberTypes);
 
             if (field != null)
             {
@@ -339,12 +348,11 @@ public static class VisualUI
 
             try
             {
-                await Task.Delay(1000, token);
+                const int OneSecondInMs = 1000;
+                await Task.Delay(OneSecondInMs, token);
                 elapsedSeconds++;
 
-                const int MAX_WAIT_TIME = 3;
-
-                if (elapsedSeconds == MAX_WAIT_TIME)
+                if (elapsedSeconds == MaxSecondsToWaitForInitialValues)
                 {
                     string memberName = string.Empty;
 
@@ -448,8 +456,8 @@ public static class VisualUI
             {
                 LabelSettings = new LabelSettings
                 {
-                    FontSize = 18,
-                    OutlineSize = 6,
+                    FontSize = MemberFontSize,
+                    OutlineSize = FontOutlineSize,
                     OutlineColor = Colors.Black,
                 }
             };
