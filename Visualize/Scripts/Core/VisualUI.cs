@@ -75,7 +75,6 @@ public static class VisualUI
         scrollContainer.HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled;
         scrollContainer.VerticalScrollMode = ScrollContainer.ScrollMode.ShowNever;
         scrollContainer.CustomMinimumSize = new Vector2(0, MinScrollViewDistance);
-        scrollContainer.MouseFilter = MouseFilterEnum.Ignore;
 
         // Make them hidden by default
         //mutableMembers.Hide();
