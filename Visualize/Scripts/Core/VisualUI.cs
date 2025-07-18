@@ -51,11 +51,6 @@ public static class VisualUI
         // Readonly Members
         AddReadonlyControls(visualData.ReadonlyMembers, node, readonlyMembers, updateControls, spinBoxes);
 
-        foreach (Control control in readonlyMembers.GetChildren<Control>())
-        {
-            control.MouseFilter = MouseFilterEnum.Ignore;
-        }
-
         // Mutable Members
         AddMutableControls(mutableMembers, visualData.Properties, node, spinBoxes);
         AddMutableControls(mutableMembers, visualData.Fields, node, spinBoxes);
