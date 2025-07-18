@@ -12,11 +12,11 @@ public static partial class VisualControlTypes
 
     private static VisualControlInfo VisualNumeric(Type type, MemberInfo memberInfo, VisualControlContext context)
     {
-        Godot.Range control;
+        SpinBox control;
 
         if (memberInfo != null && TryGetExportAttributeRange(memberInfo, out ExportAttributeRange range))
         {
-            control = new HSlider()
+            control = new SpinBox()
             {
                 CustomMinimumSize = new Vector2(MIN_SLIDER_WIDTH, 0),
                 MinValue = range.MinValue,
@@ -82,7 +82,7 @@ public static partial class VisualControlTypes
     }
 }
 
-public class NumericControl(Godot.Range spinBox) : IVisualControl
+public class NumericControl(SpinBox spinBox) : IVisualControl
 {
     public void SetValue(object value)
     {
@@ -104,8 +104,6 @@ public class NumericControl(Godot.Range spinBox) : IVisualControl
 
     public void SetEditable(bool editable)
     {
-        // There is no Editable property for Range so we instead use SetAllowGreater and SetAllowLesser
-        spinBox.SetAllowGreater(editable);
-        spinBox.SetAllowLesser(editable);
+        spinBox.Editable = editable;
     }
 }
