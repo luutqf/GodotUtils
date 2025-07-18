@@ -446,25 +446,21 @@ public static class VisualUI
         }));
 
         Control container;
-        Label label;
+        Label label = new();
 
         if (element.VisualControl is ClassControl)
         {
             container = new VBoxContainer();
-            label = new Label
+            label.LabelSettings = new LabelSettings
             {
-                LabelSettings = new LabelSettings
-                {
-                    FontSize = MemberFontSize,
-                    OutlineSize = FontOutlineSize,
-                    OutlineColor = Colors.Black,
-                }
+                FontSize = MemberFontSize,
+                OutlineSize = FontOutlineSize,
+                OutlineColor = Colors.Black,
             };
         }
         else
         {
             container = new HBoxContainer();
-            label = new Label();
         }
 
         label.Text = member.Name.ToPascalCase().AddSpaceBeforeEachCapital();
