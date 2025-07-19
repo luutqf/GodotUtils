@@ -8,7 +8,6 @@ namespace GodotUtils.Visualize;
 public static partial class VisualControlTypes
 {
     private const double DEFAULT_STEP_VALUE = 0.005;
-    private const float MIN_SLIDER_WIDTH = 200;
 
     private static VisualControlInfo VisualNumeric(Type type, MemberInfo memberInfo, VisualControlContext context)
     {
@@ -18,7 +17,7 @@ public static partial class VisualControlTypes
         {
             control = new SpinBox()
             {
-                CustomMinimumSize = new Vector2(MIN_SLIDER_WIDTH, 0),
+                Alignment = HorizontalAlignment.Center,
                 MinValue = range.MinValue,
                 MaxValue = range.MaxValue,
                 Step = range.StepValue,

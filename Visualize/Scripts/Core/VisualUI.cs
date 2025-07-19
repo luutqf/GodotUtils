@@ -18,7 +18,8 @@ public static class VisualUI
 
     private const string PathIcons = "res://addons/Framework/GodotUtils/Visualize/Icons";
     private const double ReleaseFocusOnPressDelay = 0.1;
-    private const int MinScrollViewDistance = 250;
+    private const float PanelScaleFactor = 0.9f;
+    private const int MinScrollViewDistance = 350;
     private const int TitleFontSize = 20;
     private const int MemberFontSize = 18;
     private const int FontOutlineSize = 6;
@@ -34,7 +35,7 @@ public static class VisualUI
     /// <summary>
     /// Creates the visual panel for a specified visual node.
     /// </summary>
-    public static (Control, List<Action>) CreateVisualPanel(SceneTree tree, VisualData visualData)
+    public static (Control, List<Action>) CreateVisualPanel(VisualData visualData)
     {
         Dictionary<Node, VBoxContainer> visualNodes = [];
         
@@ -46,6 +47,9 @@ public static class VisualUI
         PanelContainer panelContainer = CreatePanelContainer(node.Name);
         panelContainer.MouseFilter = MouseFilterEnum.Ignore;
         panelContainer.Name = "Main Panel";
+
+        Vector2 currentCameraZoom = GetCurrentCameraZoom(node);
+        panelContainer.Scale = new Vector2(1f / currentCameraZoom.X, 1f / currentCameraZoom.Y) * PanelScaleFactor;
 
         VBoxContainer mutableMembers = CreateColoredVBox(Green);
         mutableMembers.MouseFilter =  MouseFilterEnum.Ignore;
@@ -104,11 +108,25 @@ public static class VisualUI
 
         return (panelContainer, updateControls);
     }
-    
+
+    private static Vector2 GetCurrentCameraZoom(Node node)
+    {
+        Viewport viewport = node.GetViewport();
+
+        Camera2D cam2D = viewport.GetCamera2D();
+
+        if (cam2D != null)
+        {
+            return cam2D.Zoom;
+        }
+
+        return Vector2.One;
+    }
+
     /// <summary>
     /// Sets the initial position for a VBoxContainer.
     /// </summary>
-    private static void SetInitialPosition(VBoxContainer vbox, Vector2 initialPosition)
+    private static void SetInitialPosition(Control vbox, Vector2 initialPosition)
     {
         if (initialPosition != Vector2.Zero)
         {
@@ -132,7 +150,7 @@ public static class VisualUI
         }
     }
 
-    private static VBoxContainer CreateTitleBar(string name, VBoxContainer mutableMembers, VBoxContainer readonlyMembers, VisualData visualData)
+    private static VBoxContainer CreateTitleBar(string name, Control mutableMembers, Control readonlyMembers, VisualData visualData)
     {
         VBoxContainer vboxParent = new();
 
@@ -277,7 +295,7 @@ public static class VisualUI
     /// <summary>
     /// Adds visual controls for specified members of a Internal.
     /// </summary>
-    private static void AddReadonlyControls(string[] visualizeMembers, Node node, VBoxContainer readonlyMembers, List<Action> updateControls, List<VisualSpinBox> spinBoxes)
+    private static void AddReadonlyControls(string[] visualizeMembers, Node node, Control readonlyMembers, List<Action> updateControls, List<VisualSpinBox> spinBoxes)
     {
         if (visualizeMembers == null)
         {
@@ -319,7 +337,7 @@ public static class VisualUI
     /// <summary>
     /// Asynchronously tries to add a visual control for a Internal member.
     /// </summary>
-    private static async Task TryAddReadonlyControlAsync(string visualMember, VBoxContainer readonlyMembers, Node node, FieldInfo field, PropertyInfo property, List<Action> updateControls, List<VisualSpinBox> spinBoxes)
+    private static async Task TryAddReadonlyControlAsync(string visualMember, Control readonlyMembers, Node node, FieldInfo field, PropertyInfo property, List<Action> updateControls, List<VisualSpinBox> spinBoxes)
     {
         CancellationTokenSource cts = new();
         CancellationToken token = cts.Token;
@@ -378,7 +396,7 @@ public static class VisualUI
     /// <summary>
     /// Adds a visual control to the UI for a Internal member.
     /// </summary>
-    private static void AddReadonlyControl(string visualMember, VBoxContainer readonlyMembers, Node node, FieldInfo field, PropertyInfo property, object initialValue, List<Action> updateControls, List<VisualSpinBox> spinBoxes)
+    private static void AddReadonlyControl(string visualMember, Control readonlyMembers, Node node, FieldInfo field, PropertyInfo property, object initialValue, List<Action> updateControls, List<VisualSpinBox> spinBoxes)
     {
         Type memberType = property != null ? property.PropertyType : field.FieldType;
 
@@ -414,7 +432,7 @@ public static class VisualUI
     /// <summary>
     /// Adds member information elements to a VBoxContainer.
     /// </summary>
-    private static void AddMutableControls(VBoxContainer vbox, IEnumerable<MemberInfo> members, Node node, List<VisualSpinBox> spinBoxes)
+    private static void AddMutableControls(Control vbox, IEnumerable<MemberInfo> members, Node node, List<VisualSpinBox> spinBoxes)
     {
         foreach (MemberInfo member in members)
         {

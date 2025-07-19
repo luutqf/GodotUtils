@@ -44,7 +44,7 @@ public static class VisualMethods
         return hboxParams;
     }
 
-    public static void AddMethodInfoElements(VBoxContainer vbox, IEnumerable<MethodInfo> methods, Node node, List<VisualSpinBox> debugExportSpinBoxes)
+    public static void AddMethodInfoElements(Control vbox, IEnumerable<MethodInfo> methods, Node node, List<VisualSpinBox> debugExportSpinBoxes)
     {
         foreach (MethodInfo method in methods)
         {

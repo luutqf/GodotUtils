@@ -10,7 +10,8 @@ public static partial class VisualControlTypes
 {
     private static VisualControlInfo VisualClass(Type type, VisualControlContext context)
     {
-        VBoxContainer vbox = new();
+        GridContainer container = new();
+        container.Columns = 1;
 
         if (context.InitialValue == null)
         {
@@ -18,7 +19,7 @@ public static partial class VisualControlTypes
             // auto properties cannot have default values so their initial value will always be null.
             return new VisualControlInfo(
                 new ClassControl(
-                    vboxContainer: vbox,
+                    container: container,
                     visualPropertyControls: [],
                     visualFieldControls: [],
                     properties: [],
@@ -32,14 +33,14 @@ public static partial class VisualControlTypes
 
         BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance | BindingFlags.DeclaredOnly;
 
-        AddProperties(flags, vbox, type, context, out List<IVisualControl> propertyControls, out PropertyInfo[] properties);
-        AddFields(flags, vbox, type, context, out List<IVisualControl> fieldControls, out FieldInfo[] fields);
-        AddMethods(flags, vbox, type, context);
+        AddProperties(flags, container, type, context, out List<IVisualControl> propertyControls, out PropertyInfo[] properties);
+        AddFields(flags, container, type, context, out List<IVisualControl> fieldControls, out FieldInfo[] fields);
+        AddMethods(flags, container, type, context);
 
-        return new VisualControlInfo(new ClassControl(vbox, propertyControls, fieldControls, properties, fields));
+        return new VisualControlInfo(new ClassControl(container, propertyControls, fieldControls, properties, fields));
     }
 
-    private static void AddProperties(BindingFlags flags, VBoxContainer vbox, Type type, VisualControlContext context, out List<IVisualControl> propertyControls, out PropertyInfo[] properties)
+    private static void AddProperties(BindingFlags flags, Control vbox, Type type, VisualControlContext context, out List<IVisualControl> propertyControls, out PropertyInfo[] properties)
     {
         propertyControls = [];
 
@@ -69,12 +70,15 @@ public static partial class VisualControlTypes
 
                 control.VisualControl.SetEditable(propertySetMethod != null);
 
-                vbox.AddChild(CreateHBoxForMember(property.Name, control.VisualControl.Control));
+                HBoxContainer hbox = CreateHBoxForMember(property.Name, control.VisualControl.Control);
+                hbox.Name = property.Name;
+
+                vbox.AddChild(hbox);
             }
         }
     }
 
-    private static void AddFields(BindingFlags flags, VBoxContainer vbox, Type type, VisualControlContext context, out List<IVisualControl> fieldControls, out FieldInfo[] fields)
+    private static void AddFields(BindingFlags flags, Control vbox, Type type, VisualControlContext context, out List<IVisualControl> fieldControls, out FieldInfo[] fields)
     {
         fieldControls = [];
 
@@ -116,12 +120,15 @@ public static partial class VisualControlTypes
 
                 control.VisualControl.SetEditable(!field.IsLiteral);
 
-                vbox.AddChild(CreateHBoxForMember(field.Name, control.VisualControl.Control));
+                HBoxContainer hbox = CreateHBoxForMember(field.Name, control.VisualControl.Control);
+                hbox.Name = field.Name;
+
+                vbox.AddChild(hbox);
             }
         }
     }
 
-    private static void AddMethods(BindingFlags flags, VBoxContainer vbox, Type type, VisualControlContext context)
+    private static void AddMethods(BindingFlags flags, Control vbox, Type type, VisualControlContext context)
     {
         // Cannot include private methods or else we will see Godots built in methods
         flags &= ~BindingFlags.NonPublic;
@@ -177,14 +184,17 @@ public static partial class VisualControlTypes
 
     private static HBoxContainer CreateHBoxForMember(string memberName, Control control)
     {
+        Label label = new() { Text = memberName.ToPascalCase().AddSpaceBeforeEachCapital() };
+        label.CustomMinimumSize = new Vector2(200, 0);
+
         HBoxContainer hbox = new();
-        hbox.AddChild(new Label { Text = memberName.ToPascalCase().AddSpaceBeforeEachCapital() });
+        hbox.AddChild(label);
         hbox.AddChild(control);
         return hbox;
     }
 }
 
-public class ClassControl(VBoxContainer vboxContainer, List<IVisualControl> visualPropertyControls, List<IVisualControl> visualFieldControls, PropertyInfo[] properties, FieldInfo[] fields) : IVisualControl
+public class ClassControl(Control container, List<IVisualControl> visualPropertyControls, List<IVisualControl> visualFieldControls, PropertyInfo[] properties, FieldInfo[] fields) : IVisualControl
 {
     public void SetValue(object value)
     {
@@ -201,7 +211,7 @@ public class ClassControl(VBoxContainer vboxContainer, List<IVisualControl> visu
         }
     }
 
-    public Control Control => vboxContainer;
+    public Control Control => container;
 
     public void SetEditable(bool editable)
     {

@@ -27,7 +27,7 @@ public partial class VisualizeAutoload : Node
 
         if (visualData != null)
         {
-            (Control visualPanel, List<Action> actions) = VisualUI.CreateVisualPanel(GetTree(), visualData);
+            (Control visualPanel, List<Action> actions) = VisualUI.CreateVisualPanel(visualData);
 
             ulong instanceId = node.GetInstanceId();
 
