@@ -87,7 +87,10 @@ public static class NodeExtensions
     {
         return FindNode<T>(node.GetChildren(), recursive) != null;
     }
-    
+
+    /// <summary>
+    /// Find a child node of type T
+    /// </summary>
     public static T GetComponent<T>(this Node node, bool recursive = true) where T : Node
     {
         return GetNode<T>(node, recursive);
