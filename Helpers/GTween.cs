@@ -1,6 +1,7 @@
 using Godot;
 using static Godot.Tween;
 using System;
+using System.Threading.Tasks;
 
 namespace GodotUtils;
 
@@ -129,6 +130,11 @@ public class GTween
     {
         _tween = _tween.SetLoops(loops);
         return this;
+    }
+
+    public async Task FinishedAsync()
+    {
+        await _node.ToSignal(_tween, Tween.SignalName.Finished);
     }
 
     /// <summary>
