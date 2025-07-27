@@ -5,27 +5,19 @@ namespace GodotUtils;
 public static class Node2DExtensions
 {
     /// <summary>
-    /// <para>
-    /// Reparent a node to a new parent. The rotation and position will be
-    /// preserved.
-    /// </para>
-    /// 
-    /// <para>
-    /// Useful for if example you want to detach missiles connected from a
-    /// spaceship. The missiles position and rotation will no longer be
-    /// influenced by the spaceship.
-    /// </para>
+    /// Sets the color of the given node only.
     /// </summary>
-    public static void Reparent(this Node2D node, Node targetParent)
+    public static void SetColor(this Node2D node, Color color)
     {
-        Vector2 pos = node.GlobalPosition;
-        float rot = node.GlobalRotation;
+        node.SelfModulate = color;
+    }
 
-        node.GetParent().RemoveChild(node);
-        targetParent.AddChild(node);
-
-        node.GlobalPosition = pos;
-        node.GlobalRotation = rot;
+    /// <summary>
+    /// Recursively sets the color of the node and all its children.
+    /// </summary>
+    public static void SetColorRecursive(this Node2D node, Color color)
+    {
+        node.Modulate = color;
     }
 }
 
