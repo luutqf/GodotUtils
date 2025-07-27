@@ -10,3 +10,4 @@ light_mode = 1
 material = SubResource("CanvasItemMaterial_v1aa2")
 texture = ExtResource("1_n7c3n")
 script = ExtResource("2_2sqlw")
+metadata/_edit_lock_ = true
