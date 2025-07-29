@@ -49,4 +49,3 @@ public static class AnimationTreeExtensions
         return tree.Get("parameters/playback").As<AnimationNodeStateMachinePlayback>();
     }
 }
-

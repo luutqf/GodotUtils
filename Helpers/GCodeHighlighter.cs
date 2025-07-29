@@ -36,4 +36,3 @@ public partial class GCodeHighlighter : CodeHighlighter
         }
     }
 }
-

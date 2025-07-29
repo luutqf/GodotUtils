@@ -171,4 +171,3 @@ public static class AnimatedSprite2DExtensions
         return diff;
     }
 }
-

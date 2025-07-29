@@ -40,4 +40,3 @@ public static class TextEditExtensions
         //textEdit.CaretColumn = text.Length;
     }
 }
-

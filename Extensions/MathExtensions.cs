@@ -69,4 +69,3 @@ public static class MathExtensions
         return (ushort)Math.Floor(Math.Log10(num) + 1);
     }
 }
-

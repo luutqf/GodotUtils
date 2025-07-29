@@ -25,4 +25,3 @@ public class VisualizeAttribute : Attribute
         InitialPosition = new Vector2(x, y);
     }
 }
-

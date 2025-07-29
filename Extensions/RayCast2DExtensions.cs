@@ -107,4 +107,3 @@ public static class RayCast2DExtensions
         return default;
     }
 }
-

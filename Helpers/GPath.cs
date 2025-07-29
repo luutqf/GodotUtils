@@ -205,4 +205,3 @@ public partial class GPath : Path2D
         return duration;
     }
 }
-

@@ -30,4 +30,3 @@ public class GTimer
         _timer.Stop();
     }
 }
-

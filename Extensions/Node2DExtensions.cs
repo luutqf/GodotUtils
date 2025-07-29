@@ -20,4 +20,3 @@ public static class Node2DExtensions
         node.Modulate = color;
     }
 }
-

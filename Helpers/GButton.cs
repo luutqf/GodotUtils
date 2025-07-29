@@ -13,4 +13,3 @@ public partial class GButton
         parent.AddChild(Internal);
     }
 }
-

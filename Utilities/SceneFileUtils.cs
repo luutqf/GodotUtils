@@ -57,4 +57,3 @@ public static partial class SceneFileUtils
     [GeneratedRegex("\"save_to_file/path\": \"(?<path>.+)\"")]
     private static partial Regex GLBPath();
 }
-

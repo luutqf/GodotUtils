@@ -12,4 +12,3 @@ public static class VectorUtils
         return new Vector2(GMath.RandRange(-1.0, 1.0), GMath.RandRange(-1.0, 1.0)).Normalized();
     }
 }
-

@@ -32,4 +32,3 @@ public static class InputEventMouseButtonExtensions
     private static bool IsReleased(this InputEventMouseButton @event, MouseButton button) => @event.ButtonIndex == button && !@event.Pressed;
     private static bool IsJustReleased(this InputEventMouseButton @event, MouseButton button) => @event.IsReleased(button) && !@event.IsEcho();
 }
-

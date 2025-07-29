@@ -24,4 +24,3 @@ public static class InputUtils
         return Input.IsKeyPressed(Key.Down) || Input.IsKeyPressed(Key.S);
     }
 }
-

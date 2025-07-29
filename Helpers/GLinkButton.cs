@@ -21,4 +21,3 @@ public partial class GLinkButton
         Internal.AddThemeFontSizeOverride("font_size", v);
     }
 }
-

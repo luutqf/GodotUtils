@@ -28,4 +28,3 @@ public partial class GLabel
         return this;
     }
 }
-

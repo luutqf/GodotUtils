@@ -28,4 +28,3 @@ public static class InputEventKeyExtensions
         return OS.GetKeycodeString(keyWithModifiers).Replace("+", " + ");
     }
 }
-

@@ -34,4 +34,3 @@ public static class EditorUtils
         return RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
     }
 }
-

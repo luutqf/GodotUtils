@@ -38,4 +38,3 @@ public partial class GMarginContainer
         Internal.AddThemeConstantOverride("margin_bottom", padding);
     }
 }
-

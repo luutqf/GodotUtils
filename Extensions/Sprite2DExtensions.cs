@@ -103,4 +103,3 @@ public static class Sprite2DExtensions
         return diff;
     }
 }
-

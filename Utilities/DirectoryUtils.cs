@@ -176,4 +176,3 @@ public static class DirectoryUtils
         return Directory.GetDirectories(path).Length == 0 && Directory.GetFiles(path).Length == 0;
     }
 }
-

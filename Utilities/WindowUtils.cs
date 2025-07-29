@@ -24,4 +24,3 @@ public static class WindowUtils
         return DisplayServer.WindowGetSize().Y;
     }
 }
-

@@ -108,4 +108,3 @@ public partial class XTimer : Node
         return Time < Delay;
     }
 }
-

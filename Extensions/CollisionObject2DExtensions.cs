@@ -13,4 +13,3 @@ public static class CollisionObject2DExtensions
         collisionObject.CollisionMask = (uint)GMath.GetLayerValues(layers);
     }
 }
-

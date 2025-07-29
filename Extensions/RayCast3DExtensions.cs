@@ -37,4 +37,3 @@ public static class RayCast3DExtensions
         }
     }
 }
-

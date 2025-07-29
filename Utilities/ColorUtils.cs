@@ -28,4 +28,3 @@ public class ColorUtils
         return new Color(r, g, b, alpha / 255f);
     }
 }
-
