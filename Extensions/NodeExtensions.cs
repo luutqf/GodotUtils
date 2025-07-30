@@ -128,9 +128,7 @@ public static class NodeExtensions
     }
 
     /// <summary>
-    /// Asynchronously waits one procress frame. Remember any async operations will
-    /// continue to run even after a node is QueueFree'd. If this is not desired have
-    /// a look at ExtensionsNode.Delay(this Node node, double duration, Action callback)
+    /// Asynchronously waits for one procress frame.
     /// </summary>
     public async static Task WaitOneFrame(this Node parent)
     {
@@ -139,46 +137,9 @@ public static class NodeExtensions
             signal: SceneTree.SignalName.ProcessFrame);
     }
 
-    /// <summary>
-    /// Delays an action. Callback may not execute if node is freed before delay completes.
-    /// </summary>
-    /// <param name="node">The node.</param>
-    /// <param name="duration">Delay in seconds.</param>
-    /// <param name="callback">Action to execute after delay.</param>
-    public static async void Delay(this Node node, double duration, Action callback)
-    {
-        await node.ToSignal(node.GetTree().CreateTimer(duration), "timeout");
-        callback?.Invoke();
-    }
-
-    /// <summary>
-    /// Sets the PhysicsProcess and Process for all the first level children of a node.
-    /// This is not a recursive operation.
-    /// </summary>
-    public static void SetChildrenEnabled(this Node node, bool enabled)
-    {
-        foreach (Node child in node.GetChildren())
-        {
-            child.SetProcess(enabled);
-            child.SetPhysicsProcess(enabled);
-        }
-    }
-
     public static void AddChildDeferred(this Node node, Node child)
     {
         node.CallDeferred(Node.MethodName.AddChild, child);
-    }
-
-    /// <summary>
-    /// Reparents <paramref name="node"/> from <paramref name="oldParent"/> to <paramref name="newParent"/>
-    /// </summary>
-    public static void Reparent(this Node oldParent, Node newParent, Node node)
-    {
-        // Remove node from current parent
-        oldParent.RemoveChild(node);
-
-        // Add node to new parent
-        newParent.AddChild(node);
     }
 
     /// <summary>
