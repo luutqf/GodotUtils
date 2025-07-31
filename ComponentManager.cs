@@ -67,6 +67,11 @@ public partial class ComponentManager : Node
     }
 
     // Exposed register functions
+    public void RegisterReady(Component component)
+    {
+        _ready.Add(component);
+    }
+
     public void RegisterProcess(Component component)
     {
         _process.Add(component);
