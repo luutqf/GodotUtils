@@ -32,6 +32,6 @@ public partial class Component : Node
             current = current.GetParent();
         }
 
-        throw new InvalidOperationException("ComponentManager not found in parent hierarchy.");
+        throw new InvalidOperationException($"ComponentManager not found for {Name}.");
     }
 }
