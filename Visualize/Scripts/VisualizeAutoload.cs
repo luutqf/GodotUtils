@@ -5,13 +5,15 @@ using System.Linq;
 
 namespace GodotUtils.Visualize;
 
-public partial class VisualizeAutoload : Node
+public partial class VisualizeAutoload : Component
 {
 #if DEBUG
     private readonly Dictionary<ulong, VisualNodeInfo> _nodeTrackers = [];
 
-    public override void _Ready()
+    public override void Ready()
     {
+        ComponentManager.RegisterProcess(this);
+
         foreach (Node node in GetTree().Root.GetChildren<Node>())
         {
             AddVisualNode(node);
@@ -19,6 +21,35 @@ public partial class VisualizeAutoload : Node
 
         GetTree().NodeAdded += AddVisualNode;
         GetTree().NodeRemoved += RemoveVisualNode;
+    }
+
+    public override void Process(double delta)
+    {
+        foreach (KeyValuePair<ulong, VisualNodeInfo> kvp in _nodeTrackers)
+        {
+            VisualNodeInfo info = kvp.Value;
+            Node node = info.Node;
+            Control visualControl = info.VisualControl;
+
+            // Update position based on node type
+            if (node != null) // Checking null here every frame is costly. No need to update the position if the position never changes!
+            {
+                if (node is Node2D node2D)
+                {
+                    visualControl.GlobalPosition = node2D.GlobalPosition + info.Offset;
+                }
+                else if (node is Control control)
+                {
+                    visualControl.GlobalPosition = control.GlobalPosition + info.Offset;
+                }
+            }
+
+            // Execute actions
+            foreach (Action action in info.Actions)
+            {
+                action();
+            }
+        }
     }
 
     private void AddVisualNode(Node node)
@@ -97,35 +128,6 @@ public partial class VisualizeAutoload : Node
             // GetParent to queue free the CanvasLayer this VisualControl is a child of
             info.VisualControl.GetParent().QueueFree();
             _nodeTrackers.Remove(instanceId);
-        }
-    }
-
-    public override void _Process(double delta)
-    {
-        foreach (KeyValuePair<ulong, VisualNodeInfo> kvp in _nodeTrackers)
-        {
-            VisualNodeInfo info = kvp.Value;
-            Node node = info.Node;
-            Control visualControl = info.VisualControl;
-
-            // Update position based on node type
-            if (node != null) // Checking null here every frame is costly. No need to update the position if the position never changes!
-            {
-                if (node is Node2D node2D)
-                {
-                    visualControl.GlobalPosition = node2D.GlobalPosition + info.Offset;
-                }
-                else if (node is Control control)
-                {
-                    visualControl.GlobalPosition = control.GlobalPosition + info.Offset;
-                }
-            }
-
-            // Execute actions
-            foreach (Action action in info.Actions)
-            {
-                action();
-            }
         }
     }
 
