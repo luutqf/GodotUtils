@@ -10,6 +10,7 @@ public partial class Component : Node
     public override void _EnterTree()
     {
         ComponentManager = GetComponentManager();
+        ComponentManager.RegisterReady(this);
     }
 
     public virtual void Ready() { }
