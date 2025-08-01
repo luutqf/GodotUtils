@@ -16,7 +16,7 @@ public partial class ComponentManager : Node
     private List<Component> _unhandledInput = [];
     private List<Component> _input          = [];
 
-    // Disable overrides on startup
+    // Disable overrides on startup for performance
     public override void _EnterTree()
     {
         SetProcess(false);
@@ -75,24 +75,64 @@ public partial class ComponentManager : Node
     public void RegisterProcess(Component component)
     {
         _process.Add(component);
-        SetProcess(true);
+
+        if (_process.Count == 1)
+            SetProcess(true);
+    }
+
+    public void UnregisterProcess(Component component)
+    {
+        _process.Remove(component);
+
+        if (_process.Count == 0)
+            SetProcess(false);
     }
 
     public void RegisterPhysicsProcess(Component component)
     {
         _physicsProcess.Add(component);
-        SetPhysicsProcess(true);
+
+        if (_physicsProcess.Count == 1)
+            SetPhysicsProcess(true);
+    }
+
+    public void UnregisterPhysicsProcess(Component component)
+    {
+        _physicsProcess.Remove(component);
+
+        if (_physicsProcess.Count == 0)
+            SetPhysicsProcess(false);
     }
 
     public void RegisterInput(Component component)
     {
         _input.Add(component);
-        SetProcessInput(true);
+
+        if (_input.Count == 1)
+            SetProcessInput(true);
+    }
+
+    public void UnregisterInput(Component component)
+    {
+        _input.Remove(component);
+
+        if (_input.Count == 0)
+            SetProcessInput(false);
     }
 
     public void RegisterUnhandledInput(Component component)
     {
         _unhandledInput.Add(component);
-        SetProcessUnhandledInput(true);
+
+        if (_unhandledInput.Count == 1)
+            SetProcessUnhandledInput(true);
+    }
+
+    public void UnregisterUnhandledInput(Component component)
+    {
+        _unhandledInput.Remove(component);
+
+        if (_unhandledInput.Count == 0)
+            SetProcessUnhandledInput(false);
     }
 }
