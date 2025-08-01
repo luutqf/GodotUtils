@@ -12,7 +12,7 @@ public partial class VisualizeAutoload : Component
 
     public override void Ready()
     {
-        ComponentManager.RegisterProcess(this);
+        RegisterProcess();
 
         foreach (Node node in GetTree().Root.GetChildren<Node>())
         {
