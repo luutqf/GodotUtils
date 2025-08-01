@@ -5,7 +5,7 @@ namespace GodotUtils;
 
 public partial class Component : Node
 {
-    protected ComponentManager ComponentManager { get; private set; }
+    public ComponentManager ComponentManager { get; private set; }
 
     public override void _EnterTree()
     {
