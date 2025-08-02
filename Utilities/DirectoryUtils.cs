@@ -10,19 +10,16 @@ public static class DirectoryUtils
     /// Recursively traverses all directories and performs a action on each file path. 
     /// 
     /// <code>
-    /// GDirectories.Traverse("res://", fullFilePath => GD.Print(fullFilePath))
+    /// Traverse("res://", fullFilePath => GD.Print(fullFilePath))
     /// </code>
     /// </summary>
-    public static void Traverse(string directory, Action<string> actionFullFilePath)
+    public static bool Traverse(string directory, Func<string, bool> actionFullFilePath)
     {
         directory = NormalizePath(ProjectSettings.GlobalizePath(directory));
-
         using DirAccess dir = DirAccess.Open(directory);
-
         dir.ListDirBegin();
 
         string nextFileName;
-
         while ((nextFileName = dir.GetNext()) != string.Empty)
         {
             string fullFilePath = Path.Combine(directory, nextFileName);
@@ -31,93 +28,47 @@ public static class DirectoryUtils
             {
                 if (!nextFileName.StartsWith('.'))
                 {
-                    Traverse(fullFilePath, actionFullFilePath);
+                    if (Traverse(fullFilePath, actionFullFilePath))
+                        return true;
                 }
             }
             else
             {
-                actionFullFilePath(fullFilePath);
+                if (actionFullFilePath(fullFilePath))
+                    return true;
             }
         }
 
         dir.ListDirEnd();
+        return false;
     }
+
 
     /// <summary>
     /// Recursively searches for the file name and if found returns the full file path to
     /// that file.
     /// 
     /// <code>
-    /// string fullPathToPlayer = GDirectories.FindFile("res://", "Player.tscn")
+    /// string fullPathToPlayer = FindFile("res://", "Player.tscn")
     /// </code>
     /// </summary>
     /// <returns>Returns the full path to the file or null if the file is not found</returns>
     public static string FindFile(string directory, string fileName)
     {
-        directory = NormalizePath(ProjectSettings.GlobalizePath(directory));
+        string foundPath = null;
 
-        using DirAccess dir = DirAccess.Open(directory);
-
-        dir.ListDirBegin();
-
-        string nextFileName;
-
-        while ((nextFileName = dir.GetNext()) != string.Empty)
+        Traverse(directory, fullFilePath =>
         {
-            string fullFilePath = Path.Combine(directory, nextFileName);
-
-            if (dir.CurrentIsDir())
+            if (Path.GetFileName(fullFilePath) == fileName)
             {
-                if (!nextFileName.StartsWith('.'))
-                {
-                    string result = FindFile(fullFilePath, fileName);
-
-                    if (result != null)
-                    {
-                        return result;
-                    }
-                }
+                foundPath = fullFilePath;
+                return true;
             }
-            else
-            {
-                if (fileName == nextFileName)
-                {
-                    return fullFilePath;
-                }
-            }
-        }
 
-        dir.ListDirEnd();
+            return false;
+        });
 
-        return null;
-    }
-
-    /// <summary>
-    /// Removes a specified <paramref name="segmentToRemove"/> from a file <paramref name="path"/>.
-    /// <code>
-    /// string path = @"A/B/C/D/E";
-    /// string segmentToRemove = "C";
-    /// string newPath = GDirectories.RemovePathSegment(path, segmentToRemove);
-    /// // newPath will be "A/B/D/E"
-    /// </code>
-    /// </summary>
-    /// <param name="path">The original file path.</param>
-    /// <param name="segmentToRemove">The segment to remove from the path.</param>
-    /// <returns>A new file path with the specified segment removed.</returns>
-    public static string RemovePathSegment(string path, string segmentToRemove)
-    {
-        // Normalize the path separators to match the current environment
-        path = NormalizePath(path);
-        segmentToRemove = NormalizePath(segmentToRemove);
-
-        // Check if the segment to remove is part of the path
-        if (path.Contains(segmentToRemove))
-        {
-            // Remove the segment from the path
-            path = path.Replace(segmentToRemove + Path.DirectorySeparatorChar, string.Empty);
-        }
-
-        return path;
+        return foundPath;
     }
 
     /// <summary>
@@ -155,11 +106,11 @@ public static class DirectoryUtils
     /// <summary>
     /// Checks if the folder is empty and deletes it if it is
     /// </summary>
-    public static void DeleteEmptyDirectory(string path)
+    private static void DeleteEmptyDirectory(string path)
     {
         path = NormalizePath(ProjectSettings.GlobalizePath(path));
 
-        if (IsEmptyDirectory(path))
+        if (IsDirectoryEmpty(path))
         {
             Directory.Delete(path, recursive: false);
         }
@@ -169,7 +120,7 @@ public static class DirectoryUtils
     /// Checks if the directory is empty
     /// </summary>
     /// <returns>Returns true if the directory is empty</returns>
-    public static bool IsEmptyDirectory(string path)
+    private static bool IsDirectoryEmpty(string path)
     {
         path = NormalizePath(ProjectSettings.GlobalizePath(path));
 
