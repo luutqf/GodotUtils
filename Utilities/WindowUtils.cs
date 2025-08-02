@@ -24,3 +24,10 @@ public static class WindowUtils
         return DisplayServer.WindowGetSize().Y;
     }
 }
+
+public enum WindowMode
+{
+    Windowed,
+    Borderless,
+    Fullscreen
+}
