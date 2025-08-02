@@ -2,9 +2,12 @@ using Godot;
 using Godot.Collections;
 using GodotUtils.UI;
 using System;
+using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using FileAccess = Godot.FileAccess;
 
 namespace GodotUtils.UI;
 
@@ -160,6 +163,8 @@ public partial class OptionsManager : Component
     {
         if (FileAccess.FileExists(PathHotkeys))
         {
+            string localResPath = ProjectSettings.LocalizePath(DirectoryUtils.FindFile("res://", "ResourceHotkeys.cs"));
+            ValdiateResourceFile(PathHotkeys, localResPath);
             Hotkeys = GD.Load<ResourceHotkeys>(PathHotkeys);
 
             // InputMap in project settings has changed so reset all saved hotkeys
@@ -177,6 +182,38 @@ public partial class OptionsManager : Component
             ResetHotkeys();
         }
     }
+
+    // *.tres files store the path to their script in res:// and as a result if that script is moved then the
+    // path in *.tres will point to an invalid path and so this function corrects the path again.
+    private void ValdiateResourceFile(string localUserPath, string localResPath)
+    {
+        string userGlobalPath = ProjectSettings.GlobalizePath(localUserPath);
+        string content = File.ReadAllText(userGlobalPath);
+
+        // Find current path in the resource file
+        Match match = ScriptPathRegex().Match(content);
+
+        if (!match.Success)
+        {
+            GD.PrintErr($"Script path not found in {localUserPath}");
+            return;
+        }
+
+        string currentPath = match.Value;
+
+        if (currentPath == localResPath)
+            return; // Resource path is correct. No update needed.
+
+        // Path is incorrect, proceed to rewrite.
+        string updatedContent = ScriptPathRegex().Replace(content, localResPath);
+
+        File.WriteAllText(userGlobalPath, updatedContent);
+
+        GD.Print($"Updated {Path.GetFileName(userGlobalPath)} script path to: {localResPath}");
+    }
+
+    [GeneratedRegex(@"(?<=type=""Script""[^\n]*path="")[^""]+(?="")", RegexOptions.Multiline)]
+    private static partial Regex ScriptPathRegex();
 
     private static bool ActionsAreEqual(Dictionary<StringName, Array<InputEvent>> dict1, Dictionary<StringName, Array<InputEvent>> dict2)
     {
