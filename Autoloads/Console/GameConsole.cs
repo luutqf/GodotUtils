@@ -164,7 +164,7 @@ public partial class GameConsole : PanelContainer
 
         if (cmd == null)
         {
-            LoggerManager.Instance.Logger.Log($"The command '{text.Split()[0].ToLower()}' does not exist");
+            Logger.Instance.Log($"The command '{text.Split()[0].ToLower()}' does not exist");
             return false;
         }
 
@@ -321,7 +321,7 @@ public partial class GameConsole : PanelContainer
             }
         } catch (FormatException e)
         {
-            LoggerManager.Instance.Logger.Log(e.Message);
+            Logger.Instance.Log(e.Message);
             return 0;
         }
 
@@ -334,7 +334,7 @@ public partial class GameConsole : PanelContainer
         }
         catch (FormatException e)
         {
-            LoggerManager.Instance.Logger.Log(e.Message);
+            Logger.Instance.Log(e.Message);
             return false;
         }
 

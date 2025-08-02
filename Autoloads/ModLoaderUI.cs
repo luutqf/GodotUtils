@@ -22,7 +22,7 @@ public class ModLoaderUI
 
         if (dir == null)
         {
-            LoggerManager.Instance.Logger.LogWarning("Failed to open Mods directory has it does not exist");
+            Logger.Instance.LogWarning("Failed to open Mods directory has it does not exist");
             return;
         }
 
@@ -47,7 +47,7 @@ public class ModLoaderUI
 
             if (!File.Exists(modJson))
             {
-                LoggerManager.Instance.Logger.LogWarning($"The mod folder '{filename}' does not have a mod.json so it will not be loaded");
+                Logger.Instance.LogWarning($"The mod folder '{filename}' does not have a mod.json so it will not be loaded");
                 goto Next;
             }
 
@@ -59,7 +59,7 @@ public class ModLoaderUI
 
             if (Mods.ContainsKey(modInfo.Id))
             {
-                LoggerManager.Instance.Logger.LogWarning($"Duplicate mod id '{modInfo.Id}' was skipped");
+                Logger.Instance.LogWarning($"Duplicate mod id '{modInfo.Id}' was skipped");
                 goto Next;
             }
 
@@ -84,7 +84,7 @@ public class ModLoaderUI
 
                 if (!success)
                 {
-                    LoggerManager.Instance.Logger.LogWarning($"Failed to load pck file for mod '{modInfo.Name}'");
+                    Logger.Instance.LogWarning($"Failed to load pck file for mod '{modInfo.Name}'");
                     goto Next;
                 }
 
@@ -94,7 +94,7 @@ public class ModLoaderUI
 
                 if (importedScene == null)
                 {
-                    LoggerManager.Instance.Logger.LogWarning($"Failed to load mod.tscn for mod '{modInfo.Name}'");
+                    Logger.Instance.LogWarning($"Failed to load mod.tscn for mod '{modInfo.Name}'");
                     goto Next;
                 }
 

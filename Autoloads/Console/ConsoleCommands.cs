@@ -11,7 +11,7 @@ public partial class GameConsole
     {
         IEnumerable<string> cmds = Commands.Select(x => x.Name);
 
-        LoggerManager.Instance.Logger.Log(cmds.ToFormattedString());
+        Logger.Instance.Log(cmds.ToFormattedString());
     }
 
     [ConsoleCommand("quit", "exit")]
@@ -23,6 +23,6 @@ public partial class GameConsole
     [ConsoleCommand("debug")]
     private void Debug(int x)
     {
-        LoggerManager.Instance.Logger.Log(x);
+        Logger.Instance.Log(x);
     }
 }

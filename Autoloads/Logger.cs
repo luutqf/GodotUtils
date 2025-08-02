@@ -1,24 +1,39 @@
 using Godot;
+using GodotUtils.UI.Console;
+using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
-using System;
 
-namespace GodotUtils.UI;
+namespace GodotUtils;
 
 /*
- * This is meant to replace all GD.Print(...) with Logger.Log(...) to make
- * logging multi-thread friendly. Remember to put Logger.Update() in
- * _PhysicsProcess(double delta) otherwise you will be wondering why Logger.Log(...)
- * is printing nothing to the console.
+ * Autoload
+ * 
+ * This is meant to replace all GD.Print(...) with Logger.Log(...) to make logging multi-thread friendly. 
+ * Remember to put Logger.Update() in _PhysicsProcess(double delta) otherwise you will be wondering why 
+ * Logger.Log(...) is printing nothing to the console.
  */
-public class Logger
+public partial class Logger : Component
 {
+    public static Logger Instance { get; private set; }
+
     public event Action<string> MessageLogged;
 
-    private readonly ConcurrentQueue<LogInfo> _messages = new();
+    private readonly ConcurrentQueue<LogInfo> _messages = [];
+
+    public override void Ready()
+    {
+        Instance = this;
+        MessageLogged += GetNode<GameConsole>(AutoloadPaths.Console).AddMessage;
+    }
+
+    public override void PhysicsProcess(double delta)
+    {
+        DequeueMessages();
+    }
 
     /// <summary>
     /// Log a message
@@ -122,7 +137,7 @@ public class Logger
     /// <summary>
     /// Dequeues a Requested Message and Logs it
     /// </summary>
-    public void Update()
+    public void DequeueMessages()
     {
         if (!_messages.TryDequeue(out LogInfo result))
         {
@@ -214,32 +229,32 @@ public class Logger
         GD.PrintErr(v);
         GD.PushError(v);
     }
-}
 
-public class LogInfo(LoggerOpcode opcode, LogMessage data, BBColor color = BBColor.Gray)
-{
-    public LoggerOpcode Opcode { get; set; } = opcode;
-    public LogMessage Data { get; set; } = data;
-    public BBColor Color { get; set; } = color;
-}
+    private class LogInfo(LoggerOpcode opcode, LogMessage data, BBColor color = BBColor.Gray)
+    {
+        public LoggerOpcode Opcode { get; set; } = opcode;
+        public LogMessage Data { get; set; } = data;
+        public BBColor Color { get; set; } = color;
+    }
 
-public class LogMessage(string message)
-{
-    public string Message { get; set; } = message;
-}
+    private class LogMessage(string message)
+    {
+        public string Message { get; set; } = message;
+    }
 
-public class LogMessageTrace(string message, bool trace = true, string tracePath = default) : LogMessage(message)
-{
-    // Show the Trace Information for the Message
-    public bool ShowTrace { get; set; } = trace;
-    public string TracePath { get; set; } = tracePath;
-}
+    private class LogMessageTrace(string message, bool trace = true, string tracePath = default) : LogMessage(message)
+    {
+        // Show the Trace Information for the Message
+        public bool ShowTrace { get; set; } = trace;
+        public string TracePath { get; set; } = tracePath;
+    }
 
-public enum LoggerOpcode
-{
-    Message,
-    Exception,
-    Debug
+    private enum LoggerOpcode
+    {
+        Message,
+        Exception,
+        Debug
+    }
 }
 
 // Full list of BBCode color tags: https://absitomen.com/index.php?topic=331.0
