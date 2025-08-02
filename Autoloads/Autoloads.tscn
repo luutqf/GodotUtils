@@ -8,7 +8,7 @@
 [ext_resource type="Script" uid="uid://cwtgwqgmuuihe" path="res://Framework/GodotUtils/Autoloads/Console/CommandLineArgs.cs" id="3_ocdib"]
 [ext_resource type="Script" uid="uid://br42xukyu1bkq" path="res://Framework/GodotUtils/Autoloads/Logger/LoggerManager.cs" id="4_3cpyl"]
 [ext_resource type="Script" uid="uid://bhx5ou1uiwfkj" path="res://Framework/GodotUtils/Autoloads/Services/Services.cs" id="4_jxhl7"]
-[ext_resource type="Script" uid="uid://bji01posut5cy" path="res://Framework/GodotUtils/Autoloads/OptionsManager.cs" id="4_nskj3"]
+[ext_resource type="Script" uid="uid://bji01posut5cy" path="res://Framework/GodotUtils/Autoloads/Options/OptionsManager.cs" id="4_nskj3"]
 [ext_resource type="PackedScene" uid="uid://jrjqky6ag6gg" path="res://Framework/GodotUtils/Autoloads/Console/GameConsole.tscn" id="8_i1ct5"]
 [ext_resource type="Script" uid="uid://2a2podwr0kur" path="res://Framework/GodotUtils/Debugging/Visualize/VisualizeAutoload.cs" id="8_supaa"]
 

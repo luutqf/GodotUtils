@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace GodotUtils;
+namespace GodotUtils.UI;
 
 // Autoload
 public partial class OptionsManager : Component

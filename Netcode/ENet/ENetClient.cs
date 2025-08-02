@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
+using GodotUtils.UI;
 
 namespace GodotUtils.Netcode.Client;
 

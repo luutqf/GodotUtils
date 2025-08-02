@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System;
 
-namespace GodotUtils;
+namespace GodotUtils.UI;
 
 /*
  * This is meant to replace all GD.Print(...) with Logger.Log(...) to make
@@ -133,7 +133,7 @@ public class Logger
         {
             case LoggerOpcode.Message:
                 Print(result.Data.Message, result.Color);
-                Console.ResetColor();
+                System.Console.ResetColor();
                 break;
 
             case LoggerOpcode.Exception:
@@ -144,7 +144,7 @@ public class Logger
                     PrintErr(exceptionData.TracePath);
                 }
 
-                Console.ResetColor();
+                System.Console.ResetColor();
                 break;
 
             case LoggerOpcode.Debug:
@@ -155,7 +155,7 @@ public class Logger
                     Print(debugData.TracePath, BBColor.DarkGray);
                 }
 
-                Console.ResetColor();
+                System.Console.ResetColor();
                 break;
         }
 

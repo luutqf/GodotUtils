@@ -2,7 +2,7 @@ using Godot;
 using GodotUtils;
 using System.Collections.Generic;
 
-namespace GodotUtils.UI;
+namespace GodotUtils.UI.Console;
 
 /// <summary>
 /// Handles custom command line arguments set for each instance.

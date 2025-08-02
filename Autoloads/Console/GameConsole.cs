@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System;
 
-namespace GodotUtils;
+namespace GodotUtils.UI.Console;
 
 [SceneTree]
 public partial class GameConsole : PanelContainer

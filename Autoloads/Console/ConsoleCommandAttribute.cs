@@ -1,6 +1,6 @@
 using System;
 
-namespace GodotUtils;
+namespace GodotUtils.UI.Console;
 
 [AttributeUsage(AttributeTargets.Method)]
 public class ConsoleCommandAttribute(string name, params string[] aliases) : Attribute

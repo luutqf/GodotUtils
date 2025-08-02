@@ -1,4 +1,6 @@
-namespace GodotUtils;
+using GodotUtils.UI.Console;
+
+namespace GodotUtils.UI;
 
 // Autoload
 public partial class LoggerManager : Component

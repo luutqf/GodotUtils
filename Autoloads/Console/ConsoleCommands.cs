@@ -2,7 +2,7 @@ using GodotUtils;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace GodotUtils;
+namespace GodotUtils.UI.Console;
 
 public partial class GameConsole
 {

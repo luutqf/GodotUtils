@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace GodotUtils;
+namespace GodotUtils.UI.Console;
 
 public class ConsoleCommandInfo
 {
