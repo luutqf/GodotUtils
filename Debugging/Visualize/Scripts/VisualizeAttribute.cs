@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-namespace GodotUtils.Visualize;
+namespace GodotUtils.Debugging.Visualize;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Method)]
 public class VisualizeAttribute : Attribute

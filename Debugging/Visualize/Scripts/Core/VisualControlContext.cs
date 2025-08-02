@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace GodotUtils.Visualize;
+namespace GodotUtils.Debugging.Visualize;
 
 /// <summary>
 /// Represents the context for a visual control

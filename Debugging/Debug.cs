@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 
-namespace GodotUtils;
+namespace GodotUtils.Debugging;
 
 public static class Debug
 {

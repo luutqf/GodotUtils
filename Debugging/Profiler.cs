@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-namespace GodotUtils;
+namespace GodotUtils.Debugging;
 
 public static class Profiler
 {

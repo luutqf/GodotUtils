@@ -1,7 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 
-namespace GodotUtils.Visualize;
+namespace GodotUtils.Debugging.Visualize;
 
 /// <summary>
 /// This logger shows all messages in game making it easier to debug

@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using static Godot.Control;
 
-namespace GodotUtils.Visualize;
+namespace GodotUtils.Debugging.Visualize;
 
 public static partial class VisualControlTypes
 {

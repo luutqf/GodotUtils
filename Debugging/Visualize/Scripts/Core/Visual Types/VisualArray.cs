@@ -2,7 +2,7 @@ using Godot;
 using System;
 using static Godot.Control;
 
-namespace GodotUtils.Visualize;
+namespace GodotUtils.Debugging.Visualize;
 
 public static partial class VisualControlTypes
 {

@@ -1,7 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 
-namespace GodotUtils.Visualize;
+namespace GodotUtils.Debugging.Visualize;
 
 [Visualize(nameof(Position), nameof(Offset), nameof(Rotation))]
 public partial class VisualizeExampleSprite : Sprite2D

@@ -7,7 +7,7 @@ using System.Threading;
 using static Godot.Control;
 using System.Linq;
 
-namespace GodotUtils.Visualize;
+namespace GodotUtils.Debugging.Visualize;
 
 /// <summary>
 /// The main core class for the visualizer UI

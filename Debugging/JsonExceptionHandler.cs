@@ -4,7 +4,7 @@ using System.Text;
 using System;
 using System.Text.Json;
 
-namespace GodotUtils;
+namespace GodotUtils.Debugging;
 
 public class JsonExceptionHandler
 {

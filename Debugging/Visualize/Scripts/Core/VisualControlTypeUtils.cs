@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-namespace GodotUtils.Visualize;
+namespace GodotUtils.Debugging.Visualize;
 
 /// <summary>
 /// More utility methods
