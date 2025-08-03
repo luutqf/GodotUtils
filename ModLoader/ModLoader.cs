@@ -59,7 +59,7 @@ public partial class ModLoader : Node
     {
         if (Input.IsActionJustPressed(InputActions.UICancel))
         {
-            GetNode<SceneManager>(AutoloadPaths.SceneManager).SwitchScene(Scene.MainMenu);
+            SceneManager.SwitchScene(Scene.MainMenu);
         }
     }
 
@@ -85,7 +85,7 @@ public partial class ModLoader : Node
     {
         //OS.CreateProcess(OS.GetExecutablePath(), null);
         OS.CreateInstance(null);
-        await GetNode<Global>(AutoloadPaths.Global).QuitAndCleanup();
+        await Global.Instance.QuitAndCleanup();
     }
 
     private static void _OnOpenModsFolderPressed()

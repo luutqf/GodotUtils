@@ -11,24 +11,26 @@ using FileAccess = Godot.FileAccess;
 namespace GodotUtils.UI;
 
 // Autoload
-public partial class OptionsManager : Component
+public partial class OptionsManager
 {
     public event Action<WindowMode> WindowModeChanged;
 
-    public Dictionary<StringName, Array<InputEvent>> DefaultHotkeys { get; set; }
-    public ResourceHotkeys Hotkeys { get; private set; }
-    public ResourceOptions Options { get; private set; }
-    public string CurrentOptionsTab { get; set; } = "General";
+    public static OptionsManager Instance { get; private set; }
+    public static ResourceHotkeys Hotkeys { get; private set; }
+
+    public static ResourceOptions Options { get; private set; }
+    public static string CurrentOptionsTab { get; set; } = "General";
 
     private const string PathOptions = "user://options.json";
     private const string PathHotkeys = "user://hotkeys.tres";
 
+    private static Dictionary<StringName, Array<InputEvent>> _defaultHotkeys;
     private JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
 
-    public override void Ready()
+    public void Init(Global global)
     {
-        RegisterPhysicsProcess();
-        GetNode<Global>(AutoloadPaths.Global).PreQuit += SaveSettingsOnQuit;
+        Instance = this;
+        global.PreQuit += SaveSettingsOnQuit;
 
         LoadOptions();
 
@@ -43,7 +45,7 @@ public partial class OptionsManager : Component
         SetAntialiasing();
     }
 
-    public override void PhysicsProcess(double delta)
+    public void Update()
     {
         if (Input.IsActionJustPressed(InputActions.Fullscreen))
         {
@@ -51,7 +53,7 @@ public partial class OptionsManager : Component
         }
     }
 
-    public void ToggleFullscreen()
+    private void ToggleFullscreen()
     {
         if (DisplayServer.WindowGetMode() == DisplayServer.WindowMode.Windowed)
         {
@@ -63,7 +65,7 @@ public partial class OptionsManager : Component
         }
     }
 
-    public void SaveOptions()
+    private void SaveOptions()
     {
         string json = JsonSerializer.Serialize(Options, _jsonOptions);
 
@@ -73,7 +75,7 @@ public partial class OptionsManager : Component
         file.Close();
     }
 
-    public void SaveHotkeys()
+    private void SaveHotkeys()
     {
         Error error = ResourceSaver.Save(Hotkeys, PathHotkeys);
 
@@ -83,16 +85,16 @@ public partial class OptionsManager : Component
         }
     }
 
-    public void ResetHotkeys()
+    public static void ResetHotkeys()
     {
         // Deep clone default hotkeys over
         Hotkeys.Actions = [];
 
-        foreach (System.Collections.Generic.KeyValuePair<StringName, Array<InputEvent>> element in DefaultHotkeys)
+        foreach (System.Collections.Generic.KeyValuePair<StringName, Array<InputEvent>> element in _defaultHotkeys)
         {
             Array<InputEvent> arr = [];
 
-            foreach (InputEvent item in DefaultHotkeys[element.Key])
+            foreach (InputEvent item in _defaultHotkeys[element.Key])
             {
                 arr.Add((InputEvent)item.Duplicate());
             }
@@ -101,7 +103,7 @@ public partial class OptionsManager : Component
         }
 
         // Set input map
-        LoadInputMap(DefaultHotkeys);
+        LoadInputMap(_defaultHotkeys);
     }
 
     private void LoadOptions()
@@ -155,7 +157,7 @@ public partial class OptionsManager : Component
             }
         }
 
-        DefaultHotkeys = actions;
+        _defaultHotkeys = actions;
     }
 
     private void LoadHotkeys()
@@ -167,7 +169,7 @@ public partial class OptionsManager : Component
             Hotkeys = GD.Load<ResourceHotkeys>(PathHotkeys);
 
             // InputMap in project settings has changed so reset all saved hotkeys
-            if (!ActionsAreEqual(DefaultHotkeys, Hotkeys.Actions))
+            if (!ActionsAreEqual(_defaultHotkeys, Hotkeys.Actions))
             {
                 Hotkeys = new();
                 ResetHotkeys();

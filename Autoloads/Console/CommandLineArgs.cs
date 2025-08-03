@@ -6,9 +6,9 @@ namespace GodotUtils.UI.Console;
 /// <summary>
 /// Handles custom command line arguments set for each instance.
 /// </summary>
-public partial class CommandLineArgs : Component
+public class CommandLineArgs
 {
-    public override void Ready()
+    public static void Init()
     {
         // Get command-line arguments
         string[] args = OS.GetCmdlineArgs();

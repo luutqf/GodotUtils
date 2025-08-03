@@ -17,10 +17,10 @@ public partial class SceneManager : Component
     /// </summary>
     public event Action<string> PreSceneChanged;
 
-    public Node CurrentScene { get; private set; }
+    public static Node CurrentScene { get; private set; }
 
     private SceneTree _tree;
-    private SceneManager _instance;
+    private static SceneManager _instance;
 
     public override void Ready()
     {
@@ -30,10 +30,17 @@ public partial class SceneManager : Component
         CurrentScene = root.GetChild(root.GetChildCount() - 1);
 
         // Gradually fade out all SFX whenever the scene is changed
-        PreSceneChanged += _ => GetNode<AudioManager>(AutoloadPaths.AudioManager).FadeOutSFX();
+        PreSceneChanged += OnPreSceneChanged;
     }
 
-    public void SwitchScene(Scene scene, TransType transType = TransType.None)
+    public override void _ExitTree()
+    {
+        PreSceneChanged -= OnPreSceneChanged;
+    }
+
+    private void OnPreSceneChanged(string scene) => AudioManager.FadeOutSFX();
+
+    public static void SwitchScene(Scene scene, TransType transType = TransType.None)
     {
         string scenePath = scene switch
         {
@@ -45,15 +52,15 @@ public partial class SceneManager : Component
             _ => throw new ArgumentOutOfRangeException(nameof(scene), scene, "Tried to switch to unknown scene")
         };
 
-        PreSceneChanged?.Invoke(scenePath);
+        _instance.PreSceneChanged?.Invoke(scenePath);
 
         switch (transType)
         {
             case TransType.None:
-                ChangeScene(scenePath, transType);
+                _instance.ChangeScene(scenePath, transType);
                 break;
             case TransType.Fade:
-                FadeTo(TransColor.Black, 2, () => ChangeScene(scenePath, transType));
+                _instance.FadeTo(TransColor.Black, 2, () => _instance.ChangeScene(scenePath, transType));
                 break;
         }
     }

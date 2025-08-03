@@ -11,20 +11,18 @@ namespace GodotUtils.UI.Console;
 [SceneTree]
 public partial class GameConsole : Component
 {
-    public event Action<bool> VisibilityToggled;
-
     private const int MaxTextFeed = 1000;
 
     private readonly ConsoleHistory _history = new();
     private PopupPanel              _settingsPopup;
     private CheckBox                _settingsAutoScroll;
     private TextEdit                _feed;
-    private LineEdit                _input;
+    private static LineEdit         _input;
     private Button                  _settingsBtn;
     private bool                    _autoScroll = true;
-    private PanelContainer          _mainContainer;
+    private static PanelContainer   _mainContainer;
 
-    public bool Visible => _mainContainer.Visible;
+    public static bool Visible => _mainContainer.Visible;
 
     public static List<ConsoleCommandInfo> Commands { get; } = [];
 
@@ -84,10 +82,9 @@ public partial class GameConsole : Component
         ScrollDown();
     }
 
-    public void ToggleVisibility()
+    public static void ToggleVisibility()
     {
         _mainContainer.Visible = !_mainContainer.Visible;
-        VisibilityToggled?.Invoke(_mainContainer.Visible);
 
         if (_mainContainer.Visible)
         {
@@ -166,7 +163,7 @@ public partial class GameConsole : Component
 
         if (cmd == null)
         {
-            Logger.Instance.Log($"The command '{text.Split()[0].ToLower()}' does not exist");
+            Logger.Log($"The command '{text.Split()[0].ToLower()}' does not exist");
             return false;
         }
 
@@ -323,7 +320,7 @@ public partial class GameConsole : Component
             }
         } catch (FormatException e)
         {
-            Logger.Instance.Log(e.Message);
+            Logger.Log(e.Message);
             return 0;
         }
 
@@ -336,7 +333,7 @@ public partial class GameConsole : Component
         }
         catch (FormatException e)
         {
-            Logger.Instance.Log(e.Message);
+            Logger.Log(e.Message);
             return false;
         }
 

@@ -16,21 +16,19 @@ namespace GodotUtils;
  * Remember to put Logger.Update() in _PhysicsProcess(double delta) otherwise you will be wondering why 
  * Logger.Log(...) is printing nothing to the console.
  */
-public partial class Logger : Component
+public class Logger
 {
-    public static Logger Instance { get; private set; }
 
     public event Action<string> MessageLogged;
 
-    private readonly ConcurrentQueue<LogInfo> _messages = [];
+    private static readonly ConcurrentQueue<LogInfo> _messages = [];
 
-    public override void Ready()
+    public void Init(GameConsole console)
     {
-        Instance = this;
-        MessageLogged += GetNode<GameConsole>(AutoloadPaths.Console).AddMessage;
+        MessageLogged += console.AddMessage;
     }
 
-    public override void PhysicsProcess(double delta)
+    public void Update()
     {
         DequeueMessages();
     }
@@ -38,7 +36,7 @@ public partial class Logger : Component
     /// <summary>
     /// Log a message
     /// </summary>
-    public void Log(object message, BBColor color = BBColor.Gray)
+    public static void Log(object message, BBColor color = BBColor.Gray)
     {
         _messages.Enqueue(new LogInfo(LoggerOpcode.Message, new LogMessage($"{message}"), color));
     }
@@ -46,7 +44,7 @@ public partial class Logger : Component
     /// <summary>
     /// Logs multiple objects by concatenating them into a single message.
     /// </summary>
-    public void Log(params object[] objects)
+    public static void Log(params object[] objects)
     {
         if (objects == null || objects.Length == 0)
         {
@@ -71,7 +69,7 @@ public partial class Logger : Component
     /// <summary>
     /// Log a warning
     /// </summary>
-    public void LogWarning(object message, BBColor color = BBColor.Orange)
+    public static void LogWarning(object message, BBColor color = BBColor.Orange)
     {
         Log($"[Warning] {message}", color);
     }
@@ -79,7 +77,7 @@ public partial class Logger : Component
     /// <summary>
     /// Log a todo
     /// </summary>
-    public void LogTodo(object message, BBColor color = BBColor.White)
+    public static void LogTodo(object message, BBColor color = BBColor.White)
     {
         Log($"[Todo] {message}", color);
     }
@@ -87,7 +85,7 @@ public partial class Logger : Component
     /// <summary>
     /// Logs an exception with trace information. Optionally allows logging a human readable hint
     /// </summary>
-    public void LogErr
+    public static void LogErr
     (
         Exception e,
         string hint = default,
@@ -102,7 +100,7 @@ public partial class Logger : Component
     /// <summary>
     /// Logs a debug message that optionally contains trace information
     /// </summary>
-    public void LogDebug
+    public static void LogDebug
     (
         object message,
         BBColor color = BBColor.Magenta,
@@ -117,7 +115,7 @@ public partial class Logger : Component
     /// <summary>
     /// Log the time it takes to do a section of code
     /// </summary>
-    public void LogMs(Action code)
+    public static void LogMs(Action code)
     {
         Stopwatch watch = new();
         watch.Start();
@@ -129,7 +127,7 @@ public partial class Logger : Component
     /// <summary>
     /// Checks to see if there are any messages left in the queue
     /// </summary>
-    public bool StillWorking()
+    public static bool StillWorking()
     {
         return !_messages.IsEmpty;
     }
@@ -137,7 +135,7 @@ public partial class Logger : Component
     /// <summary>
     /// Dequeues a Requested Message and Logs it
     /// </summary>
-    public void DequeueMessages()
+    private void DequeueMessages()
     {
         if (!_messages.TryDequeue(out LogInfo result))
         {
@@ -180,7 +178,7 @@ public partial class Logger : Component
     /// <summary>
     /// Logs a message that may contain trace information
     /// </summary>
-    private void LogDetailed(LoggerOpcode opcode, string message, BBColor color, bool trace, string filePath, int lineNumber)
+    private static void LogDetailed(LoggerOpcode opcode, string message, BBColor color, bool trace, string filePath, int lineNumber)
     {
         string tracePath;
 

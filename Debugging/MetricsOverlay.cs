@@ -7,7 +7,7 @@ using Vector2 = System.Numerics.Vector2;
 
 namespace GodotUtils.Debugging;
 
-public partial class MetricsOverlay : Component
+public class MetricsOverlay
 {
     private const int BytesInMegabyte     = 1048576;
     private const int BytesInKilobyte     = 1024;
@@ -30,10 +30,8 @@ public partial class MetricsOverlay : Component
     private static Dictionary<string, Func<object>> _trackingVariables = []; // Should this really be static?
     private Dictionary<string, Func<string>> _currentMetrics = [];
 
-    public override void Ready()
+    public void Init()
     {
-        RegisterProcess();
-
         Dictionary<string, (bool Enabled, Func<string> ValueProvider)> metrics = new()
         {
             { "FPS",                    (true,  () => $"{_cachedFps}") },
@@ -65,7 +63,7 @@ public partial class MetricsOverlay : Component
         }
     }
 
-    public override void Process(double delta)
+    public void Update()
     {
         if (Input.IsActionJustPressed(InputActions.DebugOverlay))
         {

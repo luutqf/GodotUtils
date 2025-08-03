@@ -10,18 +10,18 @@ public partial class GameConsole
     {
         IEnumerable<string> cmds = Commands.Select(x => x.Name);
 
-        Logger.Instance.Log(cmds.ToFormattedString());
+        Logger.Log(cmds.ToFormattedString());
     }
 
     [ConsoleCommand("quit", "exit")]
     private async void Quit()
     {
-        await GetNode<Global>(AutoloadPaths.Global).QuitAndCleanup();
+        await Global.Instance.QuitAndCleanup();
     }
 
     [ConsoleCommand("debug")]
     private void Debug(int x)
     {
-        Logger.Instance.Log(x);
+        Logger.Log(x);
     }
 }

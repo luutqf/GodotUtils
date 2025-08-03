@@ -5,25 +5,23 @@ using System.Linq;
 
 namespace GodotUtils.Debugging.Visualize;
 
-public partial class VisualizeAutoload : Component
+public partial class VisualizeAutoload
 {
 #if DEBUG
     private readonly Dictionary<ulong, VisualNodeInfo> _nodeTrackers = [];
 
-    public override void Ready()
+    public void Init(SceneTree tree)
     {
-        RegisterProcess();
-
-        foreach (Node node in GetTree().Root.GetChildren<Node>())
+        foreach (Node node in tree.Root.GetChildren<Node>())
         {
             AddVisualNode(node);
         }
 
-        GetTree().NodeAdded += AddVisualNode;
-        GetTree().NodeRemoved += RemoveVisualNode;
+        tree.NodeAdded += AddVisualNode;
+        tree.NodeRemoved += RemoveVisualNode;
     }
 
-    public override void Process(double delta)
+    public void Update()
     {
         foreach (KeyValuePair<ulong, VisualNodeInfo> kvp in _nodeTrackers)
         {

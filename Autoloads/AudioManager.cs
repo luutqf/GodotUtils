@@ -3,7 +3,7 @@ using GodotUtils.UI;
 
 namespace GodotUtils;
 
-public partial class AudioManager : Component
+public class AudioManager
 {
     private const float MinRandomPitch        = 0.8f;
     private const float MaxRandomPitch        = 1.2f;
@@ -11,23 +11,23 @@ public partial class AudioManager : Component
     private const int   MutedVolume           = -80;
     private const int   MutedVolumeNormalized = -40;
 
-    private AudioStreamPlayer _musicPlayer;
-    private ResourceOptions   _options;
-    private Node              _sfxPlayersParent;
-    private float             _lastPitch;
+    private static AudioStreamPlayer _musicPlayer;
+    private static ResourceOptions   _options;
+    private static Node              _sfxPlayersParent;
+    private static float             _lastPitch;
 
-    public override void Ready()
+    public void Init(Node autoloads)
     {
-        _options = GetNode<OptionsManager>(AutoloadPaths.OptionsManager).Options;
+        _options = OptionsManager.Options;
 
         _musicPlayer = new AudioStreamPlayer();
-        AddChild(_musicPlayer);
+        autoloads.AddChild(_musicPlayer);
 
         _sfxPlayersParent = new Node();
-        AddChild(_sfxPlayersParent);
+        autoloads.AddChild(_sfxPlayersParent);
     }
 
-    public void PlayMusic(AudioStream song, bool instant = true, double fadeOut = 1.5, double fadeIn = 0.5)
+    public static void PlayMusic(AudioStream song, bool instant = true, double fadeOut = 1.5, double fadeIn = 0.5)
     {
         if (!instant && _musicPlayer.Playing)
         {
@@ -41,7 +41,7 @@ public partial class AudioManager : Component
         }
     }
 
-    public void PlaySFX(AudioStream sound)
+    public static void PlaySFX(AudioStream sound)
     {
         AudioStreamPlayer sfxPlayer = new()
         {
@@ -56,7 +56,7 @@ public partial class AudioManager : Component
         sfxPlayer.Play();
     }
 
-    public void FadeOutSFX(double fadeTime = 1)
+    public static void FadeOutSFX(double fadeTime = 1)
     {
         foreach (AudioStreamPlayer audioPlayer in _sfxPlayersParent.GetChildren<AudioStreamPlayer>())
         {
@@ -64,13 +64,13 @@ public partial class AudioManager : Component
         }
     }
 
-    public void SetMusicVolume(float volume)
+    public static void SetMusicVolume(float volume)
     {
         _musicPlayer.VolumeDb = NormalizeConfigVolume(volume);
         _options.MusicVolume = volume;
     }
 
-    public void SetSFXVolume(float volume)
+    public static void SetSFXVolume(float volume)
     {
         _options.SFXVolume = volume;
 
@@ -82,14 +82,14 @@ public partial class AudioManager : Component
         }
     }
 
-    private void PlayAudio(AudioStreamPlayer player, AudioStream song, float volume)
+    private static void PlayAudio(AudioStreamPlayer player, AudioStream song, float volume)
     {
         player.Stream = song;
         player.VolumeDb = NormalizeConfigVolume(volume);
         player.Play();
     }
 
-    private void PlayAudioCrossfade(AudioStreamPlayer player, AudioStream song, float volume, double fadeOut, double fadeIn)
+    private static void PlayAudioCrossfade(AudioStreamPlayer player, AudioStream song, float volume, double fadeOut, double fadeIn)
     {
         new GTween(player)
             .SetAnimatingProp(AudioStreamPlayer.PropertyName.VolumeDb)
@@ -98,12 +98,12 @@ public partial class AudioManager : Component
             .AnimateProp(NormalizeConfigVolume(volume), fadeIn).EaseIn();
     }
 
-    private float NormalizeConfigVolume(float volume)
+    private static float NormalizeConfigVolume(float volume)
     {
         return volume == 0 ? MutedVolume : volume.Remap(0, 100, MutedVolumeNormalized, 0);
     }
 
-    private float GetRandomPitch()
+    private static float GetRandomPitch()
     {
         RandomNumberGenerator rng = new();
         rng.Randomize();

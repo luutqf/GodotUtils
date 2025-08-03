@@ -59,7 +59,7 @@ public abstract class ENetClient : ENetLow
         }
         catch (Exception e)
         {
-            Logger.Instance.LogErr(e, "Client");
+            Logger.LogErr(e, "Client");
         }
     }
 
@@ -142,7 +142,7 @@ public abstract class ENetClient : ENetLow
     /// </summary>
     public override void Log(object message, BBColor color = BBColor.Aqua)
     {
-        Logger.Instance.Log($"[Client] {message}", color);
+        Logger.Log($"[Client] {message}", color);
     }
 
     #endregion

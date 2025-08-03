@@ -9,7 +9,7 @@ namespace GodotUtils;
 /// Services have a scene lifetime meaning they will be destroyed when the scene changes. Services
 /// aid as an alternative to using the static keyword everywhere.
 /// </summary>
-public partial class Services : Component
+public partial class Services
 {
     /// <summary>
     /// Dictionary to store registered services, keyed by their type.
@@ -17,10 +17,10 @@ public partial class Services : Component
     private static Dictionary<Type, Service> _services = [];
     private SceneManager _sceneManager;
 
-    public override void _EnterTree()
+    public void Init(SceneTree tree, SceneManager sceneManager)
     {
-        _sceneManager = GetNode<SceneManager>(AutoloadPaths.SceneManager);
-        GetTree().NodeAdded += AttemptToRegisterService;
+        _sceneManager = sceneManager;
+        tree.NodeAdded += AttemptToRegisterService;
     }
 
     /// <summary>
