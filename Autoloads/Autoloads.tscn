@@ -18,7 +18,6 @@ script = ExtResource("1_byaaa")
 
 [node name="ComponentManager" type="Node" parent="."]
 script = ExtResource("2_6wcni")
-metadata/_custom_type_script = "uid://dg10eoueb54qm"
 
 [node name="AudioManager" type="Node" parent="ComponentManager"]
 script = ExtResource("2_7c3qn")
