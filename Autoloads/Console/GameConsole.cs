@@ -9,11 +9,9 @@ using System;
 namespace GodotUtils.UI.Console;
 
 [SceneTree]
-public partial class GameConsole : PanelContainer
+public partial class GameConsole : Component
 {
     public event Action<bool> VisibilityToggled;
-
-    public static GameConsole Instance { get; private set; }
 
     private const int MaxTextFeed = 1000;
 
@@ -24,18 +22,22 @@ public partial class GameConsole : PanelContainer
     private LineEdit                _input;
     private Button                  _settingsBtn;
     private bool                    _autoScroll = true;
+    private PanelContainer          _mainContainer;
+
+    public bool Visible => _mainContainer.Visible;
 
     public static List<ConsoleCommandInfo> Commands { get; } = [];
 
-    public override void _Ready()
+    public override void Ready()
     {
+        RegisterPhysicsProcess();
         LoadCommands();
 
-        Instance       = this;
         _feed          = Output;
         _input         = CmdsInput;
         _settingsBtn   = Settings;
-        _settingsPopup = _.PopupPanel;
+        _mainContainer = MainContainer;
+        _settingsPopup = PopupPanel;
 
         _settingsAutoScroll = PopupAutoScroll;
 
@@ -44,10 +46,10 @@ public partial class GameConsole : PanelContainer
         _settingsAutoScroll.Toggled += v => _autoScroll = v;
         _settingsAutoScroll.ButtonPressed = _autoScroll;
 
-        Hide();
+        _mainContainer.Hide();
     }
 
-    public override void _PhysicsProcess(double delta)
+    public override void PhysicsProcess(double delta)
     {
         if (Input.IsActionJustPressed(InputActions.ToggleConsole))
         {
@@ -84,13 +86,13 @@ public partial class GameConsole : PanelContainer
 
     public void ToggleVisibility()
     {
-        Instance.Visible = !Instance.Visible;
-        VisibilityToggled?.Invoke(Instance.Visible);
+        _mainContainer.Visible = !_mainContainer.Visible;
+        VisibilityToggled?.Invoke(_mainContainer.Visible);
 
-        if (Instance.Visible)
+        if (_mainContainer.Visible)
         {
             _input.GrabFocus();
-            Instance.CallDeferred(nameof(ScrollDown));
+            _mainContainer.CallDeferred(nameof(ScrollDown));
         }
     }
 
@@ -158,7 +160,7 @@ public partial class GameConsole : PanelContainer
         });
     }
 
-    private static bool ProcessCommand(string text)
+    private bool ProcessCommand(string text)
     {
         ConsoleCommandInfo cmd = TryGetCommand(text.Split()[0].ToLower());
 
@@ -188,13 +190,13 @@ public partial class GameConsole : PanelContainer
         return true;
     }
 
-    private static ConsoleCommandInfo TryGetCommand(string text)
+    private ConsoleCommandInfo TryGetCommand(string text)
     {
         ConsoleCommandInfo cmd =
             Commands.Find(cmd =>
             {
                 // Does text match the command name?
-                bool nameMatch = string.Equals(Instance.Name, text, StringComparison.OrdinalIgnoreCase);
+                bool nameMatch = string.Equals(_mainContainer.Name, text, StringComparison.OrdinalIgnoreCase);
 
                 if (nameMatch)
                 {
@@ -238,7 +240,7 @@ public partial class GameConsole : PanelContainer
     private void InputNavigateHistory()
     {
         // If console is not visible or there is no history to navigate do nothing
-        if (!Instance.Visible || _history.NoHistory())
+        if (!_mainContainer.Visible || _history.NoHistory())
         {
             return;
         }
@@ -287,14 +289,14 @@ public partial class GameConsole : PanelContainer
         return parameters;
     }
 
-    private static object GetMethodInstance(Type type)
+    private object GetMethodInstance(Type type)
     {
         object instance;
 
         if (type.IsSubclassOf(typeof(GodotObject)))
         {
             // This is a Godot Object, find it or create a new instance
-            instance = FindNodeByType(Instance.GetTree().Root, type) ??
+            instance = FindNodeByType(_mainContainer.GetTree().Root, type) ??
                 Activator.CreateInstance(type);
         }
         else
