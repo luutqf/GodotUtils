@@ -1,4 +1,5 @@
 using Godot;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -9,7 +10,12 @@ namespace GodotUtils.UI;
 
 public class ModLoaderUI
 {
-    public static Dictionary<string, ModInfo> Mods { get; } = [];
+    private Dictionary<string, ModInfo> _mods = [];
+
+    public Dictionary<string, ModInfo> GetMods()
+    {
+        return _mods;
+    }
 
     public void LoadMods(Node node)
     {
@@ -57,13 +63,13 @@ public class ModLoaderUI
 
             ModInfo modInfo = JsonSerializer.Deserialize<ModInfo>(jsonFileContents, options);
 
-            if (Mods.ContainsKey(modInfo.Id))
+            if (_mods.ContainsKey(modInfo.Id))
             {
                 Logger.LogWarning($"Duplicate mod id '{modInfo.Id}' was skipped");
                 goto Next;
             }
 
-            Mods.Add(modInfo.Id, modInfo);
+            _mods.Add(modInfo.Id, modInfo);
 
             // Load dll
             string dllPath = $@"{modRoot}/Mod.dll";

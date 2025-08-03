@@ -13,10 +13,7 @@ public partial class VisualizeExampleSprite : Sprite2D
     [Visualize] private Vector2  _offset;
 
     [OnInstantiate]
-    private void Init()
-    {
-
-    }
+    private void Init() { }
 
     public override void _PhysicsProcess(double delta)
     {

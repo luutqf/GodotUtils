@@ -5,20 +5,40 @@ using System.Linq;
 
 namespace GodotUtils.Debugging.Visualize;
 
-public partial class VisualizeAutoload
+public class VisualizeAutoload : IDisposable
 {
 #if DEBUG
-    private readonly Dictionary<ulong, VisualNodeInfo> _nodeTrackers = [];
+    public Dictionary<Node, VBoxContainer> VisualNodes { get; set; }
+
+    public static VisualizeAutoload Instance { get; private set; }
+    public Dictionary<Node, VBoxContainer> VisualNodesWithoutVisualAttribute { get; private set; } = [];
+
+    private Dictionary<ulong, VisualNodeInfo> _nodeTrackers = [];
+    private SceneTree _tree;
 
     public void Init(SceneTree tree)
     {
+        if (Instance != null)
+            throw new InvalidOperationException($"{nameof(VisualizeAutoload)} was initialized already");
+
+        Instance = this;
+        _tree = tree;
+
         foreach (Node node in tree.Root.GetChildren<Node>())
         {
             AddVisualNode(node);
         }
 
-        tree.NodeAdded += AddVisualNode;
-        tree.NodeRemoved += RemoveVisualNode;
+        _tree.NodeAdded += AddVisualNode;
+        _tree.NodeRemoved += RemoveVisualNode;
+    }
+
+    public void Dispose()
+    {
+        Instance = null;
+
+        _tree.NodeAdded -= AddVisualNode;
+        _tree.NodeRemoved -= RemoveVisualNode;
     }
 
     public void Update()

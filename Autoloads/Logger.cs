@@ -10,22 +10,31 @@ using System.Text;
 namespace GodotUtils;
 
 /*
- * Autoload
- * 
  * This is meant to replace all GD.Print(...) with Logger.Log(...) to make logging multi-thread friendly. 
  * Remember to put Logger.Update() in _PhysicsProcess(double delta) otherwise you will be wondering why 
  * Logger.Log(...) is printing nothing to the console.
  */
-public class Logger
+public class Logger : IDisposable
 {
-
     public event Action<string> MessageLogged;
 
-    private static readonly ConcurrentQueue<LogInfo> _messages = [];
+    private static Logger _instance;
+    private ConcurrentQueue<LogInfo> _messages = [];
+    private GameConsole _console;
 
     public void Init(GameConsole console)
     {
-        MessageLogged += console.AddMessage;
+        _instance = this;
+        _console = console;
+
+        MessageLogged += _console.AddMessage;
+    }
+
+    public void Dispose()
+    {
+        MessageLogged -= _console.AddMessage;
+
+        _instance = null;
     }
 
     public void Update()
@@ -38,7 +47,7 @@ public class Logger
     /// </summary>
     public static void Log(object message, BBColor color = BBColor.Gray)
     {
-        _messages.Enqueue(new LogInfo(LoggerOpcode.Message, new LogMessage($"{message}"), color));
+        _instance._messages.Enqueue(new LogInfo(LoggerOpcode.Message, new LogMessage($"{message}"), color));
     }
 
     /// <summary>
@@ -63,7 +72,7 @@ public class Logger
 
         LogInfo logInfo = new(LoggerOpcode.Message, new LogMessage(message));
 
-        _messages.Enqueue(logInfo);
+        _instance._messages.Enqueue(logInfo);
     }
 
     /// <summary>
@@ -129,7 +138,7 @@ public class Logger
     /// </summary>
     public static bool StillWorking()
     {
-        return !_messages.IsEmpty;
+        return !_instance._messages.IsEmpty;
     }
 
     /// <summary>
@@ -195,7 +204,7 @@ public class Logger
             tracePath = $"  at {elements[elements.Length - 1]}:{lineNumber}";
         }
 
-        _messages.Enqueue(
+        _instance._messages.Enqueue(
             new LogInfo(opcode,
                 new LogMessageTrace(
                     message,

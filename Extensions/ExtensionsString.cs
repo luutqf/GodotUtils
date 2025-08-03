@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System;
+using GodotUtils.RegEx;
 
 namespace GodotUtils;
 
@@ -13,7 +13,7 @@ public static partial class ExtensionsString
     /// </summary>
     public static bool IsAddress(this string v)
     {
-        return v != null && (AddressRegex().IsMatch(v) || v.Contains("localhost"));
+        return v != null && (RegexUtils.IpAddress().IsMatch(v) || v.Contains("localhost"));
     }
 
     /// <summary>
@@ -90,7 +90,4 @@ public static partial class ExtensionsString
 
         return string.Concat(input[0].ToString().ToUpper(), input.AsSpan(1));
     }
-
-    [GeneratedRegex(@"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}")]
-    private static partial Regex AddressRegex();
 }

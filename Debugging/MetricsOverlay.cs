@@ -7,7 +7,7 @@ using Vector2 = System.Numerics.Vector2;
 
 namespace GodotUtils.Debugging;
 
-public class MetricsOverlay
+public class MetricsOverlay : IDisposable
 {
     private const int BytesInMegabyte     = 1048576;
     private const int BytesInKilobyte     = 1024;
@@ -21,17 +21,27 @@ public class MetricsOverlay
     private const string LabelVariables  = "Variables";
     private const string LabelFpsGraph   = "##FPSGraph"; // The ## hides the text
 
-    private float[] _fpsBuffer = new float[MaxFpsBuffer];
-    private float   _cachedFps;
-    private int     _fpsIndex;
-
-    private bool _visible;
-
-    private static Dictionary<string, Func<object>> _trackingVariables = []; // Should this really be static?
+    private Dictionary<string, Func<object>> _trackingVariables = [];
     private Dictionary<string, Func<string>> _currentMetrics = [];
+
+    private static MetricsOverlay _instance;
+    private float[] _fpsBuffer = new float[MaxFpsBuffer];
+    private float _cachedFps;
+    private bool _visible;
+    private int _fpsIndex;
+
+    public void Dispose()
+    {
+        _instance = null;
+    }
 
     public void Init()
     {
+        if (_instance != null)
+            throw new InvalidOperationException($"{nameof(MetricsOverlay)} was initialized already");
+
+        _instance = this;
+
         Dictionary<string, (bool Enabled, Func<string> ValueProvider)> metrics = new()
         {
             { "FPS",                    (true,  () => $"{_cachedFps}") },
@@ -54,6 +64,7 @@ public class MetricsOverlay
         };
 
         // Perfect example of where var is useful...
+#pragma warning disable IDE0008 // Use explicit type
         foreach (var metric in metrics)
         {
             if (metric.Value.Enabled)
@@ -61,6 +72,7 @@ public class MetricsOverlay
                 _currentMetrics.Add(metric.Key, metric.Value.ValueProvider);
             }
         }
+#pragma warning restore IDE0008 // Use explicit type
     }
 
     public void Update()
@@ -78,12 +90,12 @@ public class MetricsOverlay
 
     public static void StartTracking(string key, Func<object> function)
     {
-        _trackingVariables.Add(key, function);
+        _instance._trackingVariables.Add(key, function);
     }
 
     public static void StopTracking(string key)
     {
-        _trackingVariables.Remove(key);
+        _instance._trackingVariables.Remove(key);
     }
 
     private static void RenderPerformanceMetrics(Dictionary<string, Func<string>> metrics, float[] fpsBuffer, ref int fpsIndex, ref float cachedFps)
@@ -132,10 +144,10 @@ public class MetricsOverlay
 
     private static void RenderUserDefinedVariables()
     {
-        if (_trackingVariables.Count == 0 || !ImGui.CollapsingHeader(LabelVariables, ImGuiTreeNodeFlags.DefaultOpen))
+        if (_instance._trackingVariables.Count == 0 || !ImGui.CollapsingHeader(LabelVariables, ImGuiTreeNodeFlags.DefaultOpen))
             return;
 
-        foreach (KeyValuePair<string, Func<object>> kvp in _trackingVariables)
+        foreach (KeyValuePair<string, Func<object>> kvp in _instance._trackingVariables)
         {
             string name = kvp.Key;
             string value = kvp.Value().ToString();

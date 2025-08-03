@@ -34,7 +34,7 @@ namespace GodotUtils.Deprecated;
 /// <typeparam name="TEvent">The event type enum to be used. For example 'EventPlayer' enum.</typeparam>
 public class EventManager<TEvent>
 {
-    private readonly Dictionary<TEvent, List<object>> eventListeners = [];
+    private readonly Dictionary<TEvent, List<object>> _eventListeners = [];
 
     /// <summary>
     /// The event type to be listened to (Action uses object[] params by default)
@@ -46,10 +46,10 @@ public class EventManager<TEvent>
 
     public void AddListener<T>(TEvent eventType, Action<T> action, string id = "")
     {
-        if (!eventListeners.TryGetValue(eventType, out List<object> value))
+        if (!_eventListeners.TryGetValue(eventType, out List<object> value))
         {
             value = [];
-            eventListeners.Add(eventType, value);
+            _eventListeners.Add(eventType, value);
         }
 
         value.Add(new Listener(action, id));
@@ -62,12 +62,12 @@ public class EventManager<TEvent>
     /// </summary>
     public void RemoveListeners(TEvent eventType, string id = "")
     {
-        if (!eventListeners.ContainsKey(eventType))
+        if (!_eventListeners.ContainsKey(eventType))
         {
             throw new InvalidOperationException($"Tried to remove listener of event type '{eventType}' from an event type that has not even been defined yet");
         }
 
-        foreach (KeyValuePair<TEvent, List<object>> pair in eventListeners)
+        foreach (KeyValuePair<TEvent, List<object>> pair in _eventListeners)
         {
             for (int i = pair.Value.Count - 1; i >= 0; i--)
             {
@@ -84,7 +84,7 @@ public class EventManager<TEvent>
     /// </summary>
     public void RemoveAllListeners()
     {
-        eventListeners.Clear();
+        _eventListeners.Clear();
     }
 
     /// <summary>
@@ -92,7 +92,7 @@ public class EventManager<TEvent>
     /// </summary>
     public void Notify(TEvent eventType, params object[] args)
     {
-        if (!eventListeners.TryGetValue(eventType, out List<object> value))
+        if (!_eventListeners.TryGetValue(eventType, out List<object> value))
         {
             return;
         }

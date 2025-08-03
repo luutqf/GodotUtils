@@ -17,17 +17,19 @@ public partial class SceneManager : Component
     /// </summary>
     public event Action<string> PreSceneChanged;
 
-    public static Node CurrentScene { get; private set; }
-
-    private SceneTree _tree;
     private static SceneManager _instance;
+    private SceneTree _tree;
+    private Node _currentScene;
 
     public override void Ready()
     {
+        if (_instance != null)
+            throw new InvalidOperationException($"{nameof(SceneManager)} was initialized already");
+
         _instance = this;
         _tree = GetTree();
         Window root = _tree.Root;
-        CurrentScene = root.GetChild(root.GetChildCount() - 1);
+        _currentScene = root.GetChild(root.GetChildCount() - 1);
 
         // Gradually fade out all SFX whenever the scene is changed
         PreSceneChanged += OnPreSceneChanged;
@@ -36,9 +38,16 @@ public partial class SceneManager : Component
     public override void _ExitTree()
     {
         PreSceneChanged -= OnPreSceneChanged;
+
+        _instance = null;
     }
 
     private void OnPreSceneChanged(string scene) => AudioManager.FadeOutSFX();
+
+    public static Node GetCurrentScene()
+    {
+        return _instance._currentScene;
+    }
 
     public static void SwitchScene(Scene scene, TransType transType = TransType.None)
     {
@@ -90,19 +99,19 @@ public partial class SceneManager : Component
     private void DeferredSwitchScene(string rawName, Variant transTypeVariant)
     {
         // Safe to remove scene now
-        CurrentScene.Free();
+        _currentScene.Free();
 
         // Load a new scene.
         PackedScene nextScene = (PackedScene)GD.Load(rawName);
 
         // Internal the new scene.
-        CurrentScene = nextScene.Instantiate();
+        _currentScene = nextScene.Instantiate();
 
         // Add it to the active scene, as child of root.
-        _tree.Root.AddChild(CurrentScene);
+        _tree.Root.AddChild(_currentScene);
 
         // Optionally, to make it compatible with the SceneTree.change_scene_to_file() API.
-        _tree.CurrentScene = CurrentScene;
+        _tree.CurrentScene = _currentScene;
 
         TransType transType = transTypeVariant.As<TransType>();
 
@@ -124,7 +133,7 @@ public partial class SceneManager : Component
             Layer = 10 // render on top of everything else
         };
 
-        CurrentScene.AddChild(canvasLayer);
+        _currentScene.AddChild(canvasLayer);
 
         // Setup color rect
         ColorRect colorRect = new()

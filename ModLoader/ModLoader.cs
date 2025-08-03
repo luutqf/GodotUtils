@@ -27,7 +27,8 @@ public partial class ModLoader : Node
         _uiAuthors = Authors;
         _uiIncompatibilities = Incompatibilities;
 
-        Dictionary<string, ModInfo> mods = ModLoaderUI.Mods;
+        ModLoaderUI modLoaderUi = new();
+        Dictionary<string, ModInfo> mods = modLoaderUi.GetMods();
 
         bool first = true;
 

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using System;
+using GodotUtils.RegEx;
 
 namespace GodotUtils.UI.Console;
 
@@ -13,21 +13,25 @@ public partial class GameConsole : Component
 {
     private const int MaxTextFeed = 1000;
 
-    private readonly ConsoleHistory _history = new();
-    private PopupPanel              _settingsPopup;
-    private CheckBox                _settingsAutoScroll;
-    private TextEdit                _feed;
-    private static LineEdit         _input;
-    private Button                  _settingsBtn;
-    private bool                    _autoScroll = true;
-    private static PanelContainer   _mainContainer;
+    private static GameConsole _instance;
+    private ConsoleHistory _history = new();
+    private PopupPanel     _settingsPopup;
+    private CheckBox       _settingsAutoScroll;
+    private TextEdit       _feed;
+    private LineEdit       _input;
+    private Button         _settingsBtn;
+    private bool           _autoScroll = true;
+    private PanelContainer _mainContainer;
 
-    public static bool Visible => _mainContainer.Visible;
-
-    public static List<ConsoleCommandInfo> Commands { get; } = [];
+    public List<ConsoleCommandInfo> Commands { get; private set; } = [];
 
     public override void Ready()
     {
+        if (_instance != null)
+            throw new InvalidOperationException($"{nameof(GameConsole)} was initialized already");
+
+        _instance = this;
+
         RegisterPhysicsProcess();
         LoadCommands();
 
@@ -38,11 +42,11 @@ public partial class GameConsole : Component
         _settingsPopup = PopupPanel;
 
         _settingsAutoScroll = PopupAutoScroll;
+        _settingsAutoScroll.ButtonPressed = _autoScroll;
 
         _input.TextSubmitted += OnConsoleInputEntered;
         _settingsBtn.Pressed += OnSettingsBtnPressed;
-        _settingsAutoScroll.Toggled += v => _autoScroll = v;
-        _settingsAutoScroll.ButtonPressed = _autoScroll;
+        _settingsAutoScroll.Toggled += OnAutoScrollToggeled;
 
         _mainContainer.Hide();
     }
@@ -56,6 +60,20 @@ public partial class GameConsole : Component
         }
 
         InputNavigateHistory();
+    }
+
+    public override void _ExitTree()
+    {
+        _input.TextSubmitted -= OnConsoleInputEntered;
+        _settingsBtn.Pressed -= OnSettingsBtnPressed;
+        _settingsAutoScroll.Toggled -= OnAutoScrollToggeled;
+
+        _instance = null;
+    }
+
+    private void OnAutoScrollToggeled(bool value)
+    {
+        _autoScroll = value;
     }
 
     public void AddMessage(object message)
@@ -82,14 +100,16 @@ public partial class GameConsole : Component
         ScrollDown();
     }
 
+    public static bool Visible => _instance._mainContainer.Visible;
+
     public static void ToggleVisibility()
     {
-        _mainContainer.Visible = !_mainContainer.Visible;
+        _instance._mainContainer.Visible = !_instance._mainContainer.Visible;
 
-        if (_mainContainer.Visible)
+        if (_instance._mainContainer.Visible)
         {
-            _input.GrabFocus();
-            _mainContainer.CallDeferred(nameof(ScrollDown));
+            _instance._input.GrabFocus();
+            _instance._mainContainer.CallDeferred(nameof(ScrollDown));
         }
     }
 
@@ -144,12 +164,12 @@ public partial class GameConsole : Component
 
     private static void TryLoadCommand(ConsoleCommandAttribute cmd, MethodInfo method)
     {
-        if (Commands.FirstOrDefault(x => x.Name == cmd.Name) != null)
+        if (_instance.Commands.FirstOrDefault(x => x.Name == cmd.Name) != null)
         {
             throw new Exception($"Duplicate console command: {cmd.Name}");
         }
 
-        Commands.Add(new ConsoleCommandInfo
+        _instance.Commands.Add(new ConsoleCommandInfo
         {
             Name = cmd.Name.ToLower(),
             Aliases = cmd.Aliases.Select(x => x.ToLower()).ToArray(),
@@ -177,7 +197,7 @@ public partial class GameConsole : Component
         // Valk (Year 2024): What in the world
 
         // Split by spaces, unless in quotes
-        string[] rawCommandSplit = CommandParamsRegex().Matches(text).Select(m => m.Value)
+        string[] rawCommandSplit = RegexUtils.CommandParams().Matches(text).Select(m => m.Value)
             .ToArray();
 
         object[] parameters = ConvertMethodParams(method, rawCommandSplit);
@@ -371,8 +391,5 @@ public partial class GameConsole : Component
 
         return null;
     }
-
-    [GeneratedRegex(@"[^\s""']+|""([^""]*)""|'([^']*)'")]
-    private static partial Regex CommandParamsRegex();
     #endregion Utils
 }

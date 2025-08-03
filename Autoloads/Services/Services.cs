@@ -9,18 +9,32 @@ namespace GodotUtils;
 /// Services have a scene lifetime meaning they will be destroyed when the scene changes. Services
 /// aid as an alternative to using the static keyword everywhere.
 /// </summary>
-public partial class Services
+public partial class Services : IDisposable
 {
     /// <summary>
     /// Dictionary to store registered services, keyed by their type.
     /// </summary>
-    private static Dictionary<Type, Service> _services = [];
+    private static Services _instance;
+    private Dictionary<Type, Service> _services = [];
     private SceneManager _sceneManager;
+    private SceneTree _tree;
 
     public void Init(SceneTree tree, SceneManager sceneManager)
     {
+        if (_instance != null)
+            throw new InvalidOperationException($"{nameof(Services)} was initialized already");
+
+        _instance = this;
+        _tree = tree;
         _sceneManager = sceneManager;
-        tree.NodeAdded += AttemptToRegisterService;
+        _tree.NodeAdded += AttemptToRegisterService;
+    }
+
+    public void Dispose()
+    {
+        _tree.NodeAdded -= AttemptToRegisterService;
+
+        _instance = null;
     }
 
     /// <summary>
@@ -30,12 +44,12 @@ public partial class Services
     /// <returns>The instance of the service.</returns>
     public static T Get<T>()
     {
-        if (!_services.ContainsKey(typeof(T)))
+        if (!_instance._services.ContainsKey(typeof(T)))
         {
             throw new Exception($"Unable to obtain service '{typeof(T)}'");
         }
 
-        return (T)_services[typeof(T)].Instance;
+        return (T)_instance._services[typeof(T)].Instance;
     }
 
     private void AttemptToRegisterService(Node node)

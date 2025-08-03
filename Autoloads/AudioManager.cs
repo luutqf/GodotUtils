@@ -1,9 +1,10 @@
 using Godot;
 using GodotUtils.UI;
+using System;
 
 namespace GodotUtils;
 
-public class AudioManager
+public class AudioManager : IDisposable
 {
     private const float MinRandomPitch        = 0.8f;
     private const float MaxRandomPitch        = 1.2f;
@@ -11,14 +12,19 @@ public class AudioManager
     private const int   MutedVolume           = -80;
     private const int   MutedVolumeNormalized = -40;
 
-    private static AudioStreamPlayer _musicPlayer;
-    private static ResourceOptions   _options;
-    private static Node              _sfxPlayersParent;
-    private static float             _lastPitch;
+    private static AudioManager _instance;
+    private AudioStreamPlayer   _musicPlayer;
+    private ResourceOptions     _options;
+    private Node                _sfxPlayersParent;
+    private float               _lastPitch;
 
     public void Init(Node autoloads)
     {
-        _options = OptionsManager.Options;
+        if (_instance != null)
+            throw new InvalidOperationException($"{nameof(AudioManager)} was initialized already");
+
+        _instance = this;
+        _options = OptionsManager.GetOptions();
 
         _musicPlayer = new AudioStreamPlayer();
         autoloads.AddChild(_musicPlayer);
@@ -27,17 +33,25 @@ public class AudioManager
         autoloads.AddChild(_sfxPlayersParent);
     }
 
+    public void Dispose()
+    {
+        _musicPlayer.QueueFree();
+        _sfxPlayersParent.QueueFree();
+
+        _instance = null;
+    }
+
     public static void PlayMusic(AudioStream song, bool instant = true, double fadeOut = 1.5, double fadeIn = 0.5)
     {
-        if (!instant && _musicPlayer.Playing)
+        if (!instant && _instance._musicPlayer.Playing)
         {
             // Slowly transition to the new song
-            PlayAudioCrossfade(_musicPlayer, song, _options.MusicVolume, fadeOut, fadeIn);
+            PlayAudioCrossfade(_instance._musicPlayer, song, _instance._options.MusicVolume, fadeOut, fadeIn);
         }
         else
         {
             // Instantly switch to the new song
-            PlayAudio(_musicPlayer, song, _options.MusicVolume);
+            PlayAudio(_instance._musicPlayer, song, _instance._options.MusicVolume);
         }
     }
 
@@ -46,19 +60,19 @@ public class AudioManager
         AudioStreamPlayer sfxPlayer = new()
         {
             Stream = sound,
-            VolumeDb = NormalizeConfigVolume(_options.SFXVolume),
+            VolumeDb = NormalizeConfigVolume(_instance._options.SFXVolume),
             PitchScale = GetRandomPitch()
         };
 
         sfxPlayer.Finished += sfxPlayer.QueueFree;
 
-        _sfxPlayersParent.AddChild(sfxPlayer);
+        _instance._sfxPlayersParent.AddChild(sfxPlayer);
         sfxPlayer.Play();
     }
 
     public static void FadeOutSFX(double fadeTime = 1)
     {
-        foreach (AudioStreamPlayer audioPlayer in _sfxPlayersParent.GetChildren<AudioStreamPlayer>())
+        foreach (AudioStreamPlayer audioPlayer in _instance._sfxPlayersParent.GetChildren<AudioStreamPlayer>())
         {
             new GTween(audioPlayer).Animate(AudioStreamPlayer.PropertyName.VolumeDb, MutedVolume, fadeTime);
         }
@@ -66,17 +80,17 @@ public class AudioManager
 
     public static void SetMusicVolume(float volume)
     {
-        _musicPlayer.VolumeDb = NormalizeConfigVolume(volume);
-        _options.MusicVolume = volume;
+        _instance._musicPlayer.VolumeDb = NormalizeConfigVolume(volume);
+        _instance._options.MusicVolume = volume;
     }
 
     public static void SetSFXVolume(float volume)
     {
-        _options.SFXVolume = volume;
+        _instance._options.SFXVolume = volume;
 
         float mappedVolume = NormalizeConfigVolume(volume);
 
-        foreach (AudioStreamPlayer audioPlayer in _sfxPlayersParent.GetChildren())
+        foreach (AudioStreamPlayer audioPlayer in _instance._sfxPlayersParent.GetChildren())
         {
             audioPlayer.VolumeDb = mappedVolume;
         }
@@ -110,13 +124,13 @@ public class AudioManager
 
         float pitch = rng.RandfRange(MinRandomPitch, MaxRandomPitch);
 
-        while (Mathf.Abs(pitch - _lastPitch) < RandomPitchThreshold)
+        while (Mathf.Abs(pitch - _instance._lastPitch) < RandomPitchThreshold)
         {
             rng.Randomize();
             pitch = rng.RandfRange(MinRandomPitch, MaxRandomPitch);
         }
 
-        _lastPitch = pitch;
+        _instance._lastPitch = pitch;
         return pitch;
     }
 }

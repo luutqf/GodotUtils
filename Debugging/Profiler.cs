@@ -66,6 +66,11 @@ public static class Profiler
     {
         _entries[key].Stop();
     }
+
+    public static void Dispose()
+    {
+        _entries = null;
+    }
 }
 
 public class ProfilerEntry

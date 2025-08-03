@@ -1,5 +1,6 @@
 using Godot;
 using Godot.Collections;
+using GodotUtils.RegEx;
 using System;
 using System.IO;
 using System.Linq;
@@ -11,26 +12,30 @@ using FileAccess = Godot.FileAccess;
 namespace GodotUtils.UI;
 
 // Autoload
-public partial class OptionsManager
+public partial class OptionsManager : IDisposable
 {
     public event Action<WindowMode> WindowModeChanged;
 
     public static OptionsManager Instance { get; private set; }
-    public static ResourceHotkeys Hotkeys { get; private set; }
-
-    public static ResourceOptions Options { get; private set; }
-    public static string CurrentOptionsTab { get; set; } = "General";
 
     private const string PathOptions = "user://options.json";
     private const string PathHotkeys = "user://hotkeys.tres";
 
-    private static Dictionary<StringName, Array<InputEvent>> _defaultHotkeys;
+    private Dictionary<StringName, Array<InputEvent>> _defaultHotkeys;
     private JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
+    private ResourceOptions _options;
+    private ResourceHotkeys _hotkeys;
+    private string _currentOptionsTab = "General";
+    private Global _global;
 
     public void Init(Global global)
     {
+        if (Instance != null)
+            throw new InvalidOperationException($"{nameof(OptionsManager)} was initialized already");
+
         Instance = this;
-        global.PreQuit += SaveSettingsOnQuit;
+        _global = global;
+        _global.PreQuit += SaveSettingsOnQuit;
 
         LoadOptions();
 
@@ -45,12 +50,40 @@ public partial class OptionsManager
         SetAntialiasing();
     }
 
+    public void Dispose()
+    {
+        _global.PreQuit -= SaveSettingsOnQuit;
+
+        WindowModeChanged = null;
+        Instance = null;
+    }
+
     public void Update()
     {
         if (Input.IsActionJustPressed(InputActions.Fullscreen))
         {
             ToggleFullscreen();
         }
+    }
+
+    public static string GetCurrentTab()
+    {
+        return Instance._currentOptionsTab;
+    }
+
+    public static void SetCurrentTab(string tab)
+    {
+        Instance._currentOptionsTab = tab;
+    }
+
+    public static ResourceOptions GetOptions()
+    {
+        return Instance._options;
+    }
+
+    public static ResourceHotkeys GetHotkeys()
+    {
+        return Instance._hotkeys;
     }
 
     private void ToggleFullscreen()
@@ -67,7 +100,7 @@ public partial class OptionsManager
 
     private void SaveOptions()
     {
-        string json = JsonSerializer.Serialize(Options, _jsonOptions);
+        string json = JsonSerializer.Serialize(_options, _jsonOptions);
 
         FileAccess file = FileAccess.Open(PathOptions, FileAccess.ModeFlags.Write);
 
@@ -77,7 +110,7 @@ public partial class OptionsManager
 
     private void SaveHotkeys()
     {
-        Error error = ResourceSaver.Save(Hotkeys, PathHotkeys);
+        Error error = ResourceSaver.Save(_hotkeys, PathHotkeys);
 
         if (error != Error.Ok)
         {
@@ -88,22 +121,22 @@ public partial class OptionsManager
     public static void ResetHotkeys()
     {
         // Deep clone default hotkeys over
-        Hotkeys.Actions = [];
+        Instance._hotkeys.Actions = [];
 
-        foreach (System.Collections.Generic.KeyValuePair<StringName, Array<InputEvent>> element in _defaultHotkeys)
+        foreach (System.Collections.Generic.KeyValuePair<StringName, Array<InputEvent>> element in Instance._defaultHotkeys)
         {
             Array<InputEvent> arr = [];
 
-            foreach (InputEvent item in _defaultHotkeys[element.Key])
+            foreach (InputEvent item in Instance._defaultHotkeys[element.Key])
             {
                 arr.Add((InputEvent)item.Duplicate());
             }
 
-            Hotkeys.Actions.Add(element.Key, arr);
+            Instance._hotkeys.Actions.Add(element.Key, arr);
         }
 
         // Set input map
-        LoadInputMap(_defaultHotkeys);
+        LoadInputMap(Instance._defaultHotkeys);
     }
 
     private void LoadOptions()
@@ -112,13 +145,13 @@ public partial class OptionsManager
         {
             FileAccess file = FileAccess.Open(PathOptions, FileAccess.ModeFlags.Read);
 
-            Options = JsonSerializer.Deserialize<ResourceOptions>(file.GetAsText());
+            _options = JsonSerializer.Deserialize<ResourceOptions>(file.GetAsText());
 
             file.Close();
         }
         else
         {
-            Options = new();
+            _options = new();
         }
     }
 
@@ -166,20 +199,20 @@ public partial class OptionsManager
         {
             string localResPath = ProjectSettings.LocalizePath(DirectoryUtils.FindFile("res://", "ResourceHotkeys.cs"));
             ValdiateResourceFile(PathHotkeys, localResPath);
-            Hotkeys = GD.Load<ResourceHotkeys>(PathHotkeys);
+            _hotkeys = GD.Load<ResourceHotkeys>(PathHotkeys);
 
             // InputMap in project settings has changed so reset all saved hotkeys
-            if (!ActionsAreEqual(_defaultHotkeys, Hotkeys.Actions))
+            if (!ActionsAreEqual(_defaultHotkeys, _hotkeys.Actions))
             {
-                Hotkeys = new();
+                _hotkeys = new();
                 ResetHotkeys();
             }
 
-            LoadInputMap(Hotkeys.Actions);
+            LoadInputMap(_hotkeys.Actions);
         }
         else
         {
-            Hotkeys = new();
+            _hotkeys = new();
             ResetHotkeys();
         }
     }
@@ -192,7 +225,7 @@ public partial class OptionsManager
         string content = File.ReadAllText(userGlobalPath);
 
         // Find current path in the resource file
-        Match match = ScriptPathRegex().Match(content);
+        Match match = RegexUtils.ScriptPath().Match(content);
 
         if (!match.Success)
         {
@@ -206,15 +239,12 @@ public partial class OptionsManager
             return; // Resource path is correct. No update needed.
 
         // Path is incorrect, proceed to rewrite.
-        string updatedContent = ScriptPathRegex().Replace(content, localResPath);
+        string updatedContent = RegexUtils.ScriptPath().Replace(content, localResPath);
 
         File.WriteAllText(userGlobalPath, updatedContent);
 
         GD.Print($"Script path in {Path.GetFileName(userGlobalPath)} in was invalid and has been readjusted to the proper path: {localResPath}");
     }
-
-    [GeneratedRegex(@"(?<=type=""Script""[^\n]*path="")[^""]+(?="")", RegexOptions.Multiline)]
-    private static partial Regex ScriptPathRegex();
 
     private static bool ActionsAreEqual(Dictionary<StringName, Array<InputEvent>> dict1, Dictionary<StringName, Array<InputEvent>> dict2)
     {
@@ -223,7 +253,7 @@ public partial class OptionsManager
 
     private void SetWindowMode()
     {
-        switch (Options.WindowMode)
+        switch (_options.WindowMode)
         {
             case WindowMode.Windowed:
                 DisplayServer.WindowSetMode(DisplayServer.WindowMode.Windowed);
@@ -240,25 +270,25 @@ public partial class OptionsManager
     private void SwitchToFullscreen()
     {
         DisplayServer.WindowSetMode(DisplayServer.WindowMode.ExclusiveFullscreen);
-        Options.WindowMode = WindowMode.Fullscreen;
+        _options.WindowMode = WindowMode.Fullscreen;
         WindowModeChanged?.Invoke(WindowMode.Fullscreen);
     }
 
     private void SwitchToWindow()
     {
         DisplayServer.WindowSetMode(DisplayServer.WindowMode.Windowed);
-        Options.WindowMode = WindowMode.Windowed;
+        _options.WindowMode = WindowMode.Windowed;
         WindowModeChanged?.Invoke(WindowMode.Windowed);
     }
 
     private void SetVSyncMode()
     {
-        DisplayServer.WindowSetVsyncMode(Options.VSyncMode);
+        DisplayServer.WindowSetVsyncMode(_options.VSyncMode);
     }
 
     private void SetWinSize()
     {
-        Vector2I windowSize = new(Options.WindowWidth, Options.WindowHeight);
+        Vector2I windowSize = new(_options.WindowWidth, _options.WindowHeight);
 
         if (windowSize != Vector2I.Zero)
         {
@@ -275,21 +305,21 @@ public partial class OptionsManager
     {
         if (DisplayServer.WindowGetVsyncMode() == DisplayServer.VSyncMode.Disabled)
         {
-            Engine.MaxFps = Options.MaxFPS;
+            Engine.MaxFps = _options.MaxFPS;
         }
     }
 
     private void SetLanguage()
     {
         TranslationServer.SetLocale(
-        Options.Language.ToString().Substring(0, 2).ToLower());
+        _options.Language.ToString().Substring(0, 2).ToLower());
     }
 
     private void SetAntialiasing()
     {
         // Set both 2D and 3D settings to the same value
-        ProjectSettings.SetSetting("rendering/anti_aliasing/quality/msaa_2d", Options.Antialiasing);
-        ProjectSettings.SetSetting("rendering/anti_aliasing/quality/msaa_3d", Options.Antialiasing);
+        ProjectSettings.SetSetting("rendering/anti_aliasing/quality/msaa_2d", _options.Antialiasing);
+        ProjectSettings.SetSetting("rendering/anti_aliasing/quality/msaa_3d", _options.Antialiasing);
     }
 
     private Task SaveSettingsOnQuit()

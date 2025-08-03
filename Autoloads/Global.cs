@@ -8,8 +8,6 @@ using GodotUtils.Debugging;
 
 namespace GodotUtils;
 
-// todo: Separate [GeneratedRegex] into their own regex class
-
 // Autoload
 public partial class Global : Node
 {
@@ -17,11 +15,11 @@ public partial class Global : Node
 
     public static Global Instance { get; private set; }
 
-    public AudioManager   AudioManager   { get; } = new();
-    public Logger         Logger         { get; } = new();
-    public OptionsManager OptionsManager { get; } = new();
-    public Services       Services       { get; } = new();
-    public MetricsOverlay MetricsOverlay { get; } = new();
+    public AudioManager   AudioManager   { get; private set; } = new();
+    public Logger         Logger         { get; private set; } = new();
+    public OptionsManager OptionsManager { get; private set; } = new();
+    public Services       Services       { get; private set; } = new();
+    public MetricsOverlay MetricsOverlay { get; private set; } = new();
     public GameConsole    GameConsole    { get; private set; }
     public SceneManager   SceneManager   { get; private set; }
 
@@ -29,6 +27,9 @@ public partial class Global : Node
 
     public override void _EnterTree()
     {
+        if (Instance != null)
+            throw new InvalidOperationException("Global has been initialized already");
+
         Instance = this;
         GameConsole = GetNode<GameConsole>("%Console");
         SceneManager = GetNode<SceneManager>("%SceneManager");
@@ -39,21 +40,21 @@ public partial class Global : Node
     {
         CommandLineArgs.Init();
 
-        _visualizeAutoload.Init(GetTree());
-
-        AudioManager.Init(this);
         OptionsManager.Init(this);
+        AudioManager.Init(this);
         MetricsOverlay.Init();
         Logger.Init(GameConsole);
+
+        _visualizeAutoload.Init(GetTree());
     }
 
     public override void _Process(double delta)
     {
-        _visualizeAutoload.Update();
-
         OptionsManager.Update();
         MetricsOverlay.Update();
         Logger.Update();
+
+        _visualizeAutoload.Update();
     }
 
     public override async void _Notification(int what)
@@ -62,6 +63,22 @@ public partial class Global : Node
         {
             await QuitAndCleanup();
         }
+    }
+
+    public override void _ExitTree()
+    {
+        AudioManager.Dispose();
+        Logger.Dispose();
+        OptionsManager.Dispose();
+        Services.Dispose();
+        MetricsOverlay.Dispose();
+        _visualizeAutoload.Dispose();
+        Profiler.Dispose();
+
+        Instance = null;
+        GameConsole = null;
+        SceneManager = null;
+        PreQuit = null;
     }
 
     public async Task QuitAndCleanup()

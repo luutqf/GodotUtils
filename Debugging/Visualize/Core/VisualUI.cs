@@ -104,7 +104,7 @@ public static class VisualUI
         SetInitialPosition(mutableMembers, visualData.InitialPosition);
 
         // This is ugly but I don't know how else to do it
-        Visualize.VisualNodes = visualNodes;
+        VisualizeAutoload.Instance.VisualNodes = visualNodes;
 
         return (panelContainer, updateControls);
     }

@@ -1,5 +1,4 @@
 using Godot;
-using System.Collections.Generic;
 
 namespace GodotUtils.Debugging.Visualize;
 
@@ -8,12 +7,7 @@ namespace GodotUtils.Debugging.Visualize;
 /// </summary>
 public class Visualize
 {
-    // This is ugly using public static here but I don't know how else to do it
-    public static Dictionary<Node, VBoxContainer> VisualNodes { get; set; }
-
-    private static readonly Dictionary<Node, VBoxContainer> _visualNodesWithoutVisualAttribute = [];
-
-    private const int MAX_LABELS_VISIBLE_AT_ONE_TIME = 5;
+    private const int MaxLabelsVisible = 5;
 
     public static void Log(object message, Node node, double fadeTime = 5)
     {
@@ -27,7 +21,7 @@ public class Visualize
 
     private static VBoxContainer GetOrCreateVBoxContainer(Node node)
     {
-        if (VisualNodes != null && VisualNodes.TryGetValue(node, out VBoxContainer vbox))
+        if (VisualizeAutoload.Instance.VisualNodes != null && VisualizeAutoload.Instance.VisualNodes.TryGetValue(node, out VBoxContainer vbox))
         {
             return vbox;
         }
@@ -37,7 +31,7 @@ public class Visualize
             return null;
         }
 
-        if (!_visualNodesWithoutVisualAttribute.TryGetValue(node, out vbox))
+        if (!VisualizeAutoload.Instance.VisualNodesWithoutVisualAttribute.TryGetValue(node, out vbox))
         {
             vbox = new VBoxContainer
             {
@@ -45,7 +39,7 @@ public class Visualize
             };
 
             node.AddChild(vbox);
-            _visualNodesWithoutVisualAttribute[node] = vbox;
+            VisualizeAutoload.Instance.VisualNodesWithoutVisualAttribute[node] = vbox;
         }
 
         return vbox;
@@ -58,7 +52,7 @@ public class Visualize
         vbox.AddChild(label);
         vbox.MoveChild(label, 0);
 
-        if (vbox.GetChildCount() > MAX_LABELS_VISIBLE_AT_ONE_TIME)
+        if (vbox.GetChildCount() > MaxLabelsVisible)
         {
             vbox.RemoveChild(vbox.GetChild(vbox.GetChildCount() - 1));
         }
