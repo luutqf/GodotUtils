@@ -1,6 +1,5 @@
 using Godot;
 using System;
-using System.Reflection;
 using System.Collections.Generic;
 
 namespace GodotUtils;
@@ -17,24 +16,14 @@ public partial class Services : IDisposable
     private static Services _instance;
     private Dictionary<Type, Service> _services = [];
     private SceneManager _sceneManager;
-    private SceneTree _tree;
 
-    public void Init(SceneTree tree, SceneManager sceneManager)
+    public void Init(SceneManager sceneManager)
     {
         if (_instance != null)
             throw new InvalidOperationException($"{nameof(Services)} was initialized already");
 
         _instance = this;
-        _tree = tree;
         _sceneManager = sceneManager;
-        _tree.NodeAdded += AttemptToRegisterService;
-    }
-
-    public void Dispose()
-    {
-        _tree.NodeAdded -= AttemptToRegisterService;
-
-        _instance = null;
     }
 
     /// <summary>
@@ -52,33 +41,37 @@ public partial class Services : IDisposable
         return (T)_instance._services[typeof(T)].Instance;
     }
 
-    private void AttemptToRegisterService(Node node)
+    /// <summary>
+    /// Registers the given <see cref="Node"/> as a singleton-style service for the current scene.
+    /// Only one service of a particular type may be registered at a time, and it will be
+    /// automatically unregistered when the scene changes.
+    /// </summary>
+    /// <param name="node">The node to register as a service.</param>
+    /// <exception cref="Exception">
+    /// Thrown if a service of the same <see cref="Type"/> has already been registered.
+    /// </exception>
+    public static void Register(Node node)
     {
-        if (_services.ContainsKey(node.GetType()))
+        if (_instance._services.ContainsKey(node.GetType()))
         {
             throw new Exception($"There can only be one service of type '{node.GetType().Name}'");
         }
 
-        ServiceAttribute serviceAttribute = node.GetType().GetCustomAttribute<ServiceAttribute>();
-
-        if (serviceAttribute != null)
-        {
-            //GD.Print($"Registering service: {node.GetType().Name}");
-            AddService(node);
-        }
+        //GD.Print($"Registering service: {node.GetType().Name}");
+        AddService(node);
     }
 
     /// <summary>
     /// Adds a service to the service provider.
     /// </summary>
-    private void AddService(Node node)
+    private static void AddService(Node node)
     {
         Service service = new()
         {
             Instance = node
         };
 
-        _services.Add(node.GetType(), service);
+        _instance._services.Add(node.GetType(), service);
 
         RemoveServiceOnSceneChanged(service);
     }
@@ -86,18 +79,18 @@ public partial class Services : IDisposable
     /// <summary>
     /// Removes a service when the scene changes.
     /// </summary>
-    private void RemoveServiceOnSceneChanged(Service service)
+    private static void RemoveServiceOnSceneChanged(Service service)
     {
         // The scene has changed, remove all services
-        _sceneManager.PreSceneChanged += Cleanup;
+        _instance._sceneManager.PreSceneChanged += Cleanup;
 
         void Cleanup(string scene)
         {
             // Stop listening to PreSceneChanged
-            _sceneManager.PreSceneChanged -= Cleanup;
+            _instance._sceneManager.PreSceneChanged -= Cleanup;
 
             // Remove the service
-            bool success = _services.Remove(service.Instance.GetType());
+            bool success = _instance._services.Remove(service.Instance.GetType());
 
             if (!success)
             {
@@ -112,6 +105,11 @@ public partial class Services : IDisposable
     public override string ToString()
     {
         return _services.ToFormattedString();
+    }
+
+    public void Dispose()
+    {
+        _instance = null;
     }
 
     /// <summary>

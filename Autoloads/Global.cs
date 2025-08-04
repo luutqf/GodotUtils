@@ -33,7 +33,7 @@ public partial class Global : Node
         Instance = this;
         GameConsole = GetNode<GameConsole>("%Console");
         SceneManager = GetNode<SceneManager>("%SceneManager");
-        Services.Init(GetTree(), SceneManager);
+        Services.Init(SceneManager);
     }
 
     public override void _Ready()
