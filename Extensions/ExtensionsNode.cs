@@ -7,22 +7,24 @@ namespace GodotUtils;
 
 public static class ExtensionsNode
 {
-    /// <summary>
-    /// Add a child (deferred) to the current scene node. This is the node that is a child of the root node, 
-    /// for example, a node called "Level".
-    /// </summary>
-    public static void AddChildToCurrentSceneDeferred(this Node node, Node child)
+    public static void AddToCurrentSceneDeferred(this Node node, Node child)
     {
-        node.GetTree().CurrentScene.CallDeferred(Node.MethodName.AddChild, child);
+        GetCurrentScene(node).CallDeferred(Node.MethodName.AddChild, child);
     }
 
-    /// <summary>
-    /// Add a child to the current scene node. This is the node that is a child of the root node, 
-    /// for example, a node called "Level".
-    /// </summary>
-    public static void AddChildToCurrentScene(this Node node, Node child)
+    public static void AddToCurrentScene(this Node node, Node child)
     {
-        node.GetTree().CurrentScene.AddChild(child);
+        GetCurrentScene(node).AddChild(child);
+    }
+
+    public static Node GetNodeInCurrentScene(this Node node, string path)
+    {
+        return GetCurrentScene(node).GetNode(path);
+    }
+
+    public static Node GetCurrentScene(this Node node)
+    {
+        return node.GetTree().CurrentScene;
     }
 
     /// <summary>
