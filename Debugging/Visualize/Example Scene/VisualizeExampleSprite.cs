@@ -6,7 +6,6 @@ namespace GodotUtils.Debugging.Visualize;
 
 public partial class VisualizeExampleSprite : Sprite2D
 {
-	[Visualize] private Vector2I _position;
     [Visualize] private float    _rotation;
     [Visualize] private Color    _color = Colors.White;
     [Visualize] private float    _skew;
@@ -17,12 +16,11 @@ public partial class VisualizeExampleSprite : Sprite2D
 
     public override void _EnterTree()
     {
-        Visualize.Register(this, nameof(Position), nameof(Offset), nameof(Rotation));
+        Visualize.Register(this, nameof(Offset), nameof(Rotation));
     }
 
     public override void _PhysicsProcess(double delta)
     {
-        Position = _position;
         Rotation = _rotation;
         Modulate = _color;
         Skew     = _skew;

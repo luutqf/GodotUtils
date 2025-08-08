@@ -102,8 +102,6 @@ public static class VisualUI
 
         node.CallDeferred(Node.MethodName.AddChild, canvasLayer);
 
-        //SetInitialPosition(mutableMembers, visualData.InitialPosition);
-
         // This is ugly but I don't know how else to do it
         VisualizeAutoload.Instance.VisualNodes = visualNodes;
 
@@ -122,17 +120,6 @@ public static class VisualUI
         }
 
         return Vector2.One;
-    }
-
-    /// <summary>
-    /// Sets the initial position for a VBoxContainer.
-    /// </summary>
-    private static void SetInitialPosition(Control vbox, Vector2 initialPosition)
-    {
-        if (initialPosition != Vector2.Zero)
-        {
-            vbox.GlobalPosition = initialPosition;
-        }
     }
 
     /// <summary>

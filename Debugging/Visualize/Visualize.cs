@@ -56,15 +56,13 @@ public class Visualize : IDisposable
         _instance = null;
     }
 
-    public static Control Register(Node node, params string[] readonlyMembers)
+    public static void Register(Node node, params string[] readonlyMembers)
     {
-        Control theVisualPanel = null;
         VisualData visualData = VisualizeAttributeHandler.RetrieveData(node);
 
         if (visualData != null)
         {
             (Control visualPanel, List<Action> actions) = VisualUI.CreateVisualPanel(visualData, readonlyMembers);
-            theVisualPanel = visualPanel;
 
             ulong instanceId = node.GetInstanceId();
 
@@ -112,9 +110,10 @@ public class Visualize : IDisposable
             _instance._nodeTrackers.Add(instanceId, new VisualNodeInfo(actions, visualPanel, positionalNode ?? node, offset));
         }
 
-        node.TreeExited += () => RemoveVisualNode(node);
-
-        return theVisualPanel;
+        node.TreeExited += () =>
+        {
+            RemoveVisualNode(node);
+        };
     }
 
     public static void Log(object message, Node node, double fadeTime = 5)

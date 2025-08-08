@@ -14,13 +14,14 @@ public partial class ExampleScene : Node
         _camera = GetNode<Camera2D>("Camera2D");
 
         VisualizeExampleSprite sprite = VisualizeExampleSprite.Instantiate();
-
+        
         // As you can see the visualize info is created at the moment of node creation
         _ = new GTween(this)
-            .Delay(0.1)
+            .Delay(1)
             .Callback(() =>
             {
                 AddChild(sprite);
+                sprite.GlobalPosition = new Vector2(200, 100);
             });
     }
 
