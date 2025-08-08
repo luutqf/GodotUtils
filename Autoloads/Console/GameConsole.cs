@@ -14,14 +14,14 @@ public partial class GameConsole : Component
     private const int MaxTextFeed = 1000;
 
     private static GameConsole _instance;
-    private ConsoleHistory _history = new();
-    private PopupPanel     _settingsPopup;
-    private CheckBox       _settingsAutoScroll;
-    private TextEdit       _feed;
-    private LineEdit       _input;
-    private Button         _settingsBtn;
-    private bool           _autoScroll = true;
-    private PanelContainer _mainContainer;
+    private ConsoleHistory     _history = new();
+    private PopupPanel         _settingsPopup;
+    private CheckBox           _settingsAutoScroll;
+    private TextEdit           _feed;
+    private LineEdit           _input;
+    private Button             _settingsBtn;
+    private bool               _autoScroll = true;
+    private PanelContainer     _mainContainer;
 
     public List<ConsoleCommandInfo> Commands { get; private set; } = [];
 
