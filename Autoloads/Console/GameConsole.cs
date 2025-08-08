@@ -188,12 +188,10 @@ public partial class GameConsole : Component
 
         object instance = GetMethodInstance(cmd.Method.DeclaringType);
 
-        // Valk (Year 2023): Not really sure what this regex is doing. May rewrite
-        // code in a more readable fassion.
-
-        // Valk (Year 2024): What in the world
-
-        // Split by spaces, unless in quotes
+        // Use a regex to split the command input into parameters,
+        // treating quoted strings as single parameters.
+        // For example: command "param with spaces" param2
+        // will split into: ["command", "param with spaces", "param2"]
         string[] rawCommandSplit = RegexUtils
             .CommandParams()
             .Matches(text)
