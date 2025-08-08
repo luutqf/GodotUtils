@@ -194,7 +194,10 @@ public partial class GameConsole : Component
         // Valk (Year 2024): What in the world
 
         // Split by spaces, unless in quotes
-        string[] rawCommandSplit = RegexUtils.CommandParams().Matches(text).Select(m => m.Value)
+        string[] rawCommandSplit = RegexUtils
+            .CommandParams()
+            .Matches(text)
+            .Select(m => m.Value)
             .ToArray();
 
         object[] parameters = ConvertMethodParams(method, rawCommandSplit);
