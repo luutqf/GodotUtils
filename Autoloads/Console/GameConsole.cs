@@ -144,17 +144,14 @@ public partial class GameConsole : Component
 
             foreach (MethodInfo method in methods)
             {
-                object[] attributes =
-                    method.GetCustomAttributes(
+                object[] attributes = method.GetCustomAttributes(
                         attributeType: typeof(ConsoleCommandAttribute),
                         inherit: false);
 
                 foreach (object attribute in attributes)
                 {
                     if (attribute is not ConsoleCommandAttribute cmd)
-                    {
                         continue;
-                    }
 
                     TryLoadCommand(cmd, method);
                 }
@@ -216,9 +213,7 @@ public partial class GameConsole : Component
                 bool nameMatch = string.Equals(_mainContainer.Name, text, StringComparison.OrdinalIgnoreCase);
 
                 if (nameMatch)
-                {
                     return true;
-                }
 
                 // Does text match an alias in this command?
                 bool aliasMatch = cmd.Aliases.FirstOrDefault(x => x == text) != null;
@@ -240,9 +235,7 @@ public partial class GameConsole : Component
 
         // do not do anything if cmd is just whitespace
         if (string.IsNullOrWhiteSpace(cmd))
-        {
             return;
-        }
 
         // keep track of input history
         _history.Add(inputToLowerTrimmed);
@@ -258,9 +251,7 @@ public partial class GameConsole : Component
     {
         // If console is not visible or there is no history to navigate do nothing
         if (!_mainContainer.Visible || _history.NoHistory())
-        {
             return;
-        }
 
         if (Input.IsActionJustPressed(InputActions.UIUp))
         {
@@ -328,9 +319,7 @@ public partial class GameConsole : Component
     private static object ConvertStringToType(string input, Type targetType)
     {
         if (targetType == typeof(string))
-        {
             return input;
-        }
 
         try
         {
@@ -375,18 +364,14 @@ public partial class GameConsole : Component
     private static Node FindNodeByType(Node root, Type targetType)
     {
         if (root.GetType() == targetType)
-        {
             return root;
-        }
 
         foreach (Node child in root.GetChildren())
         {
             Node foundNode = FindNodeByType(child, targetType);
 
             if (foundNode != null)
-            {
                 return foundNode;
-            }
         }
 
         return null;
