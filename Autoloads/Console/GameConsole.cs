@@ -109,7 +109,7 @@ public partial class GameConsole : Component
         if (_instance._mainContainer.Visible)
         {
             _instance._input.GrabFocus();
-            _instance._mainContainer.CallDeferred(nameof(ScrollDown));
+            _instance.CallDeferred(nameof(ScrollDown));
         }
     }
 
