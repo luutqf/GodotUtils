@@ -128,7 +128,7 @@ public partial class GameConsole : Component
 
         MethodInfo method = cmd.Method;
 
-        object instance = GetMethodInstance(cmd.Method.DeclaringType);
+        object instance = GetMethodInstance(cmd.Method);
 
         // Use a regex to split the command input into parameters,
         // treating quoted strings as single parameters.
@@ -149,22 +149,17 @@ public partial class GameConsole : Component
 
     private ConsoleCommandInfo TryGetCommand(string text)
     {
-        ConsoleCommandInfo cmd =
-            Commands.Find(cmd =>
-            {
-                // Does text match the command name?
-                bool nameMatch = string.Equals(_mainContainer.Name, text, StringComparison.OrdinalIgnoreCase);
-
-                if (nameMatch)
-                    return true;
-
-                // Does text match an alias in this command?
-                bool aliasMatch = cmd.Aliases.FirstOrDefault(x => x == text) != null;
-
-                return aliasMatch;
-            });
+        ConsoleCommandInfo cmd = Commands.Find(IsMatchingCommand);
 
         return cmd;
+
+        bool IsMatchingCommand(ConsoleCommandInfo cmd)
+        {
+            if (string.Equals(cmd.Name, text, StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            return cmd.Aliases.Any(alias => string.Equals(alias, text, StringComparison.OrdinalIgnoreCase));
+        }
     }
 
     private void InputNavigateHistory()
@@ -236,18 +231,12 @@ public partial class GameConsole : Component
 
         foreach (Type type in types)
         {
-            // BindingFlags.Instance must be added or the methods will not
-            // be seen
             MethodInfo[] methods = type.GetMethods(
-                BindingFlags.Instance |
-                BindingFlags.Public |
-                BindingFlags.NonPublic);
+            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
             foreach (MethodInfo method in methods)
             {
-                object[] attributes = method.GetCustomAttributes(
-                        attributeType: typeof(ConsoleCommandAttribute),
-                        inherit: false);
+                object[] attributes = method.GetCustomAttributes(typeof(ConsoleCommandAttribute), false);
 
                 foreach (object attribute in attributes)
                 {
@@ -298,22 +287,24 @@ public partial class GameConsole : Component
         return parameters;
     }
 
-    private object GetMethodInstance(Type type)
+    private object GetMethodInstance(MethodInfo method)
     {
-        object instance;
+        // Return null if the method is static (no instance needed)
+        if (method.IsStatic)
+        {
+            return null;
+        }
+
+        Type type = method.DeclaringType!;
 
         if (type.IsSubclassOf(typeof(GodotObject)))
         {
-            // This is a Godot Object, find it or create a new instance
-            instance = FindNodeByType(_mainContainer.GetTree().Root, type) ?? Activator.CreateInstance(type);
-        }
-        else
-        {
-            // This is a generic class, create a new instance
-            instance = Activator.CreateInstance(type);
+            // Try to find an existing Godot node of this type or create a new one
+            return FindNodeByType(_mainContainer.GetTree().Root, type) ?? Activator.CreateInstance(type);
         }
 
-        return instance;
+        // For non-GodotObject classes, just create a new instance
+        return Activator.CreateInstance(type);
     }
 
     private static object ConvertStringToType(string input, Type targetType)
