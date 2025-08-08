@@ -1,10 +1,7 @@
 using Godot;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Reflection;
 using System;
-using GodotUtils.RegEx;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace GodotUtils.UI.Console;
 
@@ -13,27 +10,26 @@ public partial class GameConsole : Component
 {
     private const int MaxTextFeed = 1000;
 
-    private static GameConsole _instance;
-    private ConsoleHistory     _history = new();
-    private PopupPanel         _settingsPopup;
-    private CheckBox           _settingsAutoScroll;
-    private TextEdit           _feed;
-    private LineEdit           _input;
-    private Button             _settingsBtn;
-    private bool               _autoScroll = true;
-    private PanelContainer     _mainContainer;
+    public static GameConsole Instance { get; private set; }
 
-    public List<ConsoleCommandInfo> Commands { get; private set; } = [];
+    private List<ConsoleCommandInfo> _commands = [];
+    private ConsoleHistory           _history = new();
+    private PanelContainer           _mainContainer;
+    private PopupPanel               _settingsPopup;
+    private CheckBox                 _settingsAutoScroll;
+    private TextEdit                 _feed;
+    private LineEdit                 _input;
+    private Button                   _settingsBtn;
+    private bool                     _autoScroll = true;
 
-    public override void Ready()
+    public override void _Ready()
     {
-        if (_instance != null)
+        if (Instance != null)
             throw new InvalidOperationException($"{nameof(GameConsole)} was initialized already");
 
-        _instance = this;
+        Instance = this;
 
         RegisterPhysicsProcess();
-        LoadCommands();
 
         _feed          = Output;
         _input         = CmdsInput;
@@ -68,7 +64,25 @@ public partial class GameConsole : Component
         _settingsBtn.Pressed -= OnSettingsBtnPressed;
         _settingsAutoScroll.Toggled -= OnAutoScrollToggeled;
 
-        _instance = null;
+        Instance = null;
+    }
+
+    public List<ConsoleCommandInfo> GetCommands()
+    {
+        return _commands;
+    }
+
+    public static ConsoleCommandInfo RegisterCommand(string cmd, Action<string[]> code)
+    {
+        ConsoleCommandInfo info = new()
+        {
+            Name = cmd,
+            Code = code
+        };
+
+        Instance._commands.Add(info);
+
+        return info;
     }
 
     public void AddMessage(object message)
@@ -95,16 +109,16 @@ public partial class GameConsole : Component
         ScrollDown();
     }
 
-    public static bool Visible => _instance._mainContainer.Visible;
+    public static bool Visible => Instance._mainContainer.Visible;
 
     public static void ToggleVisibility()
     {
-        _instance._mainContainer.Visible = !_instance._mainContainer.Visible;
+        Instance._mainContainer.Visible = !Instance._mainContainer.Visible;
 
-        if (_instance._mainContainer.Visible)
+        if (Instance._mainContainer.Visible)
         {
-            _instance._input.GrabFocus();
-            _instance.CallDeferred(nameof(ScrollDown));
+            Instance._input.GrabFocus();
+            Instance.CallDeferred(nameof(ScrollDown));
         }
     }
 
@@ -118,38 +132,27 @@ public partial class GameConsole : Component
 
     private bool ProcessCommand(string text)
     {
-        ConsoleCommandInfo cmd = TryGetCommand(text.Split()[0].ToLower());
+        string[] parts = text.ToLower().Split();
+        string cmd = parts[0];
 
-        if (cmd == null)
+        ConsoleCommandInfo cmdInfo = TryGetCommand(cmd);
+
+        if (cmdInfo == null)
         {
-            Logger.Log($"The command '{text.Split()[0].ToLower()}' does not exist");
+            Logger.Log($"The command '{cmd}' does not exist");
             return false;
         }
 
-        MethodInfo method = cmd.Method;
+        string[] args = parts.Skip(1).ToArray();
 
-        object instance = GetMethodInstance(cmd.Method);
-
-        // Use a regex to split the command input into parameters,
-        // treating quoted strings as single parameters.
-        // For example: command "param with spaces" param2
-        // will split into: ["command", "param with spaces", "param2"]
-        string[] rawCommandSplit = RegexUtils
-            .CommandParams()
-            .Matches(text)
-            .Select(m => m.Value)
-            .ToArray();
-
-        object[] parameters = ConvertMethodParams(method, rawCommandSplit);
-
-        method.Invoke(instance, parameters);
+        cmdInfo.Code.Invoke(args);
 
         return true;
     }
 
     private ConsoleCommandInfo TryGetCommand(string text)
     {
-        ConsoleCommandInfo cmd = Commands.Find(IsMatchingCommand);
+        ConsoleCommandInfo cmd = _commands.Find(IsMatchingCommand);
 
         return cmd;
 
@@ -158,7 +161,7 @@ public partial class GameConsole : Component
             if (string.Equals(cmd.Name, text, StringComparison.OrdinalIgnoreCase))
                 return true;
 
-            return cmd.Aliases.Any(alias => string.Equals(alias, text, StringComparison.OrdinalIgnoreCase));
+            return cmd.Aliases != null && cmd.Aliases.Any(alias => string.Equals(alias, text, StringComparison.OrdinalIgnoreCase));
         }
     }
 
@@ -227,155 +230,26 @@ public partial class GameConsole : Component
         CallDeferred(nameof(RefocusInput));
     }
 
+    // Put focus back on the input and move caret to end so user can type immediately
     private void RefocusInput()
     {
-        // Put focus back on the input and move caret to end so user can type immediately.
         _input.Edit(); // MUST do this otherwise refocus on LineEdit will NOT work
         _input.GrabFocus();
         _input.CaretColumn = _input.Text.Length;
     }
 
-    private static void LoadCommands()
-    {
-        Type[] types = Assembly.GetExecutingAssembly().GetTypes();
-
-        foreach (Type type in types)
-        {
-            MethodInfo[] methods = type.GetMethods(
-            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-
-            foreach (MethodInfo method in methods)
-            {
-                object[] attributes = method.GetCustomAttributes(typeof(ConsoleCommandAttribute), false);
-
-                foreach (object attribute in attributes)
-                {
-                    if (attribute is not ConsoleCommandAttribute cmd)
-                        continue;
-
-                    TryLoadCommand(cmd, method);
-                }
-            }
-        }
-    }
-
-    private static void TryLoadCommand(ConsoleCommandAttribute cmd, MethodInfo method)
-    {
-        if (_instance.Commands.FirstOrDefault(x => x.Name == cmd.Name) != null)
-        {
-            throw new Exception($"Duplicate console command: {cmd.Name}");
-        }
-
-        _instance.Commands.Add(new ConsoleCommandInfo
-        {
-            Name = cmd.Name.ToLower(),
-            Aliases = cmd.Aliases.Select(x => x.ToLower()).ToArray(),
-            Method = method
-        });
-    }
-
-    #region Helper Functions
     private void SetCaretColumn(int pos)
     {
         _input.CallDeferred(Control.MethodName.GrabFocus);
         _input.CallDeferred(GodotObject.MethodName.Set, LineEdit.PropertyName.CaretColumn, pos);
     }
+}
 
-    private static object[] ConvertMethodParams(MethodInfo method, string[] rawCmdSplit)
+public static class ConsoleCommandInfoExtensions
+{
+    public static ConsoleCommandInfo WithAliases(this ConsoleCommandInfo cmdInfo, params string[] aliases)
     {
-        ParameterInfo[] paramInfos = method.GetParameters();
-        object[] parameters = new object[paramInfos.Length];
-        for (int i = 0; i < paramInfos.Length; i++)
-        {
-            parameters[i] = rawCmdSplit.Length > i + 1 && rawCmdSplit[i + 1] != null
-                ? ConvertStringToType(
-                    input: rawCmdSplit[i + 1],
-                    targetType: paramInfos[i].ParameterType)
-                : null;
-        }
-
-        return parameters;
+        cmdInfo.Aliases = aliases;
+        return cmdInfo;
     }
-
-    private object GetMethodInstance(MethodInfo method)
-    {
-        // Return null if the method is static (no instance needed)
-        if (method.IsStatic)
-        {
-            return null;
-        }
-
-        Type type = method.DeclaringType!;
-
-        if (type.IsSubclassOf(typeof(GodotObject)))
-        {
-            // Try to find an existing Godot node of this type or create a new one
-            return FindNodeByType(_mainContainer.GetTree().Root, type) ?? Activator.CreateInstance(type);
-        }
-
-        // For non-GodotObject classes, just create a new instance
-        return Activator.CreateInstance(type);
-    }
-
-    private static object ConvertStringToType(string input, Type targetType)
-    {
-        if (targetType == typeof(string))
-            return input;
-
-        try
-        {
-            if (targetType == typeof(int))
-            {
-                return int.Parse(input);
-            }
-        } catch (FormatException e)
-        {
-            Logger.Log(e.Message);
-            return 0;
-        }
-
-        try
-        {
-            if (targetType == typeof(bool))
-            {
-                return bool.Parse(input);
-            }
-        }
-        catch (FormatException e)
-        {
-            Logger.Log(e.Message);
-            return false;
-        }
-
-        if (targetType == typeof(float))
-        {
-            // Valk: Not entirely sure what is happening here other than
-            // convert the input to a float.
-            float value = float.Parse(input.Replace(',', '.'),
-                style: NumberStyles.Any,
-                provider: CultureInfo.InvariantCulture);
-
-            return value;
-        }
-
-        throw new ArgumentException($"Unsupported type: {targetType}");
-    }
-
-    // Valk: I have not tested this code to see if it works with 100% no errors.
-    private static Node FindNodeByType(Node root, Type targetType)
-    {
-        if (root.GetType() == targetType)
-            return root;
-
-        foreach (Node child in root.GetChildren())
-        {
-            Node foundNode = FindNodeByType(child, targetType);
-
-            if (foundNode != null)
-                return foundNode;
-        }
-
-        return null;
-    }
-    #endregion Utils
 }
