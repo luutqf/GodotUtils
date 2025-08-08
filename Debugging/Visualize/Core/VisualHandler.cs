@@ -1,3 +1,4 @@
+#if DEBUG
 using Godot;
 using System;
 using System.Reflection;
@@ -118,3 +119,4 @@ public static class VisualHandler
         };
     }
 }
+#endif

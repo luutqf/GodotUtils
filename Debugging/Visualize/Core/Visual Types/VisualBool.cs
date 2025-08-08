@@ -1,3 +1,4 @@
+#if DEBUG
 using Godot;
 
 namespace GodotUtils.Debugging.Visualize;
@@ -30,3 +31,4 @@ public class BoolControl(CheckBox checkBox) : IVisualControl
         checkBox.Disabled = !editable;
     }
 }
+#endif

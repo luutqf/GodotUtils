@@ -1,9 +1,9 @@
+#if DEBUG
 using Godot;
 using System.Collections.Generic;
 
 namespace GodotUtils.Debugging.Visualize;
 
-[Visualize(nameof(Position), nameof(Offset), nameof(Rotation))]
 public partial class VisualizeExampleSprite : Sprite2D
 {
 	[Visualize] private Vector2I _position;
@@ -14,6 +14,11 @@ public partial class VisualizeExampleSprite : Sprite2D
 
     [OnInstantiate]
     private void Init() { }
+
+    public override void _EnterTree()
+    {
+        Visualize.Register(this, nameof(Position), nameof(Offset), nameof(Rotation));
+    }
 
     public override void _PhysicsProcess(double delta)
     {
@@ -59,3 +64,4 @@ public partial class VisualizeExampleSprite : Sprite2D
         Three
     }
 }
+#endif

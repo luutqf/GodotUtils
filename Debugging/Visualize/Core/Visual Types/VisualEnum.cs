@@ -1,3 +1,4 @@
+#if DEBUG
 using Godot;
 using System;
 
@@ -53,3 +54,4 @@ public class OptionButtonEnumControl(OptionButton optionButton, Action<object> s
         optionButton.Disabled = !editable;
     }
 }
+#endif

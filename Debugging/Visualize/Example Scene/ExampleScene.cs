@@ -1,10 +1,12 @@
+#if DEBUG
 using Godot;
 
 namespace GodotUtils.Debugging.Visualize;
 
 public partial class ExampleScene : Node
 {
-    private const int CAMERA_SPEED = 5;
+    [Export] private int _cameraSpeed = 5;
+
     private Camera2D _camera;
 
     public override void _Ready()
@@ -22,29 +24,11 @@ public partial class ExampleScene : Node
             });
     }
 
-    public override void _Input(InputEvent @event)
+    public override void _PhysicsProcess(double delta)
     {
-        if (@event is InputEventKey key)
-        {
-            if (key.Keycode == Key.A)
-            {
-                _camera.Position -= new Vector2(CAMERA_SPEED, 0);
-            }
-
-            if (key.Keycode == Key.D)
-            {
-                _camera.Position += new Vector2(CAMERA_SPEED, 0);
-            }
-
-            if (key.Keycode == Key.W)
-            {
-                _camera.Position -= new Vector2(0, CAMERA_SPEED);
-            }
-
-            if (key.Keycode == Key.S)
-            {
-                _camera.Position += new Vector2(0, CAMERA_SPEED);
-            }
-        }
+        Vector2 dir = Input.GetVector(InputActions.MoveLeft, InputActions.MoveRight, InputActions.MoveUp, InputActions.MoveDown);
+        
+        _camera.Position += dir * _cameraSpeed;
     }
 }
+#endif

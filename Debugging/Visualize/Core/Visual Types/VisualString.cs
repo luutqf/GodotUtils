@@ -1,3 +1,4 @@
+#if DEBUG
 using Godot;
 
 namespace GodotUtils.Debugging.Visualize;
@@ -30,3 +31,4 @@ public class LineEditControl(LineEdit lineEdit) : IVisualControl
         lineEdit.Editable = editable;
     }
 }
+#endif

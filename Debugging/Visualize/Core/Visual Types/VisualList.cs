@@ -1,3 +1,4 @@
+#if DEBUG
 using Godot;
 using System;
 using System.Collections;
@@ -88,3 +89,4 @@ public static partial class VisualControlTypes
         return new VisualControlInfo(new VBoxContainerControl(listVBox));
     }
 }
+#endif

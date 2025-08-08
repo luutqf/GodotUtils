@@ -1,3 +1,4 @@
+#if DEBUG
 using Godot;
 
 namespace GodotUtils.Debugging.Visualize;
@@ -15,3 +16,4 @@ public static partial class VisualControlTypes
         return new VisualControlInfo(new LineEditControl(lineEdit));
     }
 }
+#endif

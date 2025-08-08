@@ -1,3 +1,4 @@
+#if DEBUG
 using Godot;
 
 namespace GodotUtils.Debugging.Visualize;
@@ -32,3 +33,4 @@ public class ColorPickerButtonControl(ColorPickerButton colorPickerButton) : IVi
         colorPickerButton.Disabled = !editable;
     }
 }
+#endif

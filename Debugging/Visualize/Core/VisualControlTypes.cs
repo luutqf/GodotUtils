@@ -1,3 +1,4 @@
+#if DEBUG
 using Godot;
 using System;
 using System.Collections.Generic;
@@ -68,3 +69,4 @@ public class VisualControlInfo(IVisualControl visualControl)
 {
     public IVisualControl VisualControl { get; } = visualControl;
 }
+#endif

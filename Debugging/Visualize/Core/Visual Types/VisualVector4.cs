@@ -1,3 +1,4 @@
+#if DEBUG
 using Godot;
 
 namespace GodotUtils.Debugging.Visualize;
@@ -80,3 +81,4 @@ public class Vector4Control(HBoxContainer vector4HBox, SpinBox spinBoxX, SpinBox
         spinBoxW.Editable = editable;
     }
 }
+#endif

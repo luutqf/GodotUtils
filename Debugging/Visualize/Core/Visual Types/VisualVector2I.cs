@@ -1,3 +1,4 @@
+#if DEBUG
 using Godot;
 
 namespace GodotUtils.Debugging.Visualize;
@@ -56,3 +57,4 @@ public static partial class VisualControlTypes
         }
     }
 }
+#endif

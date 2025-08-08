@@ -23,7 +23,9 @@ public partial class Global : Node
     public GameConsole    GameConsole    { get; private set; }
     public SceneManager   SceneManager   { get; private set; }
 
+#if DEBUG
     private VisualizeAutoload _visualizeAutoload = new();
+#endif
 
     public override void _EnterTree()
     {
@@ -45,7 +47,9 @@ public partial class Global : Node
         MetricsOverlay.Init();
         Logger.Init(GameConsole);
 
-        _visualizeAutoload.Init(GetTree());
+#if DEBUG
+        _visualizeAutoload.Init();
+#endif
     }
 
     public override void _Process(double delta)
@@ -54,7 +58,9 @@ public partial class Global : Node
         MetricsOverlay.Update();
         Logger.Update();
 
+#if DEBUG
         _visualizeAutoload.Update();
+#endif
     }
 
     public override async void _Notification(int what)
@@ -72,12 +78,14 @@ public partial class Global : Node
         OptionsManager.Dispose();
         Services.Dispose();
         MetricsOverlay.Dispose();
+
+#if DEBUG
         _visualizeAutoload.Dispose();
+#endif
+
         Profiler.Dispose();
 
         Instance = null;
-        GameConsole = null;
-        SceneManager = null;
         PreQuit = null;
     }
 
@@ -87,9 +95,7 @@ public partial class Global : Node
 
         // Wait for cleanup
         if (PreQuit != null)
-        {
             await PreQuit?.Invoke();
-        }
 
         // This must be here because buttons call Global::Quit()
         GetTree().Quit();

@@ -1,3 +1,4 @@
+#if DEBUG
 using Godot;
 using System;
 using static Godot.Control;
@@ -103,3 +104,4 @@ public class VBoxContainerControl(VBoxContainer vboxContainer) : IVisualControl
         // No specific editable setting for VBoxContainer
     }
 }
+#endif

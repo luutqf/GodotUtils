@@ -1,3 +1,4 @@
+#if DEBUG
 using Godot;
 using System;
 
@@ -48,40 +49,6 @@ public static partial class VisualControlTypes
         return dest;
     }
 
-/*
-    private static object ConvertNumericValue(SpinBox spinBox, double value, Type paramType)
-    {
-        object convertedValue;
-
-        try
-        {
-            convertedValue = Convert.ChangeType(value, paramType);
-        }
-        catch
-        {
-            (object min, object max) = TypeRangeConstraints.GetRange(paramType);
-
-            if (Convert.ToDouble(value) < Convert.ToDouble(min))
-            {
-                spinBox.Value = Convert.ToDouble(min);
-                convertedValue = min;
-            }
-            else if (Convert.ToDouble(value) > Convert.ToDouble(max))
-            {
-                spinBox.Value = Convert.ToDouble(max);
-                convertedValue = max;
-            }
-            else
-            {
-                string errorMessage = $"[Visualize] The provided value '{value}' is not assignable to the parameter type '{paramType}'.";
-                throw new InvalidOperationException(errorMessage);
-            }
-        }
-
-        return convertedValue;
-    }
-*/
-
     private static SpinBox CreateSpinBox(Type type)
     {
         SpinBox spinBox = new()
@@ -106,3 +73,4 @@ public static partial class VisualControlTypes
         return spinBox;
     }
 }
+#endif

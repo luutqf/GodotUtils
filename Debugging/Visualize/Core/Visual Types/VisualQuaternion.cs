@@ -1,3 +1,4 @@
+#if DEBUG
 using Godot;
 
 namespace GodotUtils.Debugging.Visualize;
@@ -80,3 +81,4 @@ public class QuaternionControl(HBoxContainer quaternionHBox, SpinBox spinBoxX, S
         spinBoxW.Editable = editable;
     }
 }
+#endif

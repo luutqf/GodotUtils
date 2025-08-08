@@ -1,3 +1,4 @@
+#if DEBUG
 using Godot;
 using System;
 using System.Collections.Generic;
@@ -35,7 +36,7 @@ public static class VisualUI
     /// <summary>
     /// Creates the visual panel for a specified visual node.
     /// </summary>
-    public static (Control, List<Action>) CreateVisualPanel(VisualData visualData)
+    public static (Control, List<Action>) CreateVisualPanel(VisualData visualData, string[] readonlyMembers)
     {
         Dictionary<Node, VBoxContainer> visualNodes = [];
         
@@ -51,27 +52,27 @@ public static class VisualUI
         Vector2 currentCameraZoom = GetCurrentCameraZoom(node);
         panelContainer.Scale = new Vector2(1f / currentCameraZoom.X, 1f / currentCameraZoom.Y) * PanelScaleFactor;
 
-        VBoxContainer mutableMembers = CreateColoredVBox(Green);
-        mutableMembers.MouseFilter =  MouseFilterEnum.Ignore;
-        mutableMembers.Name = "Mutable Members";
+        VBoxContainer mutableMembersVbox = CreateColoredVBox(Green);
+        mutableMembersVbox.MouseFilter =  MouseFilterEnum.Ignore;
+        mutableMembersVbox.Name = "Mutable Members";
 
-        VBoxContainer readonlyMembers = CreateColoredVBox(Pink);
-        readonlyMembers.MouseFilter = MouseFilterEnum.Ignore;
-        readonlyMembers.Name = "Readonly Members";
+        VBoxContainer readonlyMembersVbox = CreateColoredVBox(Pink);
+        readonlyMembersVbox.MouseFilter = MouseFilterEnum.Ignore;
+        readonlyMembersVbox.Name = "Readonly Members";
 
         // Readonly Members
-        AddReadonlyControls(visualData.ReadonlyMembers, node, readonlyMembers, updateControls, spinBoxes);
+        AddReadonlyControls(readonlyMembers, node, readonlyMembersVbox, updateControls, spinBoxes);
 
         // Mutable Members
-        AddMutableControls(mutableMembers, visualData.Properties, node, spinBoxes);
-        AddMutableControls(mutableMembers, visualData.Fields, node, spinBoxes);
+        AddMutableControls(mutableMembersVbox, visualData.Properties, node, spinBoxes);
+        AddMutableControls(mutableMembersVbox, visualData.Fields, node, spinBoxes);
 
         // Methods
-        VisualMethods.AddMethodInfoElements(mutableMembers, visualData.Methods, node, spinBoxes);
+        VisualMethods.AddMethodInfoElements(mutableMembersVbox, visualData.Methods, node, spinBoxes);
 
         VBoxContainer vboxLogs = new();
         vboxLogs.Name = "Logs";
-        mutableMembers.AddChild(vboxLogs);
+        mutableMembersVbox.AddChild(vboxLogs);
 
         visualNodes.Add(node, vboxLogs);
 
@@ -81,14 +82,14 @@ public static class VisualUI
         scrollContainer.CustomMinimumSize = new Vector2(0, MinScrollViewDistance);
 
         // Make them hidden by default
-        //mutableMembers.Hide();
-        //readonlyMembers.Hide();
+        //mutableMembersVbox.Hide();
+        //readonlyMembersVbox.Hide();
 
-        VBoxContainer titleBar = CreateTitleBar(node.Name, mutableMembers, readonlyMembers, visualData);
+        VBoxContainer titleBar = CreateTitleBar(node.Name, mutableMembersVbox, readonlyMembersVbox, visualData, readonlyMembers);
         titleBar.Name = "Main VBox";
         titleBar.MouseFilter = MouseFilterEnum.Ignore;
-        titleBar.AddChild(readonlyMembers);
-        titleBar.AddChild(mutableMembers);
+        titleBar.AddChild(readonlyMembersVbox);
+        titleBar.AddChild(mutableMembersVbox);
 
         SetButtonsToReleaseFocusOnPress(titleBar);
 
@@ -101,7 +102,7 @@ public static class VisualUI
 
         node.CallDeferred(Node.MethodName.AddChild, canvasLayer);
 
-        SetInitialPosition(mutableMembers, visualData.InitialPosition);
+        //SetInitialPosition(mutableMembers, visualData.InitialPosition);
 
         // This is ugly but I don't know how else to do it
         VisualizeAutoload.Instance.VisualNodes = visualNodes;
@@ -150,7 +151,7 @@ public static class VisualUI
         }
     }
 
-    private static VBoxContainer CreateTitleBar(string name, Control mutableMembers, Control readonlyMembers, VisualData visualData)
+    private static VBoxContainer CreateTitleBar(string name, Control mutableMembersVbox, Control readonlyMembersVbox, VisualData visualData, string[] readonlyMembers)
     {
         VBoxContainer vboxParent = new();
 
@@ -180,7 +181,7 @@ public static class VisualUI
         Button readonlyBtn = null;
         Button mutableBtn = null;
 
-        if (visualData.ReadonlyMembers != null)
+        if (readonlyMembers != null)
         {
             readonlyBtn = CreateVisibilityButton(_eyeOpen, Colors.Pink);
             readonlyBtn.ButtonPressed = true;
@@ -199,7 +200,7 @@ public static class VisualUI
             readonlyBtn.Pressed += () =>
             {
                 readonlyBtn.Icon = readonlyBtn.ButtonPressed ? _eyeOpen : _eyeClosed;
-                readonlyMembers.Visible = readonlyBtn.ButtonPressed;
+                readonlyMembersVbox.Visible = readonlyBtn.ButtonPressed;
                 title.Visible = readonlyBtn.ButtonPressed || (mutableBtn != null && mutableBtn.ButtonPressed);
             };
         }
@@ -208,7 +209,7 @@ public static class VisualUI
         {
             mutableBtn.Pressed += () =>
             {
-                mutableMembers.Visible = mutableBtn.ButtonPressed;
+                mutableMembersVbox.Visible = mutableBtn.ButtonPressed;
                 title.Visible = mutableBtn.ButtonPressed || (readonlyBtn != null && readonlyBtn.ButtonPressed);
             };
         }
@@ -494,3 +495,4 @@ public static class VisualUI
         return container;
     }
 }
+#endif

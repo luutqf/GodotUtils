@@ -1,3 +1,4 @@
+#if DEBUG
 using System;
 using System.Reflection;
 
@@ -63,3 +64,4 @@ public static class ParameterConverter
         return null;
     }
 }
+#endif

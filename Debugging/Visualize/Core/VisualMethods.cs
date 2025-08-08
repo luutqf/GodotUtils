@@ -1,3 +1,4 @@
+#if DEBUG
 using Godot;
 using System;
 using System.Collections.Generic;
@@ -98,3 +99,4 @@ public static class VisualMethods
         return null;
     }
 }
+#endif

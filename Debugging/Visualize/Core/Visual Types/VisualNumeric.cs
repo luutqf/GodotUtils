@@ -1,3 +1,4 @@
+#if DEBUG
 using Godot;
 using System;
 using System.Linq;
@@ -106,3 +107,4 @@ public class NumericControl(SpinBox spinBox) : IVisualControl
         spinBox.Editable = editable;
     }
 }
+#endif

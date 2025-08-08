@@ -1,3 +1,4 @@
+#if DEBUG
 using System;
 using System.Collections.Generic;
 
@@ -12,3 +13,4 @@ public class VisualControlContext(List<VisualSpinBox> spinBoxes, object initialV
     public object InitialValue { get; set; } = initialValue;
     public Action<object> ValueChanged { get; set; } = valueChanged;
 }
+#endif
