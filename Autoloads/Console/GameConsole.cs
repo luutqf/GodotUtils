@@ -223,6 +223,16 @@ public partial class GameConsole : Component
 
         // clear the input after the command is executed
         _input.Clear();
+
+        CallDeferred(nameof(RefocusInput));
+    }
+
+    private void RefocusInput()
+    {
+        // Put focus back on the input and move caret to end so user can type immediately.
+        _input.Edit(); // MUST do this otherwise refocus on LineEdit will NOT work
+        _input.GrabFocus();
+        _input.CaretColumn = _input.Text.Length;
     }
 
     private static void LoadCommands()
