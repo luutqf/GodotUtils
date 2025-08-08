@@ -71,11 +71,6 @@ public partial class GameConsole : Component
         _instance = null;
     }
 
-    private void OnAutoScrollToggeled(bool value)
-    {
-        _autoScroll = value;
-    }
-
     public void AddMessage(object message)
     {
         double prevScroll = _feed.ScrollVertical;
@@ -119,59 +114,6 @@ public partial class GameConsole : Component
         {
             _feed.ScrollVertical = (int)_feed.GetVScrollBar().MaxValue;
         }
-    }
-
-    private void OnSettingsBtnPressed()
-    {
-        if (!_settingsPopup.Visible)
-        {
-            _settingsPopup.PopupCentered();
-        }
-    }
-
-    private static void LoadCommands()
-    {
-        Type[] types = Assembly.GetExecutingAssembly().GetTypes();
-
-        foreach (Type type in types)
-        {
-            // BindingFlags.Instance must be added or the methods will not
-            // be seen
-            MethodInfo[] methods = type.GetMethods(
-                BindingFlags.Instance |
-                BindingFlags.Public |
-                BindingFlags.NonPublic);
-
-            foreach (MethodInfo method in methods)
-            {
-                object[] attributes = method.GetCustomAttributes(
-                        attributeType: typeof(ConsoleCommandAttribute),
-                        inherit: false);
-
-                foreach (object attribute in attributes)
-                {
-                    if (attribute is not ConsoleCommandAttribute cmd)
-                        continue;
-
-                    TryLoadCommand(cmd, method);
-                }
-            }
-        }
-    }
-
-    private static void TryLoadCommand(ConsoleCommandAttribute cmd, MethodInfo method)
-    {
-        if (_instance.Commands.FirstOrDefault(x => x.Name == cmd.Name) != null)
-        {
-            throw new Exception($"Duplicate console command: {cmd.Name}");
-        }
-
-        _instance.Commands.Add(new ConsoleCommandInfo
-        {
-            Name = cmd.Name.ToLower(),
-            Aliases = cmd.Aliases.Select(x => x.ToLower()).ToArray(),
-            Method = method
-        });
     }
 
     private bool ProcessCommand(string text)
@@ -225,29 +167,6 @@ public partial class GameConsole : Component
         return cmd;
     }
 
-    private void OnConsoleInputEntered(string text)
-    {
-        // case sensitivity and trailing spaces should not factor in here
-        string inputToLowerTrimmed = text.Trim().ToLower();
-        string[] inputArr = inputToLowerTrimmed.Split(' ');
-
-        // extract command from input
-        string cmd = inputArr[0];
-
-        // do not do anything if cmd is just whitespace
-        if (string.IsNullOrWhiteSpace(cmd))
-            return;
-
-        // keep track of input history
-        _history.Add(inputToLowerTrimmed);
-
-        // process the command
-        ProcessCommand(text);
-
-        // clear the input after the command is executed
-        _input.Clear();
-    }
-
     private void InputNavigateHistory()
     {
         // If console is not visible or there is no history to navigate do nothing
@@ -273,6 +192,87 @@ public partial class GameConsole : Component
             // if deferred is not used then something else will override these settings
             SetCaretColumn(historyText.Length);
         }
+    }
+
+    private void OnSettingsBtnPressed()
+    {
+        if (!_settingsPopup.Visible)
+        {
+            _settingsPopup.PopupCentered();
+        }
+    }
+
+    private void OnAutoScrollToggeled(bool value)
+    {
+        _autoScroll = value;
+    }
+
+    private void OnConsoleInputEntered(string text)
+    {
+        // case sensitivity and trailing spaces should not factor in here
+        string inputToLowerTrimmed = text.Trim().ToLower();
+        string[] inputArr = inputToLowerTrimmed.Split(' ');
+
+        // extract command from input
+        string cmd = inputArr[0];
+
+        // do not do anything if cmd is just whitespace
+        if (string.IsNullOrWhiteSpace(cmd))
+            return;
+
+        // keep track of input history
+        _history.Add(inputToLowerTrimmed);
+
+        // process the command
+        ProcessCommand(text);
+
+        // clear the input after the command is executed
+        _input.Clear();
+    }
+
+    private static void LoadCommands()
+    {
+        Type[] types = Assembly.GetExecutingAssembly().GetTypes();
+
+        foreach (Type type in types)
+        {
+            // BindingFlags.Instance must be added or the methods will not
+            // be seen
+            MethodInfo[] methods = type.GetMethods(
+                BindingFlags.Instance |
+                BindingFlags.Public |
+                BindingFlags.NonPublic);
+
+            foreach (MethodInfo method in methods)
+            {
+                object[] attributes = method.GetCustomAttributes(
+                        attributeType: typeof(ConsoleCommandAttribute),
+                        inherit: false);
+
+                foreach (object attribute in attributes)
+                {
+                    if (attribute is not ConsoleCommandAttribute cmd)
+                        continue;
+
+                    TryLoadCommand(cmd, method);
+                }
+            }
+        }
+    }
+
+    private static void TryLoadCommand(ConsoleCommandAttribute cmd, MethodInfo method)
+    {
+        if (_instance.Commands.FirstOrDefault(x => x.Name == cmd.Name) != null)
+        {
+            throw new Exception($"Duplicate console command: {cmd.Name}");
+        }
+
+        _instance.Commands.Add(new ConsoleCommandInfo
+        {
+            Name = cmd.Name.ToLower(),
+            Aliases = cmd.Aliases.Select(x => x.ToLower()).ToArray(),
+            Method = method
+        });
     }
 
     #region Helper Functions
@@ -305,8 +305,7 @@ public partial class GameConsole : Component
         if (type.IsSubclassOf(typeof(GodotObject)))
         {
             // This is a Godot Object, find it or create a new instance
-            instance = FindNodeByType(_mainContainer.GetTree().Root, type) ??
-                Activator.CreateInstance(type);
+            instance = FindNodeByType(_mainContainer.GetTree().Root, type) ?? Activator.CreateInstance(type);
         }
         else
         {
