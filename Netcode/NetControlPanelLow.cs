@@ -1,8 +1,6 @@
 using Godot;
-using GodotUtils;
-using GodotUtils.Netcode;
 
-namespace __TEMPLATE__.Netcode;
+namespace GodotUtils.Netcode;
 
 public abstract partial class NetControlPanelLow : Control
 {
