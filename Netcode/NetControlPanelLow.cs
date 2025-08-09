@@ -24,7 +24,10 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
 
     public override void _Ready()
     {
-        Net = new Net(this, new ServerFactory(() => new TGameServer()), new ClientFactory(() => new TGameClient()));
+        ServerFactory serverFactory = new(() => new TGameServer());
+        ClientFactory clientFactory = new(() => new TGameClient());
+
+        Net = new Net(clientFactory, serverFactory);
 
         SetupButtons();
         SetupInputFields();
@@ -35,8 +38,6 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
     {
         Net.Client?.HandlePackets();
     }
-
-    public abstract void StartClientButtonPressed(string username);
 
     private void SetupButtons()
     {
@@ -51,7 +52,6 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
 
     private void OnStartClientBtnPressed()
     {
-        StartClientButtonPressed(_username);
         Net.StartClient(_ip, _port);
     }
 

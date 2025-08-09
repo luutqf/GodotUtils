@@ -18,23 +18,18 @@ public class Net
 
     private const int ShutdownPollIntervalMs = 1;
 
-    private IGameServerFactory _serverFactory;
     private IGameClientFactory _clientFactory;
+    private IGameServerFactory _serverFactory;
 
-    public Net(Node node, IGameServerFactory serverFactory, IGameClientFactory clientFactory)
+    public Net(IGameClientFactory clientFactory, IGameServerFactory serverFactory)
     {
         Global.Instance.PreQuit += StopThreads;
 
-        _serverFactory = serverFactory;
         _clientFactory = clientFactory;
+        _serverFactory = serverFactory;
 
-        Server = serverFactory.CreateServer();
         Client = clientFactory.CreateClient();
-    }
-
-    ~Net()
-    {
-        GD.Print("Net deconstructor");
+        Server = serverFactory.CreateServer();
     }
 
     public void StopServer()
