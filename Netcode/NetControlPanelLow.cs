@@ -38,11 +38,6 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
         Net.Client?.HandlePackets();
     }
 
-    public override void _ExitTree()
-    {
-        Net.Dispose();
-    }
-
     private void SetupButtons()
     {
         _startServerBtn = GetNode<Button>("%Start Server");

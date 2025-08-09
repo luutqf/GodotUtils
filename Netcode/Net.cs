@@ -6,7 +6,7 @@ using GodotUtils.Netcode.Server;
 
 namespace GodotUtils.Netcode;
 
-public class Net : IDisposable
+public class Net
 {
     public event Action<ENetServer> ServerCreated;
     public event Action<ENetClient> ClientCreated;
@@ -24,6 +24,7 @@ public class Net : IDisposable
     public Net(IGameClientFactory clientFactory, IGameServerFactory serverFactory)
     {
         Global.Instance.PreQuit += StopThreads;
+        Services.Get<UI.PopupMenu>().MainMenuBtnPressed += async () => await StopThreads();
 
         _clientFactory = clientFactory;
         _serverFactory = serverFactory;
@@ -54,11 +55,6 @@ public class Net : IDisposable
             PrintPacketReceived = false,
             PrintPacketSent = false
         });
-
-        Services.Get<UI.PopupMenu>().MainMenuBtnPressed += () =>
-        {
-            Server.Stop();
-        };
     }
 
     public void StartClient(string ip, ushort port)
@@ -91,12 +87,6 @@ public class Net : IDisposable
         }
 
         Client.Stop();
-    }
-
-    public void Dispose()
-    {
-        Server = null;
-        Client = null;
     }
 
     private async Task StopThreads()
