@@ -15,29 +15,30 @@ public static class PacketRegistry
 
     static PacketRegistry()
     {
-        ClientPacketInfoByType = MapPackets<ClientPacket>();
+        Type[] cachedTypes = Assembly.GetExecutingAssembly().GetTypes();
+
+        ClientPacketInfoByType = MapPackets<ClientPacket>(cachedTypes);
         ClientPacketTypeByOpcode = ClientPacketInfoByType.ToDictionary(kvp => kvp.Value.Opcode, kvp => kvp.Key);
 
-        ServerPacketInfo = MapPackets<ServerPacket>();
+        ServerPacketInfo = MapPackets<ServerPacket>(cachedTypes);
         ServerPacketTypes = ServerPacketInfo.ToDictionary(kvp => kvp.Value.Opcode, kvp => kvp.Key);
     }
 
-    private static Dictionary<Type, PacketInfo<T>> MapPackets<T>()
+    private static Dictionary<Type, PacketInfo<T>> MapPackets<T>(Type[] cachedTypes)
     {
-        List<Type> types = Assembly.GetExecutingAssembly()
-            .GetTypes()
+        Type[] packetTypes = cachedTypes
             .Where(x => typeof(T).IsAssignableFrom(x) && !x.IsInterface && !x.IsAbstract)
             .OrderBy(x => x.Name)
-            .ToList();
+            .ToArray();
 
         Dictionary<Type, PacketInfo<T>> dict = [];
 
-        for (byte i = 0; i < types.Count; i++)
+        for (byte i = 0; i < packetTypes.Length; i++)
         {
-            dict.Add(types[i], new PacketInfo<T>
+            dict.Add(packetTypes[i], new PacketInfo<T>
             {
                 Opcode = i,
-                Instance = (T)Activator.CreateInstance(types[i])
+                Instance = (T)Activator.CreateInstance(packetTypes[i])
             });
         }
 
