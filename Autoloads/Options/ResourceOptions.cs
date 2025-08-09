@@ -1,6 +1,6 @@
-using QualityP = __TEMPLATE__.UI.QualityPreset;
+using QualityP = GodotUtils.UI.QualityPreset;
 using VSyncMode = Godot.DisplayServer.VSyncMode;
-using __TEMPLATE__.UI;
+using GodotUtils.UI;
 
 namespace GodotUtils;
 

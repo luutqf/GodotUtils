@@ -1,9 +1,14 @@
 using Godot;
 using GodotUtils.Netcode.Client;
+using GodotUtils.Netcode.Sandbox.Topdown;
+using GodotUtils.Netcode.Server;
+using System;
 
 namespace GodotUtils.Netcode;
 
-public abstract partial class NetControlPanelLow : Control
+public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Control
+    where TGameClient : ENetClient, new()
+    where TGameServer : ENetServer, new()
 {
     public Net Net { get; private set; }
 
@@ -19,7 +24,7 @@ public abstract partial class NetControlPanelLow : Control
 
     public override void _Ready()
     {
-        Net = new Net(this, GameServerFactory(), GameClientFactory());
+        Net = new Net(this, new ServerFactory(() => new TGameServer()), new ClientFactory(() => new TGameClient()));
 
         SetupButtons();
         SetupInputFields();
@@ -31,8 +36,6 @@ public abstract partial class NetControlPanelLow : Control
         Net.Client?.HandlePackets();
     }
 
-    public abstract IGameServerFactory GameServerFactory();
-    public abstract IGameClientFactory GameClientFactory();
     public abstract void StartClientButtonPressed(string username);
 
     private void SetupButtons()
@@ -101,5 +104,15 @@ public abstract partial class NetControlPanelLow : Control
     {
         _startServerBtn.Disabled = false;
         _stopServerBtn.Disabled = false;
+    }
+
+    private record ClientFactory(Func<ENetClient> Creator) : IGameClientFactory
+    {
+        public ENetClient CreateClient() => Creator();
+    }
+
+    private record ServerFactory(Func<ENetServer> Creator) : IGameServerFactory
+    {
+        public ENetServer CreateServer() => Creator();
     }
 }
