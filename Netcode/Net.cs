@@ -18,18 +18,12 @@ public class Net
 
     private const int ShutdownPollIntervalMs = 1;
 
-    private IGameServerFactory _serverFactory;
-    private IGameClientFactory _clientFactory;
-
-    public Net(Node node, IGameServerFactory serverFactory, IGameClientFactory clientFactory)
+    public Net(ENetServer server, ENetClient client)
     {
         Global.Instance.PreQuit += StopThreads;
 
-        _serverFactory = serverFactory;
-        _clientFactory = clientFactory;
-
-        Server = serverFactory.CreateServer();
-        Client = clientFactory.CreateClient();
+        Server = server;
+        Client = client;
     }
 
     ~Net()
