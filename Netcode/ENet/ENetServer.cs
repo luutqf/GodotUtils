@@ -101,9 +101,15 @@ public abstract class ENetServer : ENetLow
 
         Log("Server is running");
 
-        WorkerLoop();
-
-        Host.Dispose();
+        try
+        {
+            WorkerLoop();
+        }
+        finally
+        {
+            Host.Dispose();
+        }
+        
         Log("Server has stopped");
     }
 
@@ -222,13 +228,15 @@ public abstract class ENetServer : ENetLow
         {
             SendType sendType = packet.GetSendType();
 
-            if (sendType == SendType.Peer)
+            switch (sendType)
             {
-                packet.Send();
-            }
-            else if (sendType == SendType.Broadcast)
-            {
-                packet.Broadcast(Host);
+                case SendType.Peer:
+                    packet.Send();
+                    break;
+
+                case SendType.Broadcast:
+                    packet.Broadcast(Host);
+                    break;
             }
         }
     }

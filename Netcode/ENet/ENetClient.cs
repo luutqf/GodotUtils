@@ -90,11 +90,7 @@ public abstract class ENetClient : ENetLow
     protected void WorkerThread(string ip, ushort port)
     {
         Host = new Host();
-        Address address = new()
-        {
-            Port = port
-        };
-
+        Address address = new() { Port = port };
         address.SetHost(ip);
         Host.Create();
 
@@ -102,9 +98,15 @@ public abstract class ENetClient : ENetLow
         _peer.PingInterval(PingIntervalMs);
         _peer.Timeout(PeerTimeoutMs, PeerTimeoutMinimumMs, PeerTimeoutMaximumMs);
 
-        WorkerLoop();
-
-        Host.Dispose();
+        try
+        {
+            WorkerLoop();
+        }
+        finally
+        {
+            Host.Dispose();
+        }
+        
         Log("Client has stopped");
     }
 

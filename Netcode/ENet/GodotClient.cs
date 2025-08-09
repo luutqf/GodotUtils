@@ -47,10 +47,10 @@ public abstract class GodotClient : ENetClient
 
         _running = 1;
         CTS = new CancellationTokenSource();
-        using Task task = Task.Run(() => WorkerThread(ip, port), CTS.Token);
-
+        
         try
         {
+            using Task task = Task.Run(() => WorkerThread(ip, port), CTS.Token);
             await task;
         }
         catch (Exception e)
@@ -95,6 +95,12 @@ public abstract class GodotClient : ENetClient
     /// </summary>
     public void HandlePackets()
     {
+        ProcessGodotPackets();
+        ProcessGodotCommands();
+    }
+
+    private void ProcessGodotPackets()
+    {
         while (GodotPackets.TryDequeue(out PacketData packetData))
         {
             PacketReader packetReader = packetData.PacketReader;
@@ -106,29 +112,43 @@ public abstract class GodotClient : ENetClient
 
             handlePacket.Handle(this);
 
-            if (!IgnoredPackets.Contains(type) && Options.PrintPacketReceived)
-            {
-                Log($"Received packet: {type.Name}" +
-                    $"{(Options.PrintPacketData ? $"\n{handlePacket.ToFormattedString()}" : "")}", BBColor.Deepskyblue);
-            }
+            LogReceivedPacket(type, handlePacket);
         }
+    }
 
+    private void LogReceivedPacket(Type type, ServerPacket packet)
+    {
+        if (!IgnoredPackets.Contains(type) && Options.PrintPacketReceived)
+        {
+            Log(
+                $"Received packet: {type.Name}{(Options.PrintPacketData ? $"\n{packet.ToFormattedString()}" : "")}",
+                BBColor.Deepskyblue
+            );
+        }
+    }
+
+    private void ProcessGodotCommands()
+    {
         while (GodotCmdsInternal.TryDequeue(out Cmd<GodotOpcode> cmd))
         {
             GodotOpcode opcode = cmd.Opcode;
 
-            if (opcode == GodotOpcode.Connected)
+            switch (opcode)
             {
-                Connected?.Invoke();
-            }
-            else if (opcode == GodotOpcode.Disconnected)
-            {
-                DisconnectOpcode disconnectOpcode = (DisconnectOpcode)cmd.Data[0];
-                Disconnected?.Invoke(disconnectOpcode);
-            }
-            else if (opcode == GodotOpcode.Timeout)
-            {
-                Timedout?.Invoke();
+                case GodotOpcode.Connected:
+                    Connected?.Invoke();
+                    break;
+
+                case GodotOpcode.Disconnected:
+                {
+                    DisconnectOpcode disconnectOpcode = (DisconnectOpcode)cmd.Data[0];
+                    Disconnected?.Invoke(disconnectOpcode);
+                    break;
+                }
+
+                case GodotOpcode.Timeout:
+                    Timedout?.Invoke();
+                    break;
             }
         }
     }

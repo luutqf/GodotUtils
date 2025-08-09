@@ -28,22 +28,19 @@ public abstract class GodotServer : ENetServer
         }
 
         Options = options;
-
         InitIgnoredPackets(ignoredPackets);
 
         EmitLoop = SystemTimerFactory.Create(100, Emit, false);
         EmitLoop.Start();
 
         _running = 1;
-
         CTS = new CancellationTokenSource();
 
         Starting();
 
-        using Task task = Task.Run(() => WorkerThread(port, maxClients), CTS.Token);
-
         try
         {
+            using Task task = Task.Run(() => WorkerThread(port, maxClients), CTS.Token);
             await task;
         }
         catch (Exception e)
@@ -113,12 +110,6 @@ public abstract class GodotServer : ENetServer
         EnqueuePacket(packet);
     }
 
-    /// <summary>
-    /// If no clients are specified, then the packet will be sent to everyone. If
-    /// one client is specified then that client will be excluded from the broadcast.
-    /// If more than one client is specified then the packet will only be sent to
-    /// those clients. This function is thread safe.
-    /// </summary>
     public void Broadcast(ServerPacket packet, params Peer[] clients)
     {
         packet.Write();
@@ -127,18 +118,11 @@ public abstract class GodotServer : ENetServer
 
         if (!IgnoredPackets.Contains(type) && Options.PrintPacketSent)
         {
-            // This is messy but I don't know how I will clean it up right
-            // now so I'm leaving it as is for now..
-            string byteSize = Options.PrintPacketByteSize ?
-                $"({packet.GetSize()} bytes)" : "";
+            string byteSize = GetByteSizeString(packet);
+            string peerDescription = GetPeerDescription(clients);
+            string packetData = Options.PrintPacketData ? $"\n{packet.ToFormattedString()}" : "";
 
-            string peerArr = clients.Select(x => x.ID).ToFormattedString();
-
-            string message = $"Broadcasting packet {type.Name} {byteSize}" + (clients.Length == 0 ?
-                 "to everyone" : clients.Length == 1 ?
-                $"to everyone except peer {peerArr}" :
-                $"to peers {peerArr}") + (Options.PrintPacketData ?
-                $"\n{packet.ToFormattedString()}" : "");
+            string message = $"Broadcasting packet {type.Name} {byteSize}{peerDescription}{packetData}";
 
             Log(message);
         }
@@ -147,5 +131,28 @@ public abstract class GodotServer : ENetServer
         packet.SetPeers(clients);
 
         EnqueuePacket(packet);
+    }
+
+    private string GetByteSizeString(ServerPacket packet)
+    {
+        return Options.PrintPacketByteSize ? $"({packet.GetSize()} bytes)" : "";
+    }
+
+    private string GetPeerDescription(Peer[] clients)
+    {
+        if (clients.Length == 0)
+        {
+            return "to everyone";
+        }
+        else if (clients.Length == 1)
+        {
+            string peerId = clients[0].ID.ToString();
+            return $"to everyone except peer {peerId}";
+        }
+        else
+        {
+            string peerIds = clients.Select(x => x.ID).ToFormattedString();
+            return $"to peers {peerIds}";
+        }
     }
 }
