@@ -14,7 +14,7 @@ public class VisualizeAutoload : IDisposable
 
     private Visualize _visualize;
 
-    public void Init()
+    public VisualizeAutoload()
     {
         if (Instance != null)
             throw new InvalidOperationException($"{nameof(VisualizeAutoload)} was initialized already");

@@ -15,16 +15,17 @@ public partial class Global : Node
 
     public static Global Instance { get; private set; }
 
-    public AudioManager   AudioManager   { get; private set; } = new();
-    public Logger         Logger         { get; private set; } = new();
-    public OptionsManager OptionsManager { get; private set; } = new();
-    public Services       Services       { get; private set; } = new();
-    public MetricsOverlay MetricsOverlay { get; private set; } = new();
-    public GameConsole    GameConsole    { get; private set; }
+    // Game developers should be able to access each individual manager
+    public AudioManager   AudioManager   { get; private set; }
+    public Logger         Logger         { get; private set; }
+    public OptionsManager OptionsManager { get; private set; }
+    public Services       Services       { get; private set; }
+    public MetricsOverlay MetricsOverlay { get; private set; }
     public SceneManager   SceneManager   { get; private set; }
+    public GameConsole    GameConsole    { get; private set; }
 
 #if DEBUG
-    private VisualizeAutoload _visualizeAutoload = new();
+    private VisualizeAutoload _visualizeAutoload;
 #endif
 
     public override void _EnterTree()
@@ -34,18 +35,18 @@ public partial class Global : Node
 
         Instance = this;
         GameConsole = GetNode<GameConsole>("%Console");
-        SceneManager = GetNode<SceneManager>("%SceneManager");
-        Services.Init(SceneManager);
+        SceneManager = new SceneManager(this, _scenes);
+        Services = new Services(SceneManager);
     }
 
     public override void _Ready()
     {
         CommandLineArgs.Init();
 
-        OptionsManager.Init(this);
-        AudioManager.Init(this);
-        MetricsOverlay.Init();
-        Logger.Init(GameConsole);
+        OptionsManager = new OptionsManager(this);
+        AudioManager = new AudioManager(this);
+        MetricsOverlay = new MetricsOverlay();
+        Logger = new Logger(GameConsole);
 
 #if DEBUG
         _visualizeAutoload.Init();

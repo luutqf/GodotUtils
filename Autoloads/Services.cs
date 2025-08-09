@@ -17,7 +17,7 @@ public partial class Services : IDisposable
     private Dictionary<Type, Service> _services = [];
     private SceneManager _sceneManager;
 
-    public void Init(SceneManager sceneManager)
+    public Services(SceneManager sceneManager)
     {
         if (_instance != null)
             throw new InvalidOperationException($"{nameof(Services)} was initialized already");

@@ -22,7 +22,7 @@ public class Logger : IDisposable
     private ConcurrentQueue<LogInfo> _messages = [];
     private GameConsole _console;
 
-    public void Init(GameConsole console)
+    public Logger(GameConsole console)
     {
         _instance = this;
         _console = console;

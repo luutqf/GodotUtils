@@ -21,7 +21,7 @@ public partial class SceneManager : Component
     private SceneTree _tree;
     private Node _currentScene;
 
-    public override void Ready()
+    public SceneManager(Global global, Scenes scenes)
     {
         if (_instance != null)
             throw new InvalidOperationException($"{nameof(SceneManager)} was initialized already");

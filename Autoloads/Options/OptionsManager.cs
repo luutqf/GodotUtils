@@ -28,7 +28,7 @@ public partial class OptionsManager : IDisposable
     private string _currentOptionsTab = "General";
     private Global _global;
 
-    public void Init(Global global)
+    public OptionsManager(Global global)
     {
         if (Instance != null)
             throw new InvalidOperationException($"{nameof(OptionsManager)} was initialized already");

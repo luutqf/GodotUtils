@@ -30,12 +30,7 @@ public class MetricsOverlay : IDisposable
     private bool _visible;
     private int _fpsIndex;
 
-    public void Dispose()
-    {
-        _instance = null;
-    }
-
-    public void Init()
+    public MetricsOverlay()
     {
         if (_instance != null)
             throw new InvalidOperationException($"{nameof(MetricsOverlay)} was initialized already");
@@ -86,6 +81,11 @@ public class MetricsOverlay : IDisposable
         {
             RenderPerformanceMetrics(_currentMetrics, _fpsBuffer, ref _fpsIndex, ref _cachedFps);
         }
+    }
+
+    public void Dispose()
+    {
+        _instance = null;
     }
 
     public static void StartTracking(string key, Func<object> function)
