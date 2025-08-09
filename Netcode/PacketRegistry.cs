@@ -2,26 +2,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GodotUtils.Netcode;
 
 public static class PacketRegistry
 {
-    public static Dictionary<Type, PacketInfo<ClientPacket>> ClientPacketMap { get; private set; }
-    public static Dictionary<byte, Type> ClientPacketMapBytes { get; private set; }
+    public static Dictionary<Type, PacketInfo<ClientPacket>> ClientPacketInfo { get; private set; }
+    public static Dictionary<byte, Type> ClientPacketTypes { get; private set; }
 
-    public static Dictionary<Type, PacketInfo<ServerPacket>> ServerPacketMap { get; private set; }
-    public static Dictionary<byte, Type> ServerPacketMapBytes { get; private set; }
+    public static Dictionary<Type, PacketInfo<ServerPacket>> ServerPacketInfo { get; private set; }
+    public static Dictionary<byte, Type> ServerPacketTypes { get; private set; }
 
     static PacketRegistry()
     {
-        ClientPacketMap = MapPackets<ClientPacket>();
-        ClientPacketMapBytes = ClientPacketMap.ToDictionary(kvp => kvp.Value.Opcode, kvp => kvp.Key);
+        ClientPacketInfo = MapPackets<ClientPacket>();
+        ClientPacketTypes = ClientPacketInfo.ToDictionary(kvp => kvp.Value.Opcode, kvp => kvp.Key);
 
-        ServerPacketMap = MapPackets<ServerPacket>();
-        ServerPacketMapBytes = ServerPacketMap.ToDictionary(kvp => kvp.Value.Opcode, kvp => kvp.Key);
+        ServerPacketInfo = MapPackets<ServerPacket>();
+        ServerPacketTypes = ServerPacketInfo.ToDictionary(kvp => kvp.Value.Opcode, kvp => kvp.Key);
     }
 
     private static Dictionary<Type, PacketInfo<T>> MapPackets<T>()

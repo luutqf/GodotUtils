@@ -188,8 +188,8 @@ public abstract class ENetClient : ENetLow
             PacketReader packetReader = new(packet);
             byte opcode = packetReader.ReadByte();
 
-            Type type = PacketRegistry.ServerPacketMapBytes[opcode];
-            ServerPacket handlePacket = PacketRegistry.ServerPacketMap[type].Instance;
+            Type type = PacketRegistry.ServerPacketTypes[opcode];
+            ServerPacket handlePacket = PacketRegistry.ServerPacketInfo[type].Instance;
 
             /*
             * Instead of packets being handled client-side, they are handled

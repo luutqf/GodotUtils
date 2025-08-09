@@ -255,14 +255,14 @@ public abstract class ENetServer : ENetLow
             PacketReader packetReader = new(packetPeer.Item1);
             byte opcode = packetReader.ReadByte();
 
-            if (!PacketRegistry.ClientPacketMapBytes.TryGetValue(opcode, out Type value))
+            if (!PacketRegistry.ClientPacketTypes.TryGetValue(opcode, out Type value))
             {
                 Log($"Received malformed opcode: {opcode} (Ignoring)");
                 return;
             }
 
             Type type = value;
-            ClientPacket handlePacket = PacketRegistry.ClientPacketMap[type].Instance;
+            ClientPacket handlePacket = PacketRegistry.ClientPacketInfo[type].Instance;
 
             try
             {
