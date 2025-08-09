@@ -70,7 +70,7 @@ public abstract class GodotClient : ENetClient
             return;
         }
 
-        _enetCmds.Enqueue(new Cmd<ENetClientOpcode>(ENetClientOpcode.Disconnect));
+        ENetCmds.Enqueue(new Cmd<ENetClientOpcode>(ENetClientOpcode.Disconnect));
     }
 
     /// <summary>
@@ -95,7 +95,7 @@ public abstract class GodotClient : ENetClient
     /// </summary>
     public void HandlePackets()
     {
-        while (_godotPackets.TryDequeue(out PacketData packetData))
+        while (GodotPackets.TryDequeue(out PacketData packetData))
         {
             PacketReader packetReader = packetData.PacketReader;
             ServerPacket handlePacket = packetData.HandlePacket;
@@ -113,7 +113,7 @@ public abstract class GodotClient : ENetClient
             }
         }
 
-        while (_godotCmdsInternal.TryDequeue(out Cmd<GodotOpcode> cmd))
+        while (GodotCmdsInternal.TryDequeue(out Cmd<GodotOpcode> cmd))
         {
             GodotOpcode opcode = cmd.Opcode;
 

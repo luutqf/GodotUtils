@@ -11,12 +11,13 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
 {
     public Net Net { get; private set; }
 
-    private const string LocalIp = "127.0.0.1";
+    private const int    DefaultMaxClients = 100;
+    private const string DefaultLocalIp = "127.0.0.1";
     private const ushort DefaultPort = 25565;
 
-    private string _ip = LocalIp;
-    private ushort _port = DefaultPort;
     private string _username = "";
+    private ushort _port = DefaultPort;
+    private string _ip = DefaultLocalIp;
 
     private Button _startServerBtn;
     private Button _stopServerBtn;
@@ -38,12 +39,14 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
         Net.Client?.HandlePackets();
     }
 
+    protected abstract ENetOptions Options();
+
     private void SetupButtons()
     {
         _startServerBtn = GetNode<Button>("%Start Server");
         _stopServerBtn = GetNode<Button>("%Stop Server");
 
-        _startServerBtn.Pressed += Net.StartServer;
+        _startServerBtn.Pressed += () => Net.StartServer(_port, DefaultMaxClients, Options());
         _stopServerBtn.Pressed += Net.StopServer;
         GetNode<Button>("%Start Client").Pressed += OnStartClientBtnPressed;
         GetNode<Button>("%Stop Client").Pressed += Net.StopClient;
@@ -62,14 +65,7 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
 
     private void OnIpChanged(string text)
     {
-        string[] parts = text.Split(":");
-
-        _ip = parts[0];
-
-        if (parts.Length > 1 && ushort.TryParse(parts[1], out ushort port))
-        {
-            _port = port;
-        }
+        _ip = FetchIpFromString(text, ref _port);
     }
 
     private void OnUsernameChanged(string text)
@@ -103,6 +99,19 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
     {
         _startServerBtn.Disabled = false;
         _stopServerBtn.Disabled = false;
+    }
+
+    private static string FetchIpFromString(string ipString, ref ushort port)
+    {
+        string[] parts = ipString.Split(":");
+        string ip = parts[0];
+
+        if (parts.Length > 1 && ushort.TryParse(parts[1], out ushort foundPort))
+        {
+            port = foundPort;
+        }
+
+        return ip;
     }
 
     private record ClientFactory(Func<GodotClient> Creator) : IGameClientFactory

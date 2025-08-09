@@ -1,4 +1,3 @@
-using Godot;
 using System;
 using System.Threading.Tasks;
 using GodotUtils.Netcode.Client;
@@ -13,16 +12,28 @@ public class Net
 
     public static int HeartbeatPosition { get; } = 20;
 
-    public static GodotServer Server { get; private set; }
-    public static GodotClient Client { get; private set; }
+    public GodotServer Server { get; private set; }
+    public GodotClient Client { get; private set; }
 
-    private const int ShutdownPollIntervalMs = 1;
+    private const int ShutdownPollIntervalMs = 50;
 
     private IGameClientFactory _clientFactory;
     private IGameServerFactory _serverFactory;
+    private bool _enetInitialized;
 
     public Net(IGameClientFactory clientFactory, IGameServerFactory serverFactory)
     {
+        try
+        {
+            ENet.Library.Initialize();
+            _enetInitialized = true;
+        }
+        catch (DllNotFoundException e)
+        {
+            Logger.LogErr(e);
+            _enetInitialized = false;
+        }
+
         Global.Instance.PreQuit += StopThreads;
         Services.Get<UI.PopupMenu>().MainMenuBtnPressed += async () => await StopThreads();
 
@@ -38,7 +49,7 @@ public class Net
         Server.Stop();
     }
 
-    public void StartServer()
+    public void StartServer(ushort port, int maxClients, ENetOptions options)
     {
         if (Server.IsRunning)
         {
@@ -48,13 +59,7 @@ public class Net
 
         Server = _serverFactory.CreateServer();
         ServerCreated?.Invoke(Server);
-        Server.Start(25565, 100, new ENetOptions
-        {
-            PrintPacketByteSize = false,
-            PrintPacketData = false,
-            PrintPacketReceived = false,
-            PrintPacketSent = false
-        });
+        Server.Start(port, maxClients, options);
     }
 
     public void StartClient(string ip, ushort port)
@@ -92,7 +97,7 @@ public class Net
     private async Task StopThreads()
     {
         // Stop the server and client
-        if (ENetLow.ENetInitialized)
+        if (_enetInitialized)
         {
             if (Server.IsRunning)
             {

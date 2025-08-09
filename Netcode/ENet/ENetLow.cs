@@ -11,31 +11,19 @@ namespace GodotUtils.Netcode;
 /// </summary>
 public abstract class ENetLow
 {
-    public static bool ENetInitialized { get; set; }
+    // Properties
+    protected Host Host { get; set; }
+    protected CancellationTokenSource CTS { get; set; }
+    protected ENetOptions Options { get; set; }
+    protected List<Type> IgnoredPackets { get; private set; } = [];
+    
+    // Fields
+    protected long _running; // This must be a field
 
-    static ENetLow()
-    {
-        try
-        {
-            Library.Initialize();
-            ENetInitialized = true;
-        }
-        catch (DllNotFoundException e)
-        {
-            Logger.LogErr(e);
-            ENetInitialized = false;
-        }
-    }
-
+    // Methods
     public bool IsRunning => Interlocked.Read(ref _running) == 1;
     public abstract void Log(object message, BBColor color);
     public abstract void Stop();
-
-    protected Host Host { get; set; }
-    protected CancellationTokenSource CTS { get; set; }
-    protected List<Type> IgnoredPackets { get; set; } = [];
-    
-    protected ENetOptions Options;
 
     protected virtual void DisconnectCleanup(Peer peer)
     {
@@ -93,6 +81,14 @@ public abstract class ENetLow
         Stopped();
     }
 
+    protected virtual void Stopped() { }
+    protected virtual void Starting() { }
+    protected abstract void Connect(Event netEvent);
+    protected abstract void Disconnect(Event netEvent);
+    protected abstract void Timeout(Event netEvent);
+    protected abstract void Receive(Event netEvent);
+    protected abstract void ConcurrentQueues();
+
     /// <summary>
     /// A simple function that transforms the number of bytes into a readable string. For
     /// example if bytes is 1 then "1 byte" is returned. If bytes is 2 then "2 bytes" is 
@@ -103,14 +99,4 @@ public abstract class ENetLow
     {
         return Options.PrintPacketByteSize ? $"({bytes} byte{(bytes == 1 ? "" : "s")}) " : "";
     }
-
-    protected virtual void Stopped() { }
-    protected virtual void Starting() { }
-    protected abstract void Connect(Event netEvent);
-    protected abstract void Disconnect(Event netEvent);
-    protected abstract void Timeout(Event netEvent);
-    protected abstract void Receive(Event netEvent);
-    protected abstract void ConcurrentQueues();
-
-    protected long _running;
 }

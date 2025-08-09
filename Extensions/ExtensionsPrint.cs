@@ -64,11 +64,14 @@ public static class ExtensionsPrint
     /// <returns>A formatted JSON string representation of the object.</returns>
     public static string ToFormattedString(this object v)
     {
-        return JsonConvert.SerializeObject(v, Formatting.Indented, new JsonSerializerSettings
+        string json = JsonConvert.SerializeObject(v, Formatting.Indented, new JsonSerializerSettings
         {
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            ContractResolver = new IgnorePropsResolver() // ignore all Godot props
+            ContractResolver = new IgnorePropsResolver()
         });
+
+        // Normalize line endings to avoid double-spacing in Godot logs
+        return json.Replace("\r\n", "\n");
     }
 
     /// <summary>

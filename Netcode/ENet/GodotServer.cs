@@ -73,7 +73,7 @@ public abstract class GodotServer : ENetServer
     /// </summary>
     public void Kick(uint id, DisconnectOpcode opcode)
     {
-        enetCmds.Enqueue(new Cmd<ENetServerOpcode>(ENetServerOpcode.Kick, id, opcode));
+        ENetCmds.Enqueue(new Cmd<ENetServerOpcode>(ENetServerOpcode.Kick, id, opcode));
     }
 
     /// <summary>
@@ -89,7 +89,7 @@ public abstract class GodotServer : ENetServer
 
         EmitLoop.Stop();
         EmitLoop.Dispose();
-        enetCmds.Enqueue(new Cmd<ENetServerOpcode>(ENetServerOpcode.Stop));
+        ENetCmds.Enqueue(new Cmd<ENetServerOpcode>(ENetServerOpcode.Stop));
     }
 
     /// <summary>
