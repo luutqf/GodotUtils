@@ -104,7 +104,7 @@ public abstract class ENetLow
         return Options.PrintPacketByteSize ? $"({bytes} byte{(bytes == 1 ? "" : "s")}) " : "";
     }
 
-    protected abstract void Stopped();
+    protected virtual void Stopped() { }
     protected virtual void Starting() { }
     protected abstract void Connect(Event netEvent);
     protected abstract void Disconnect(Event netEvent);

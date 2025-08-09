@@ -181,11 +181,6 @@ public abstract class ENetServer : ENetLow
     private readonly ConcurrentQueue<ServerPacket> outgoing = new();
     private readonly ConcurrentQueue<Cmd<ENetServerOpcode>> enetCmds = new();
 
-    static ENetServer()
-    {
-        ClientPacket.MapOpcodes();
-    }
-
     protected abstract void Emit();
 
     private void EnqueuePacket(ServerPacket packet)
@@ -260,14 +255,15 @@ public abstract class ENetServer : ENetLow
             PacketReader packetReader = new(packetPeer.Item1);
             byte opcode = packetReader.ReadByte();
 
-            if (!ClientPacket.PacketMapBytes.TryGetValue(opcode, out Type value))
+            if (!PacketRegistry.ClientPacketMapBytes.TryGetValue(opcode, out Type value))
             {
                 Log($"Received malformed opcode: {opcode} (Ignoring)");
                 return;
             }
 
             Type type = value;
-            ClientPacket handlePacket = ClientPacket.PacketMap[type].Instance;
+            ClientPacket handlePacket = PacketRegistry.ClientPacketMap[type].Instance;
+
             try
             {
                 handlePacket.Read(packetReader);

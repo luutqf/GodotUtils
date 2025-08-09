@@ -164,11 +164,6 @@ public abstract class ENetClient : ENetLow
     private Peer _peer;
     private long _connected;
 
-    static ENetClient()
-    {
-        ServerPacket.MapOpcodes();
-    }
-
     protected override void ConcurrentQueues()
     {
         // ENetCmds
@@ -193,8 +188,8 @@ public abstract class ENetClient : ENetLow
             PacketReader packetReader = new(packet);
             byte opcode = packetReader.ReadByte();
 
-            Type type = ServerPacket.PacketMapBytes[opcode];
-            ServerPacket handlePacket = ServerPacket.PacketMap[type].Instance;
+            Type type = PacketRegistry.ServerPacketMapBytes[opcode];
+            ServerPacket handlePacket = PacketRegistry.ServerPacketMap[type].Instance;
 
             /*
             * Instead of packets being handled client-side, they are handled

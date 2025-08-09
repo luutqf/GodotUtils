@@ -10,18 +10,7 @@ namespace GodotUtils.Netcode;
 /// </summary>
 public abstract class ServerPacket : GamePacket
 {
-    public static Dictionary<Type, PacketInfo<ServerPacket>> PacketMap { get; } = NetcodeUtils.MapPackets<ServerPacket>();
-    public static Dictionary<byte, Type> PacketMapBytes { get; set; } = [];
-
     private SendType _sendType;
-
-    public static void MapOpcodes()
-    {
-        foreach (KeyValuePair<Type, PacketInfo<ServerPacket>> packet in PacketMap)
-        {
-            PacketMapBytes.Add(packet.Value.Opcode, packet.Key);
-        }
-    }
 
     public void Send()
     {
@@ -59,7 +48,7 @@ public abstract class ServerPacket : GamePacket
 
     public override byte GetOpcode()
     {
-        return PacketMap[GetType()].Opcode;
+        return PacketRegistry.ServerPacketMap[GetType()].Opcode;
     }
 
     /// <summary>

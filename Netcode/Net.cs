@@ -6,15 +6,15 @@ using GodotUtils.Netcode.Server;
 
 namespace GodotUtils.Netcode;
 
-public class Net
+public class Net : IDisposable
 {
     public event Action<ENetServer> ServerCreated;
     public event Action<ENetClient> ClientCreated;
 
     public static int HeartbeatPosition { get; } = 20;
 
-    public ENetServer Server { get; private set; }
-    public ENetClient Client { get; private set; }
+    public static ENetServer Server { get; private set; }
+    public static ENetClient Client { get; private set; }
 
     private const int ShutdownPollIntervalMs = 1;
 
@@ -91,6 +91,12 @@ public class Net
         }
 
         Client.Stop();
+    }
+
+    public void Dispose()
+    {
+        Server = null;
+        Client = null;
     }
 
     private async Task StopThreads()
