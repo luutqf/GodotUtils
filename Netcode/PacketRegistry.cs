@@ -7,16 +7,16 @@ namespace GodotUtils.Netcode;
 
 public static class PacketRegistry
 {
-    public static Dictionary<Type, PacketInfo<ClientPacket>> ClientPacketInfo { get; private set; }
-    public static Dictionary<byte, Type> ClientPacketTypes { get; private set; }
+    public static Dictionary<Type, PacketInfo<ClientPacket>> ClientPacketInfoByType { get; private set; }
+    public static Dictionary<byte, Type> ClientPacketTypeByOpcode { get; private set; }
 
     public static Dictionary<Type, PacketInfo<ServerPacket>> ServerPacketInfo { get; private set; }
     public static Dictionary<byte, Type> ServerPacketTypes { get; private set; }
 
     static PacketRegistry()
     {
-        ClientPacketInfo = MapPackets<ClientPacket>();
-        ClientPacketTypes = ClientPacketInfo.ToDictionary(kvp => kvp.Value.Opcode, kvp => kvp.Key);
+        ClientPacketInfoByType = MapPackets<ClientPacket>();
+        ClientPacketTypeByOpcode = ClientPacketInfoByType.ToDictionary(kvp => kvp.Value.Opcode, kvp => kvp.Key);
 
         ServerPacketInfo = MapPackets<ServerPacket>();
         ServerPacketTypes = ServerPacketInfo.ToDictionary(kvp => kvp.Value.Opcode, kvp => kvp.Key);
