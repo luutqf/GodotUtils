@@ -14,6 +14,9 @@ public abstract partial class NetControlPanelLow : Control
     private ushort _port = DefaultPort;
     private string _username = "";
 
+    private Button _startServerBtn;
+    private Button _stopServerBtn;
+
     public override void _Ready()
     {
         Net = new Net(this, GameServerFactory(), GameClientFactory());
@@ -34,8 +37,11 @@ public abstract partial class NetControlPanelLow : Control
 
     private void SetupButtons()
     {
-        GetNode<Button>("%Start Server").Pressed += Net.StartServer;
-        GetNode<Button>("%Stop Server").Pressed += Net.StopServer;
+        _startServerBtn = GetNode<Button>("%Start Server");
+        _stopServerBtn = GetNode<Button>("%Stop Server");
+
+        _startServerBtn.Pressed += Net.StartServer;
+        _stopServerBtn.Pressed += Net.StopServer;
         GetNode<Button>("%Start Client").Pressed += OnStartClientBtnPressed;
         GetNode<Button>("%Stop Client").Pressed += Net.StopClient;
     }
@@ -48,7 +54,7 @@ public abstract partial class NetControlPanelLow : Control
 
     private void SetupInputFields()
     {
-        GetNode<LineEdit>("%IP").TextChanged += OnIpChanged;
+        GetNode<LineEdit>("%Ip").TextChanged += OnIpChanged;
         GetNode<LineEdit>("%Username").TextChanged += OnUsernameChanged;
     }
 
@@ -84,8 +90,8 @@ public abstract partial class NetControlPanelLow : Control
     {
         if (!Net.Server.IsRunning)
         {
-            GetNode<Button>("%Start Server").Disabled = true;
-            GetNode<Button>("%Stop Server").Disabled = true;
+            _startServerBtn.Disabled = true;
+            _stopServerBtn.Disabled = true;
         }
 
         GetTree().UnfocusCurrentControl();
@@ -93,7 +99,7 @@ public abstract partial class NetControlPanelLow : Control
 
     private void OnClientDisconnected(DisconnectOpcode opcode)
     {
-        GetNode<Button>("%Start Server").Disabled = false;
-        GetNode<Button>("%Stop Server").Disabled = false;
+        _startServerBtn.Disabled = false;
+        _stopServerBtn.Disabled = false;
     }
 }
