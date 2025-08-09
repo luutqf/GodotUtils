@@ -1,4 +1,6 @@
 using ENet;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -9,7 +11,7 @@ namespace GodotUtils.Netcode;
 /// </summary>
 public abstract class GamePacket
 {
-    private PropertyInfo[] _cachedProperties;
+    private static readonly Dictionary<Type, PropertyInfo[]> _propertyCache = [];
 
     public static int MaxSize => 8192;
 
@@ -70,13 +72,20 @@ public abstract class GamePacket
 
     private PropertyInfo[] GetProperties()
     {
-        _cachedProperties ??= GetType()
-            .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-            .Where(p => p.CanRead && p.GetCustomAttributes(typeof(NetSendAttribute), true).Length != 0)
-            .OrderBy(p => ((NetSendAttribute)p.GetCustomAttributes(typeof(NetSendAttribute), true).First()).Order)
-            .ToArray();
+        Type type = GetType();
 
-        return _cachedProperties;
+        // Properties are cached by type instead of per instance for improved performance
+        if (!_propertyCache.TryGetValue(type, out PropertyInfo[] props))
+        {
+            props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(p => p.CanRead && p.GetCustomAttributes(typeof(NetSendAttribute), true).Length != 0)
+                .OrderBy(p => ((NetSendAttribute)p.GetCustomAttributes(typeof(NetSendAttribute), true).First()).Order)
+                .ToArray();
+
+            _propertyCache[type] = props;
+        }
+
+        return props;
     }
 
     protected Packet CreateENetPacket()
