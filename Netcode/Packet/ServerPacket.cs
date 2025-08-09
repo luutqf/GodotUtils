@@ -11,6 +11,12 @@ namespace GodotUtils.Netcode;
 public abstract class ServerPacket : GamePacket
 {
     private SendType _sendType;
+    private readonly Type _type;
+
+    public ServerPacket()
+    {
+        _type = GetType();
+    }
 
     public void Send()
     {
@@ -48,7 +54,7 @@ public abstract class ServerPacket : GamePacket
 
     public override byte GetOpcode()
     {
-        return PacketRegistry.ServerPacketMap[GetType()].Opcode;
+        return PacketRegistry.ServerPacketInfo[_type].Opcode;
     }
 
     /// <summary>

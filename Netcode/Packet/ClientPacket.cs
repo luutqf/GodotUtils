@@ -1,6 +1,5 @@
-using System.Collections.Generic;
-using System;
 using GodotUtils.Netcode.Server;
+using System;
 
 namespace GodotUtils.Netcode;
 
@@ -9,6 +8,13 @@ namespace GodotUtils.Netcode;
 /// </summary>
 public abstract class ClientPacket : GamePacket
 {
+    private readonly Type _type;
+
+    public ClientPacket()
+    {
+        _type = GetType();
+    }
+
     public void Send()
     {
         ENet.Packet enetPacket = CreateENetPacket();
@@ -17,7 +23,7 @@ public abstract class ClientPacket : GamePacket
 
     public override byte GetOpcode()
     {
-        return PacketRegistry.ClientPacketMap[GetType()].Opcode;
+        return PacketRegistry.ClientPacketInfo[_type].Opcode;
     }
 
     /// <summary>
