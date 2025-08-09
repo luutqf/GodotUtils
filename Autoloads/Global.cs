@@ -1,16 +1,19 @@
+using __TEMPLATE__.UI;
 using Godot;
-using System.Threading.Tasks;
-using System;
 using GodotUtils.UI;
 using GodotUtils.UI.Console;
-using GodotUtils.Debugging.Visualize;
 using GodotUtils.Debugging;
+using GodotUtils.Debugging.Visualize;
+using System;
+using System.Threading.Tasks;
 
 namespace GodotUtils;
 
 // Autoload
 public partial class Global : Node
 {
+    [Export] private Scenes _scenes;
+
     public event Func<Task> PreQuit;
 
     public static Global Instance { get; private set; }
@@ -42,6 +45,7 @@ public partial class Global : Node
     public override void _Ready()
     {
         CommandLineArgs.Init();
+        Commands.RegisterAll();
 
         OptionsManager = new OptionsManager(this);
         AudioManager = new AudioManager(this);
@@ -49,7 +53,7 @@ public partial class Global : Node
         Logger = new Logger(GameConsole);
 
 #if DEBUG
-        _visualizeAutoload.Init();
+        _visualizeAutoload = new VisualizeAutoload();
 #endif
     }
 
@@ -79,6 +83,7 @@ public partial class Global : Node
         OptionsManager.Dispose();
         Services.Dispose();
         MetricsOverlay.Dispose();
+        SceneManager.Dispose();
 
 #if DEBUG
         _visualizeAutoload.Dispose();
@@ -90,6 +95,14 @@ public partial class Global : Node
         PreQuit = null;
     }
 
+    public void DeferredSwitchSceneProxy(string rawName, Variant transTypeVariant)
+    {
+        if (SceneManager.Instance == null)
+            return;
+
+        SceneManager.Instance.DeferredSwitchScene(rawName, transTypeVariant);
+    }
+
     public async Task QuitAndCleanup()
     {
         GetTree().AutoAcceptQuit = false;
@@ -98,7 +111,6 @@ public partial class Global : Node
         if (PreQuit != null)
             await PreQuit?.Invoke();
 
-        // This must be here because buttons call Global::Quit()
         GetTree().Quit();
     }
 }
