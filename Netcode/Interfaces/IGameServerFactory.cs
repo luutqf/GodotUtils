@@ -4,5 +4,5 @@ namespace GodotUtils.Netcode;
 
 public interface IGameServerFactory
 {
-    ENetServer CreateServer();
+    GodotServer CreateServer();
 }

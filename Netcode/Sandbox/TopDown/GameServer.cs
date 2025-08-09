@@ -5,7 +5,7 @@ using System;
 
 namespace GodotUtils.Netcode.Sandbox.Topdown;
 
-public partial class GameServer : ENetServer
+public partial class GameServer : GodotServer
 {
     protected override void Disconnected(Event netEvent)
     {

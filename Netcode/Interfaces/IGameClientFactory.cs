@@ -4,5 +4,5 @@ namespace GodotUtils.Netcode;
 
 public interface IGameClientFactory
 {
-    ENetClient CreateClient();
+    GodotClient CreateClient();
 }

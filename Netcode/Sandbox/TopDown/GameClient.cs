@@ -6,7 +6,7 @@ using System;
 
 namespace GodotUtils.Netcode.Sandbox.Topdown;
 
-public partial class GameClient : ENetClient
+public partial class GameClient : GodotClient
 {
     protected override void Connect(Event netEvent)
     {

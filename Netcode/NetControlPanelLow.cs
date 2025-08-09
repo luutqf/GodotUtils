@@ -6,8 +6,8 @@ using System;
 namespace GodotUtils.Netcode;
 
 public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Control
-    where TGameClient : ENetClient, new()
-    where TGameServer : ENetServer, new()
+    where TGameClient : GodotClient, new()
+    where TGameServer : GodotServer, new()
 {
     public Net Net { get; private set; }
 
@@ -82,7 +82,7 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
         Net.ClientCreated += OnClientCreated;
     }
 
-    private void OnClientCreated(ENetClient client)
+    private void OnClientCreated(GodotClient client)
     {
         client.Connected += OnClientConnected;
         client.Disconnected += OnClientDisconnected;
@@ -105,13 +105,13 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
         _stopServerBtn.Disabled = false;
     }
 
-    private record ClientFactory(Func<ENetClient> Creator) : IGameClientFactory
+    private record ClientFactory(Func<GodotClient> Creator) : IGameClientFactory
     {
-        public ENetClient CreateClient() => Creator();
+        public GodotClient CreateClient() => Creator();
     }
 
-    private record ServerFactory(Func<ENetServer> Creator) : IGameServerFactory
+    private record ServerFactory(Func<GodotServer> Creator) : IGameServerFactory
     {
-        public ENetServer CreateServer() => Creator();
+        public GodotServer CreateServer() => Creator();
     }
 }

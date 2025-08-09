@@ -8,13 +8,13 @@ namespace GodotUtils.Netcode;
 
 public class Net
 {
-    public event Action<ENetServer> ServerCreated;
-    public event Action<ENetClient> ClientCreated;
+    public event Action<GodotServer> ServerCreated;
+    public event Action<GodotClient> ClientCreated;
 
     public static int HeartbeatPosition { get; } = 20;
 
-    public static ENetServer Server { get; private set; }
-    public static ENetClient Client { get; private set; }
+    public static GodotServer Server { get; private set; }
+    public static GodotClient Client { get; private set; }
 
     private const int ShutdownPollIntervalMs = 1;
 
