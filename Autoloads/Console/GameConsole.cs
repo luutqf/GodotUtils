@@ -6,7 +6,7 @@ using System.Linq;
 namespace GodotUtils.UI.Console;
 
 [SceneTree]
-public partial class GameConsole : Component
+public partial class GameConsole : Node
 {
     private const int MaxTextFeed = 1000;
 
@@ -29,8 +29,6 @@ public partial class GameConsole : Component
 
         Instance = this;
 
-        RegisterPhysicsProcess();
-
         _feed          = Output;
         _input         = CmdsInput;
         _settingsBtn   = Settings;
@@ -47,7 +45,7 @@ public partial class GameConsole : Component
         _mainContainer.Hide();
     }
 
-    public override void PhysicsProcess(double delta)
+    public override void _Process(double delta)
     {
         if (Input.IsActionJustPressed(InputActions.ToggleConsole))
         {
