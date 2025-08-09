@@ -1,75 +1,76 @@
+using __TEMPLATE__.UI;
 using Godot;
 using System;
 
 namespace GodotUtils;
 
 // About Scene Switching: https://docs.godotengine.org/en/latest/tutorials/scripting/singletons_autoload.html
-public partial class SceneManager : Component
+public class SceneManager : IDisposable
 {
-    [Export] private PackedScene _sceneMainMenu;
-    [Export] private PackedScene _sceneModLoader;
-    [Export] private PackedScene _sceneOptions;
-    [Export] private PackedScene _sceneCredits;
-    [Export] private PackedScene _sceneGame;
-
     /// <summary>
     /// The event is invoked right before the scene is changed
     /// </summary>
     public event Action<string> PreSceneChanged;
 
-    private static SceneManager _instance;
+    public static SceneManager Instance { get; private set; }
+
     private SceneTree _tree;
+    private Global _global;
+    private Scenes _scenes;
     private Node _currentScene;
 
     public SceneManager(Global global, Scenes scenes)
     {
-        if (_instance != null)
+        if (Instance != null)
             throw new InvalidOperationException($"{nameof(SceneManager)} was initialized already");
 
-        _instance = this;
-        _tree = GetTree();
+        Instance = this;
+        _global = global;
+        _scenes = scenes;
+        _tree = global.GetTree();
+
         Window root = _tree.Root;
+
         _currentScene = root.GetChild(root.GetChildCount() - 1);
 
         // Gradually fade out all SFX whenever the scene is changed
         PreSceneChanged += OnPreSceneChanged;
     }
 
-    public override void _ExitTree()
+    public void Dispose()
     {
         PreSceneChanged -= OnPreSceneChanged;
-
-        _instance = null;
+        Instance = null;
     }
 
     private void OnPreSceneChanged(string scene) => AudioManager.FadeOutSFX();
 
     public static Node GetCurrentScene()
     {
-        return _instance._currentScene;
+        return Instance._currentScene;
     }
 
     public static void SwitchScene(Scene scene, TransType transType = TransType.None)
     {
         string scenePath = scene switch
         {
-            Scene.MainMenu => _instance._sceneMainMenu.ResourcePath,
-            Scene.ModLoader => _instance._sceneModLoader.ResourcePath,
-            Scene.Options => _instance._sceneOptions.ResourcePath,
-            Scene.Credits => _instance._sceneCredits.ResourcePath,
-            Scene.Game => _instance._sceneGame.ResourcePath,
+            Scene.MainMenu => Instance._scenes.MainMenu.ResourcePath,
+            Scene.ModLoader => Instance._scenes.ModLoader.ResourcePath,
+            Scene.Options => Instance._scenes.Options.ResourcePath,
+            Scene.Credits => Instance._scenes.Credits.ResourcePath,
+            Scene.Game => Instance._scenes.Game.ResourcePath,
             _ => throw new ArgumentOutOfRangeException(nameof(scene), scene, "Tried to switch to unknown scene")
         };
 
-        _instance.PreSceneChanged?.Invoke(scenePath);
+        Instance.PreSceneChanged?.Invoke(scenePath);
 
         switch (transType)
         {
             case TransType.None:
-                _instance.ChangeScene(scenePath, transType);
+                Instance.ChangeScene(scenePath, transType);
                 break;
             case TransType.Fade:
-                _instance.FadeTo(TransColor.Black, 2, () => _instance.ChangeScene(scenePath, transType));
+                Instance.FadeTo(TransColor.Black, 2, () => Instance.ChangeScene(scenePath, transType));
                 break;
         }
     }
@@ -87,16 +88,16 @@ public partial class SceneManager : Component
         PreSceneChanged?.Invoke(sceneName);
 
         // Wait for engine to be ready before switching scenes
-        _instance.CallDeferred(nameof(DeferredSwitchScene), sceneFilePath, Variant.From(TransType.None));
+        _global.CallDeferred(nameof(Global.DeferredSwitchSceneProxy), sceneFilePath, Variant.From(TransType.None));
     }
 
     private void ChangeScene(string scenePath, TransType transType)
     {
         // Wait for engine to be ready before switching scenes
-        _instance.CallDeferred(nameof(DeferredSwitchScene), scenePath, Variant.From(transType));
+        _global.CallDeferred(nameof(Global.DeferredSwitchSceneProxy), scenePath, Variant.From(transType));
     }
 
-    private void DeferredSwitchScene(string rawName, Variant transTypeVariant)
+    public void DeferredSwitchScene(string rawName, Variant transTypeVariant)
     {
         // Safe to remove scene now
         _currentScene.Free();
