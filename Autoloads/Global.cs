@@ -3,7 +3,9 @@ using Godot;
 using GodotUtils.UI;
 using GodotUtils.UI.Console;
 using GodotUtils.Debugging;
+#if DEBUG
 using GodotUtils.Debugging.Visualize;
+#endif
 using System;
 using System.Threading.Tasks;
 
