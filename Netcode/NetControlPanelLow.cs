@@ -19,11 +19,14 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
     private ushort _port = DefaultPort;
     private string _ip = DefaultLocalIp;
 
+    private Logger _logger;
     private Button _startServerBtn;
     private Button _stopServerBtn;
 
     public override void _Ready()
     {
+        _logger = new Logger(Services.Get<Global>().GameConsole);
+
         ServerFactory serverFactory = new(() => new TGameServer());
         ClientFactory clientFactory = new(() => new TGameClient());
 
@@ -34,9 +37,15 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
         SetupClientEvents();
     }
 
-    public override void _PhysicsProcess(double delta)
+    public override void _Process(double delta)
     {
+        _logger.Update();
         Net.Client?.HandlePackets();
+    }
+
+    public override void _ExitTree()
+    {
+        _logger.Dispose();
     }
 
     protected abstract ENetOptions Options();

@@ -20,7 +20,6 @@ public partial class Global : Node
 
     // Game developers should be able to access each individual manager
     public AudioManager   AudioManager   { get; private set; }
-    public Logger         Logger         { get; private set; }
     public OptionsManager OptionsManager { get; private set; }
     public Services       Services       { get; private set; }
     public MetricsOverlay MetricsOverlay { get; private set; }
@@ -40,6 +39,7 @@ public partial class Global : Node
         GameConsole = GetNode<GameConsole>("%Console");
         SceneManager = new SceneManager(this, _scenes);
         Services = new Services(SceneManager);
+        Services.Register(this);
     }
 
     public override void _Ready()
@@ -50,7 +50,6 @@ public partial class Global : Node
         OptionsManager = new OptionsManager(this);
         AudioManager = new AudioManager(this);
         MetricsOverlay = new MetricsOverlay();
-        Logger = new Logger(GameConsole);
 
 #if DEBUG
         _visualizeAutoload = new VisualizeAutoload();
@@ -61,7 +60,6 @@ public partial class Global : Node
     {
         OptionsManager.Update();
         MetricsOverlay.Update();
-        Logger.Update();
 
 #if DEBUG
         _visualizeAutoload.Update();
@@ -79,7 +77,6 @@ public partial class Global : Node
     public override void _ExitTree()
     {
         AudioManager.Dispose();
-        Logger.Dispose();
         OptionsManager.Dispose();
         Services.Dispose();
         MetricsOverlay.Dispose();
