@@ -21,16 +21,19 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
 
     protected abstract ENetOptions Options { get; set; }
 
-    private const int    DefaultMaxClients = 100;
-    private const string DefaultLocalIp = "127.0.0.1";
-    private const ushort DefaultPort = 25565;
+    protected virtual int DefaultMaxClients { get; } = 100;
+    protected virtual string DefaultLocalIp { get; } = "127.0.0.1";
+    protected virtual ushort DefaultPort { get; } = 25565;
 
     private string _username = "";
-    private ushort _port = DefaultPort;
-    private string _ip = DefaultLocalIp;
+    private ushort _port;
+    private string _ip;
 
     public override void _Ready()
     {
+        _port = DefaultPort;
+        _ip = DefaultLocalIp;
+
         ServerFactory serverFactory = new(() => new TGameServer());
         ClientFactory clientFactory = new(() => new TGameClient());
 
