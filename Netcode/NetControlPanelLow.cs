@@ -12,6 +12,15 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
 {
     public Net Net { get; private set; }
 
+    [Export] protected Button   StartServerBtn   { get; set; }
+    [Export] protected Button   StopServerBtn    { get; set; }
+    [Export] protected Button   StartClientBtn   { get; set; }
+    [Export] protected Button   StopClientBtn    { get; set; }
+    [Export] protected LineEdit IpLineEdit       { get; set; }
+    [Export] protected LineEdit UsernameLineEdit { get; set; }
+
+    protected abstract ENetOptions Options { get; set; }
+
     private const int    DefaultMaxClients = 100;
     private const string DefaultLocalIp = "127.0.0.1";
     private const ushort DefaultPort = 25565;
@@ -19,15 +28,6 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
     private string _username = "";
     private ushort _port = DefaultPort;
     private string _ip = DefaultLocalIp;
-
-    [Export] protected abstract Button   StartServerBtn   { get; set; }
-    [Export] protected abstract Button   StopServerBtn    { get; set; }
-    [Export] protected abstract Button   StartClientBtn   { get; set; }
-    [Export] protected abstract Button   StopClientBtn    { get; set; }
-    [Export] protected abstract LineEdit IpLineEdit       { get; set; }
-    [Export] protected abstract LineEdit UsernameLineEdit { get; set; }
-
-    protected abstract ENetOptions Options { get; set; }
 
     public override void _Ready()
     {
