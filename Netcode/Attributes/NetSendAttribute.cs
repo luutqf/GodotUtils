@@ -1,3 +1,4 @@
+#if NETCODE_ENABLED
 using System;
 
 namespace GodotUtils.Netcode;
@@ -7,3 +8,4 @@ public class NetSendAttribute(int order) : Attribute
 {
     public int Order { get; } = order;
 }
+#endif

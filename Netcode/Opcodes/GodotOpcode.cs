@@ -1,3 +1,4 @@
+#if NETCODE_ENABLED
 namespace GodotUtils.Netcode.Client;
 
 public enum GodotOpcode
@@ -6,3 +7,4 @@ public enum GodotOpcode
     Timeout,
     Disconnected
 }
+#endif

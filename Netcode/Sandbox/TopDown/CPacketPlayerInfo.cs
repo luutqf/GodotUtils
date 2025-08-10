@@ -1,3 +1,4 @@
+#if NETCODE_ENABLED
 using ENet;
 using Godot;
 using GodotUtils.Netcode.Server;
@@ -16,3 +17,4 @@ public class CPacketPlayerInfo : ClientPacket
     {
     }
 }
+#endif

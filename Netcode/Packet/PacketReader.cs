@@ -1,3 +1,4 @@
+#if NETCODE_ENABLED
 using Godot;
 using System.Collections.Generic;
 using System.Collections;
@@ -205,6 +206,7 @@ public class PacketReader : IDisposable
         _stream.Dispose();
         _reader.Dispose();
 
-        GC.SuppressFinalize(this); // Not sure why this is needed
+        GC.SuppressFinalize(this);
     }
 }
+#endif

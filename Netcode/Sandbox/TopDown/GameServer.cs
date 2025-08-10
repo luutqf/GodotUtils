@@ -1,3 +1,4 @@
+#if NETCODE_ENABLED
 using ENet;
 using Godot;
 using GodotUtils.Netcode.Server;
@@ -22,3 +23,4 @@ public partial class GameServer : GodotServer
         
     }
 }
+#endif

@@ -1,5 +1,5 @@
+#if NETCODE_ENABLED
 using ENet;
-using System.Collections.Generic;
 using System;
 using GodotUtils.Netcode.Client;
 
@@ -68,3 +68,4 @@ public enum SendType
     Peer,
     Broadcast
 }
+#endif

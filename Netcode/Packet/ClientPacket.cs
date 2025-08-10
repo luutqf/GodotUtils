@@ -1,3 +1,4 @@
+#if NETCODE_ENABLED
 using GodotUtils.Netcode.Server;
 using System;
 
@@ -31,3 +32,4 @@ public abstract class ClientPacket : GamePacket
     /// </summary>
     public abstract void Handle(ENetServer server, ENet.Peer client);
 }
+#endif

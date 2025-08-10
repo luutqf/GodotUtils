@@ -1,3 +1,4 @@
+#if NETCODE_ENABLED
 namespace GodotUtils.Netcode;
 
 public enum DisconnectOpcode
@@ -10,3 +11,4 @@ public enum DisconnectOpcode
     Kicked,
     Banned
 }
+#endif

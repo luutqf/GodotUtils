@@ -1,3 +1,4 @@
+#if NETCODE_ENABLED
 namespace GodotUtils.Netcode;
 
 public class ENetOptions
@@ -7,3 +8,4 @@ public class ENetOptions
     public bool PrintPacketReceived { get; set; } = true;
     public bool PrintPacketSent     { get; set; } = true;
 }
+#endif

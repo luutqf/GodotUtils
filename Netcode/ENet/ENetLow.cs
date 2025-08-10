@@ -1,3 +1,4 @@
+#if NETCODE_ENABLED
 using ENet;
 using System.Collections.Generic;
 using System.Linq;
@@ -100,3 +101,4 @@ public abstract class ENetLow
         return Options.PrintPacketByteSize ? $"({bytes} byte{(bytes == 1 ? "" : "s")}) " : "";
     }
 }
+#endif
