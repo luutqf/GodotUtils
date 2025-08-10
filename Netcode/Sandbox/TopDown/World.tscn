@@ -10,55 +10,61 @@
 [node name="PopupMenu" parent="CanvasLayer" instance=ExtResource("2_pk5r8")]
 visible = false
 
-[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer"]
+[node name="Multiplayer" type="PanelContainer" parent="CanvasLayer" node_paths=PackedStringArray("StartServerBtn", "StopServerBtn", "StartClientBtn", "StopClientBtn", "IpLineEdit", "UsernameLineEdit")]
 offset_right = 40.0
 offset_bottom = 40.0
 script = ExtResource("1_8p5wx")
+StartServerBtn = NodePath("MarginContainer/HBoxContainer/GridContainer/Start Server")
+StopServerBtn = NodePath("MarginContainer/HBoxContainer/GridContainer/Stop Server")
+StartClientBtn = NodePath("MarginContainer/HBoxContainer/GridContainer/Start Client")
+StopClientBtn = NodePath("MarginContainer/HBoxContainer/GridContainer/Stop Client")
+IpLineEdit = NodePath("MarginContainer/HBoxContainer/VBoxContainer/Ip")
+UsernameLineEdit = NodePath("MarginContainer/HBoxContainer/VBoxContainer/Username")
 
-[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/PanelContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/Multiplayer"]
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/Multiplayer/MarginContainer"]
 layout_mode = 2
 
-[node name="GridContainer" type="GridContainer" parent="CanvasLayer/PanelContainer/MarginContainer/HBoxContainer"]
+[node name="GridContainer" type="GridContainer" parent="CanvasLayer/Multiplayer/MarginContainer/HBoxContainer"]
 layout_mode = 2
 columns = 2
 
-[node name="Start Server" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/HBoxContainer/GridContainer"]
+[node name="Start Server" type="Button" parent="CanvasLayer/Multiplayer/MarginContainer/HBoxContainer/GridContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Start Server"
 
-[node name="Stop Server" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/HBoxContainer/GridContainer"]
+[node name="Stop Server" type="Button" parent="CanvasLayer/Multiplayer/MarginContainer/HBoxContainer/GridContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Stop Server"
 
-[node name="Start Client" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/HBoxContainer/GridContainer"]
+[node name="Start Client" type="Button" parent="CanvasLayer/Multiplayer/MarginContainer/HBoxContainer/GridContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Start Client"
 
-[node name="Stop Client" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/HBoxContainer/GridContainer"]
+[node name="Stop Client" type="Button" parent="CanvasLayer/Multiplayer/MarginContainer/HBoxContainer/GridContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Stop Client"
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer/HBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Multiplayer/MarginContainer/HBoxContainer"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 
-[node name="Ip" type="LineEdit" parent="CanvasLayer/PanelContainer/MarginContainer/HBoxContainer/VBoxContainer"]
+[node name="Ip" type="LineEdit" parent="CanvasLayer/Multiplayer/MarginContainer/HBoxContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "127.0.0.1"
 
-[node name="Username" type="LineEdit" parent="CanvasLayer/PanelContainer/MarginContainer/HBoxContainer/VBoxContainer"]
+[node name="Username" type="LineEdit" parent="CanvasLayer/Multiplayer/MarginContainer/HBoxContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Valk"
