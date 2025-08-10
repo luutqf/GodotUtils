@@ -4,7 +4,7 @@ namespace GodotUtils.RegEx;
 
 public static partial class RegexUtils
 {
-    [GeneratedRegex(@"(?<=type=""Script""[^\n]*path="")[^""]+(?="")", RegexOptions.Multiline)]
+    [GeneratedRegex(@"(?<=type=""Script""[^\n]*path="")[^""]*(?="")", RegexOptions.Multiline)]
     public static partial Regex ScriptPath();
 
     [GeneratedRegex(@"[^\s""']+|""([^""]*)""|'([^']*)'")]
