@@ -38,7 +38,7 @@ public abstract class GodotClient : ENetClient
     /// packets are packets that do not get logged to the console.
     /// </para>
     /// </summary>
-    public async void Connect(string ip, ushort port, ENetOptions options = default, params Type[] ignoredPackets)
+    public async Task Connect(string ip, ushort port, ENetOptions options = default, params Type[] ignoredPackets)
     {
         Options = options;
 

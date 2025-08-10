@@ -63,7 +63,7 @@ public class Net
         Server.Start(port, maxClients, options);
     }
 
-    public void StartClient(string ip, ushort port)
+    public async Task StartClient(string ip, ushort port)
     {
         if (Client.IsRunning)
         {
@@ -75,7 +75,7 @@ public class Net
 
         ClientCreated?.Invoke(Client);
 
-        Client.Connect(ip, port, new ENetOptions
+        await Client.Connect(ip, port, new ENetOptions
         {
             PrintPacketByteSize = false,
             PrintPacketData = false,

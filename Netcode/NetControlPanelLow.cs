@@ -53,9 +53,9 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
         GetNode<Button>("%Stop Client").Pressed += Net.StopClient;
     }
 
-    private void OnStartClientBtnPressed()
+    private async void OnStartClientBtnPressed()
     {
-        Net.StartClient(_ip, _port);
+        await Net.StartClient(_ip, _port);
     }
 
     private void SetupInputFields()
