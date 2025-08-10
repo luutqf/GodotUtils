@@ -10,16 +10,16 @@
 [node name="PopupMenu" parent="CanvasLayer" instance=ExtResource("2_pk5r8")]
 visible = false
 
-[node name="Multiplayer" type="PanelContainer" parent="CanvasLayer" node_paths=PackedStringArray("StartServerBtn", "StopServerBtn", "StartClientBtn", "StopClientBtn", "IpLineEdit", "UsernameLineEdit")]
+[node name="Multiplayer" type="PanelContainer" parent="CanvasLayer" node_paths=PackedStringArray("_usernameLineEdit", "_ipLineEdit", "_startServerBtn", "_stopServerBtn", "_startClientBtn", "_stopClientBtn")]
 offset_right = 40.0
 offset_bottom = 40.0
 script = ExtResource("1_8p5wx")
-StartServerBtn = NodePath("MarginContainer/HBoxContainer/GridContainer/Start Server")
-StopServerBtn = NodePath("MarginContainer/HBoxContainer/GridContainer/Stop Server")
-StartClientBtn = NodePath("MarginContainer/HBoxContainer/GridContainer/Start Client")
-StopClientBtn = NodePath("MarginContainer/HBoxContainer/GridContainer/Stop Client")
-IpLineEdit = NodePath("MarginContainer/HBoxContainer/VBoxContainer/Ip")
-UsernameLineEdit = NodePath("MarginContainer/HBoxContainer/VBoxContainer/Username")
+_usernameLineEdit = NodePath("MarginContainer/HBoxContainer/VBoxContainer/Username")
+_ipLineEdit = NodePath("MarginContainer/HBoxContainer/VBoxContainer/Ip")
+_startServerBtn = NodePath("MarginContainer/HBoxContainer/GridContainer/Start Server")
+_stopServerBtn = NodePath("MarginContainer/HBoxContainer/GridContainer/Stop Server")
+_startClientBtn = NodePath("MarginContainer/HBoxContainer/GridContainer/Start Client")
+_stopClientBtn = NodePath("MarginContainer/HBoxContainer/GridContainer/Stop Client")
 
 [node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/Multiplayer"]
 layout_mode = 2

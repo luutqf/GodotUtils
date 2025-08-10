@@ -12,12 +12,12 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
 {
     public Net Net { get; private set; }
 
-    [Export] protected Button   StartServerBtn   { get; set; }
-    [Export] protected Button   StopServerBtn    { get; set; }
-    [Export] protected Button   StartClientBtn   { get; set; }
-    [Export] protected Button   StopClientBtn    { get; set; }
-    [Export] protected LineEdit IpLineEdit       { get; set; }
-    [Export] protected LineEdit UsernameLineEdit { get; set; }
+    [Export] private LineEdit _usernameLineEdit;
+    [Export] private LineEdit _ipLineEdit;
+    [Export] private Button _startServerBtn;
+    [Export] private Button _stopServerBtn;
+    [Export] private Button _startClientBtn;
+    [Export] private Button _stopClientBtn;
 
     protected abstract ENetOptions Options { get; set; }
 
@@ -48,10 +48,10 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
 
     private void SetupButtons()
     {
-        StartServerBtn.Pressed += () => Net.StartServer(_port, DefaultMaxClients, Options);
-        StopServerBtn.Pressed += Net.StopServer;
-        StartClientBtn.Pressed += OnStartClientBtnPressed;
-        StopClientBtn.Pressed += Net.StopClient;
+        _startServerBtn.Pressed += () => Net.StartServer(_port, DefaultMaxClients, Options);
+        _stopServerBtn.Pressed += Net.StopServer;
+        _startClientBtn.Pressed += OnStartClientBtnPressed;
+        _stopClientBtn.Pressed += Net.StopClient;
     }
 
     private async void OnStartClientBtnPressed()
@@ -61,8 +61,8 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
 
     private void SetupInputFields()
     {
-        IpLineEdit.TextChanged += OnIpChanged;
-        UsernameLineEdit.TextChanged += OnUsernameChanged;
+        _ipLineEdit.TextChanged += OnIpChanged;
+        _usernameLineEdit.TextChanged += OnUsernameChanged;
     }
 
     private void OnIpChanged(string text)
@@ -90,8 +90,8 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
     {
         if (!Net.Server.IsRunning)
         {
-            StartServerBtn.Disabled = true;
-            StopServerBtn.Disabled = true;
+            _startServerBtn.Disabled = true;
+            _stopServerBtn.Disabled = true;
         }
 
         GetTree().UnfocusCurrentControl();
@@ -99,8 +99,8 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
 
     private void OnClientDisconnected(DisconnectOpcode opcode)
     {
-        StartServerBtn.Disabled = false;
-        StopServerBtn.Disabled = false;
+        _startServerBtn.Disabled = false;
+        _stopServerBtn.Disabled = false;
     }
 
     private static string FetchIpFromString(string ipString, ref ushort port)
