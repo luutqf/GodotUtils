@@ -43,7 +43,7 @@ public abstract class GodotClient : ENetClient
         Options = options;
 
         Log("Client is starting");
-        Starting();
+        OnStarting();
         InitIgnoredPackets(ignoredPackets);
 
         _running = 1;

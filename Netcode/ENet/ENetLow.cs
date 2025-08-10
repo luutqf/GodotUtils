@@ -16,24 +16,24 @@ public abstract class ENetLow
     protected Host Host { get; set; }
     protected CancellationTokenSource CTS { get; set; }
     protected ENetOptions Options { get; set; }
-    protected List<Type> IgnoredPackets { get; private set; } = [];
+    protected HashSet<Type> IgnoredPackets { get; private set; } = [];
     
     // Fields
-    protected long _running; // This must be a field
+    protected long _running; // Interlocked.Read requires this to be a field
 
     // Methods
     public bool IsRunning => Interlocked.Read(ref _running) == 1;
     public abstract void Log(object message, BBColor color);
     public abstract void Stop();
 
-    protected virtual void DisconnectCleanup(Peer peer)
+    protected virtual void OnDisconnectCleanup(Peer peer)
     {
         CTS.Cancel();
     }
 
     protected void InitIgnoredPackets(Type[] ignoredPackets)
     {
-        IgnoredPackets = ignoredPackets.ToList();
+        IgnoredPackets = new HashSet<Type>(ignoredPackets);
     }
 
     protected void WorkerLoop()
@@ -62,16 +62,16 @@ public abstract class ENetLow
                         // do nothing
                         break;
                     case EventType.Connect:
-                        Connect(netEvent);
+                        OnConnect(netEvent);
                         break;
                     case EventType.Disconnect:
-                        Disconnect(netEvent);
+                        OnDisconnect(netEvent);
                         break;
                     case EventType.Timeout:
-                        Timeout(netEvent);
+                        OnTimeout(netEvent);
                         break;
                     case EventType.Receive:
-                        Receive(netEvent);
+                        OnReceive(netEvent);
                         break;
                 }
             }
@@ -79,16 +79,16 @@ public abstract class ENetLow
 
         Host.Flush();
         _running = 0;
-        Stopped();
+        OnStopped();
     }
 
-    protected virtual void Stopped() { }
-    protected virtual void Starting() { }
-    protected abstract void Connect(Event netEvent);
-    protected abstract void Disconnect(Event netEvent);
-    protected abstract void Timeout(Event netEvent);
-    protected abstract void Receive(Event netEvent);
     protected abstract void ConcurrentQueues();
+    protected virtual void OnStopped() { }
+    protected virtual void OnStarting() { }
+    protected abstract void OnConnect(Event netEvent);
+    protected abstract void OnDisconnect(Event netEvent);
+    protected abstract void OnTimeout(Event netEvent);
+    protected abstract void OnReceive(Event netEvent);
 
     /// <summary>
     /// A simple function that transforms the number of bytes into a readable string. For

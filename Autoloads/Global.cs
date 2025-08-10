@@ -32,6 +32,10 @@ public partial class Global : Node
     private VisualizeAutoload _visualizeAutoload;
 #endif
 
+#if NETCODE_ENABLED
+    private Logger _logger;
+#endif
+
     public override void _EnterTree()
     {
         if (Instance != null)
@@ -41,7 +45,10 @@ public partial class Global : Node
         GameConsole = GetNode<GameConsole>("%Console");
         SceneManager = new SceneManager(this, _scenes);
         Services = new Services(SceneManager);
-        Services.Register(this);
+
+#if NETCODE_ENABLED
+        _logger = new Logger(GameConsole);
+#endif
     }
 
     public override void _Ready()
@@ -66,6 +73,10 @@ public partial class Global : Node
 #if DEBUG
         _visualizeAutoload.Update();
 #endif
+
+#if NETCODE_ENABLED
+        _logger.Update();
+#endif
     }
 
     public override async void _Notification(int what)
@@ -86,6 +97,10 @@ public partial class Global : Node
 
 #if DEBUG
         _visualizeAutoload.Dispose();
+#endif
+
+#if NETCODE_ENABLED
+        _logger.Dispose();
 #endif
 
         Profiler.Dispose();

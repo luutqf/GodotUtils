@@ -30,18 +30,6 @@ public class Logger : IDisposable
         MessageLogged += _console.AddMessage;
     }
 
-    public void Dispose()
-    {
-        MessageLogged -= _console.AddMessage;
-
-        _instance = null;
-    }
-
-    public void Update()
-    {
-        DequeueMessages();
-    }
-
     /// <summary>
     /// Log a message
     /// </summary>
@@ -133,12 +121,24 @@ public class Logger : IDisposable
         Log($"Took {watch.ElapsedMilliseconds} ms");
     }
 
+    public void Update()
+    {
+        DequeueMessages();
+    }
+
     /// <summary>
     /// Checks to see if there are any messages left in the queue
     /// </summary>
     public static bool StillWorking()
     {
         return !_instance._messages.IsEmpty;
+    }
+
+    public void Dispose()
+    {
+        MessageLogged -= _console.AddMessage;
+
+        _instance = null;
     }
 
     /// <summary>

@@ -3,22 +3,23 @@ using ENet;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System;
+using System.IO;
 
 namespace GodotUtils.Netcode.Server;
 
 // ENet API Reference: https://github.com/SoftwareGuy/ENet-CSharp/blob/master/DOCUMENTATION.md
 public abstract class ENetServer : ENetLow
 {
-    /// <summary>
-    /// This Dictionary is NOT thread safe and should only be accessed on the ENet Thread
-    /// </summary>
-    public Dictionary<uint, Peer> Peers { get; } = [];
-
     protected ConcurrentQueue<Cmd<ENetServerOpcode>> ENetCmds { get; } = new();
     protected System.Timers.Timer EmitLoop { get; set; }
 
     private readonly ConcurrentQueue<(Packet, Peer)> _incoming = new();
     private readonly ConcurrentQueue<ServerPacket> _outgoing = new();
+
+    /// <summary>
+    /// This Dictionary is NOT thread safe and should only be accessed on the ENet Thread
+    /// </summary>
+    private readonly Dictionary<uint, Peer> _peers = [];
 
     /// <summary>
     /// Log a message as the server. This function is thread safe.
@@ -36,7 +37,7 @@ public abstract class ENetServer : ENetLow
         ENetCmds.Enqueue(new Cmd<ENetServerOpcode>(ENetServerOpcode.KickAll, opcode));
     }
 
-    protected abstract void Emit();
+    protected abstract void OnEmit();
 
     protected void EnqueuePacket(ServerPacket packet)
     {
@@ -50,29 +51,29 @@ public abstract class ENetServer : ENetLow
         ProcessOutgoingPackets();
     }
 
-    protected override void Connect(Event netEvent)
+    protected override void OnConnect(Event netEvent)
     {
-        Peers[netEvent.Peer.ID] = netEvent.Peer;
+        _peers[netEvent.Peer.ID] = netEvent.Peer;
         Log("Client connected - ID: " + netEvent.Peer.ID);
     }
 
-    protected abstract void Disconnected(Event netEvent);
+    protected abstract void OnDisconnected(Event netEvent);
 
-    protected override void Disconnect(Event netEvent)
+    protected override void OnDisconnect(Event netEvent)
     {
-        Peers.Remove(netEvent.Peer.ID);
+        _peers.Remove(netEvent.Peer.ID);
         Log("Client disconnected - ID: " + netEvent.Peer.ID);
-        Disconnected(netEvent);
+        OnDisconnected(netEvent);
     }
 
-    protected override void Timeout(Event netEvent)
+    protected override void OnTimeout(Event netEvent)
     {
-        Peers.Remove(netEvent.Peer.ID);
+        _peers.Remove(netEvent.Peer.ID);
         Log("Client timeout - ID: " + netEvent.Peer.ID);
-        Disconnected(netEvent);
+        OnDisconnected(netEvent);
     }
 
-    protected override void Receive(Event netEvent)
+    protected override void OnReceive(Event netEvent)
     {
         Packet packet = netEvent.Packet;
 
@@ -88,17 +89,10 @@ public abstract class ENetServer : ENetLow
 
     protected void WorkerThread(ushort port, int maxClients)
     {
-        Host = new Host();
+        Host = CreateServerHost(port, maxClients);
 
-        try
-        {
-            Host.Create(new Address { Port = port }, maxClients);
-        }
-        catch (InvalidOperationException e)
-        {
-            Log($"A server is running on port {port} already! {e.Message}");
+        if (Host == null)
             return;
-        }
 
         Log("Server is running");
 
@@ -114,10 +108,28 @@ public abstract class ENetServer : ENetLow
         Log("Server has stopped");
     }
 
-    protected override void DisconnectCleanup(Peer peer)
+    protected override void OnDisconnectCleanup(Peer peer)
     {
-        base.DisconnectCleanup(peer);
-        Peers.Remove(peer.ID);
+        base.OnDisconnectCleanup(peer);
+        _peers.Remove(peer.ID);
+    }
+
+    /// <returns>Host or null if failed to create host</returns>
+    private Host CreateServerHost(ushort port, int maxClients)
+    {
+        Host host = new();
+
+        try
+        {
+            host.Create(new Address { Port = port }, maxClients);
+        }
+        catch (InvalidOperationException e)
+        {
+            Log($"A server is running on port {port} already! {e.Message}");
+            return null;
+        }
+
+        return host;
     }
 
     private void ProcessEnetCommands()
@@ -159,57 +171,85 @@ public abstract class ENetServer : ENetLow
         uint id = (uint)cmd.Data[0];
         DisconnectOpcode opcode = (DisconnectOpcode)cmd.Data[1];
 
-        if (!Peers.TryGetValue(id, out Peer peer))
+        if (!_peers.TryGetValue(id, out Peer peer))
         {
             Log($"Tried to kick peer with id '{id}' but this peer does not exist");
             return;
         }
 
         peer.DisconnectNow((uint)opcode);
-        Peers.Remove(id);
+        _peers.Remove(id);
     }
 
     private void HandleKickAllCommand(Cmd<ENetServerOpcode> cmd)
     {
         DisconnectOpcode opcode = (DisconnectOpcode)cmd.Data[0];
 
-        Peers.Values.ForEach(peer => peer.DisconnectNow((uint)opcode));
-        Peers.Clear();
+        foreach (Peer peer in _peers.Values)
+        {
+            peer.DisconnectNow((uint)opcode);
+        }
+
+        _peers.Clear();
     }
 
     private void ProcessIncomingPackets()
     {
-        while (_incoming.TryDequeue(out (Packet, Peer) packetPeer))
+        while (_incoming.TryDequeue(out (Packet enetPacket, Peer peer) packetPeer))
         {
-            PacketReader packetReader = new(packetPeer.Item1);
-            byte opcode = packetReader.ReadByte();
-
-            if (!PacketRegistry.ClientPacketTypeByOpcode.TryGetValue(opcode, out Type value))
-            {
-                Log($"Received malformed opcode: {opcode} (Ignoring)");
-                return;
-            }
-
-            Type type = value;
-            ClientPacket handlePacket = PacketRegistry.ClientPacketInfoByType[type].Instance;
+            PacketReader reader = new(packetPeer.enetPacket);
 
             try
             {
-                handlePacket.Read(packetReader);
-            }
-            catch (System.IO.EndOfStreamException e)
-            {
-                Log($"Received malformed packet: {opcode} {e.Message} (Ignoring)");
-                return;
+                if (!TryGetPacketHandler(reader, out ClientPacket handler, out Type type))
+                    continue;
+
+                if (!TryReadPacket(handler, reader, out string err))
+                {
+                    Log($"Received malformed packet: {err} (Ignoring)");
+                    continue;
+                }
+
+                handler.Handle(this, packetPeer.peer);
+                LogPacketReceived(type, packetPeer.peer.ID, handler);
             }
             finally
             {
-                packetReader.Dispose();
+                reader.Dispose();
             }
+        }
+    }
 
-            handlePacket.Handle(this, packetPeer.Item2);
+    private bool TryGetPacketHandler(PacketReader reader, out ClientPacket handler, out Type type)
+    {
+        handler = null;
 
-            LogPacketReceived(type, packetPeer.Item2.ID, handlePacket);
+        // Note: reader is positioned at start of packet when constructed
+        byte opcode = reader.ReadByte();
+
+        if (!PacketRegistry.ClientPacketTypeByOpcode.TryGetValue(opcode, out type))
+        {
+            Log($"Received malformed opcode: {opcode} (Ignoring)");
+            return false;
+        }
+
+        handler = PacketRegistry.ClientPacketInfoByType[type].Instance;
+        return true;
+    }
+
+    private bool TryReadPacket(ClientPacket handler, PacketReader reader, out string error)
+    {
+        error = null;
+
+        try
+        {
+            handler.Read(reader);
+            return true;
+        }
+        catch (EndOfStreamException e)
+        {
+            error = e.Message;
+            return false;
         }
     }
 

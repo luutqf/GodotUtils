@@ -31,13 +31,13 @@ public abstract class GodotServer : ENetServer
         Options = options;
         InitIgnoredPackets(ignoredPackets);
 
-        EmitLoop = SystemTimerFactory.Create(100, Emit, false);
+        EmitLoop = SystemTimerFactory.Create(100, OnEmit, false);
         EmitLoop.Start();
 
         _running = 1;
         CTS = new CancellationTokenSource();
 
-        Starting();
+        OnStarting();
 
         try
         {

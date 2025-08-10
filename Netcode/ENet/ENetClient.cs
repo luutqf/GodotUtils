@@ -40,35 +40,35 @@ public abstract class ENetClient : ENetLow
         ProcessOutgoingPackets();
     }
 
-    protected override void Connect(Event netEvent)
+    protected override void OnConnect(Event netEvent)
     {
         _connected = 1;
         GodotCmdsInternal.Enqueue(new Cmd<GodotOpcode>(GodotOpcode.Connected));
         Log("Client connected to server");
     }
 
-    protected override void Disconnect(Event netEvent)
+    protected override void OnDisconnect(Event netEvent)
     {
         DisconnectOpcode opcode = (DisconnectOpcode)netEvent.Data;
         
         GodotCmdsInternal.Enqueue(new Cmd<GodotOpcode>(GodotOpcode.Disconnected, opcode));
         
-        DisconnectCleanup(_peer);
+        OnDisconnectCleanup(_peer);
 
-        Log($"Received disconnect opcode from server: " +
-            $"{opcode.ToString().ToLower()}");
+        Log($"Received disconnect opcode from server: {opcode.ToString().ToLower()}");
     }
 
-    protected override void Timeout(Event netEvent)
+    protected override void OnTimeout(Event netEvent)
     {
+        // I do not remember why I enqueued both a Timeout AND a Disconnected Godot cmds
         GodotCmdsInternal.Enqueue(new Cmd<GodotOpcode>(GodotOpcode.Disconnected, DisconnectOpcode.Timeout));
         GodotCmdsInternal.Enqueue(new Cmd<GodotOpcode>(GodotOpcode.Timeout));
 
-        DisconnectCleanup(_peer);
+        OnDisconnectCleanup(_peer);
         Log("Client connection timeout");
     }
 
-    protected override void Receive(Event netEvent)
+    protected override void OnReceive(Event netEvent)
     {
         Packet packet = netEvent.Packet;
         if (packet.Length > GamePacket.MaxSize)
@@ -82,20 +82,18 @@ public abstract class ENetClient : ENetLow
         _incoming.Enqueue(packet);
     }
 
-    protected override void DisconnectCleanup(Peer peer)
+    protected override void OnDisconnectCleanup(Peer peer)
     {
-        base.DisconnectCleanup(peer);
+        base.OnDisconnectCleanup(peer);
         _connected = 0;
     }
 
     protected void WorkerThread(string ip, ushort port)
     {
         Host = new Host();
-        Address address = new() { Port = port };
-        address.SetHost(ip);
         Host.Create();
 
-        _peer = Host.Connect(address);
+        _peer = Host.Connect(CreateAddress(ip, port));
         _peer.PingInterval(PingIntervalMs);
         _peer.Timeout(PeerTimeoutMs, PeerTimeoutMinimumMs, PeerTimeoutMaximumMs);
 
@@ -123,8 +121,8 @@ public abstract class ENetClient : ENetLow
                     break;
                 }
 
-                _peer.Disconnect(0);
-                DisconnectCleanup(_peer);
+                _peer.Disconnect((uint)DisconnectOpcode.Disconnected);
+                OnDisconnectCleanup(_peer);
             }
         }
     }
@@ -158,14 +156,25 @@ public abstract class ENetClient : ENetLow
         {
             Type type = clientPacket.GetType();
 
-            if (!IgnoredPackets.Contains(type) && Options.PrintPacketSent)
-            {
-                Log($"Sent packet: {type.Name} {FormatByteSize(clientPacket.GetSize())}" +
-                    $"{(Options.PrintPacketData ? $"\n{clientPacket.ToFormattedString()}" : "")}");
-            }
-
+            LogOutgoingPacket(type, clientPacket);
             clientPacket.Send();
         }
+    }
+
+    private void LogOutgoingPacket(Type type, ClientPacket clientPacket)
+    {
+        if (!IgnoredPackets.Contains(type) && Options.PrintPacketSent)
+        {
+            Log($"Sent packet: {type.Name} {FormatByteSize(clientPacket.GetSize())}" +
+                $"{(Options.PrintPacketData ? $"\n{clientPacket.ToFormattedString()}" : "")}");
+        }
+    }
+
+    private static Address CreateAddress(string ip, ushort port)
+    {
+        Address address = new() { Port = port };
+        address.SetHost(ip);
+        return address;
     }
 }
 #endif

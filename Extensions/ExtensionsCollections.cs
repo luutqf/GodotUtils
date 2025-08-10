@@ -7,7 +7,8 @@ namespace GodotUtils;
 public static class ExtensionsCollection
 {
     /// <summary>
-    /// A convience method for a foreach loop at the the sacrafice of debugging support
+    /// A convience method for a foreach loop at the the sacrafice of debugging support and is
+    /// slightly slower for performance than a regular foreach loop.
     /// </summary>
     public static void ForEach<T>(this IEnumerable<T> value, Action<T> action)
     {
