@@ -1,6 +1,5 @@
-[gd_scene load_steps=3 format=3 uid="uid://d1jo48n2hdkih"]
+[gd_scene load_steps=2 format=3 uid="uid://d1jo48n2hdkih"]
 
-[ext_resource type="Theme" uid="uid://0lugooukjqem" path="res://Framework/GodotUtils/ModLoader/ModLoader.tres" id="1_22r32"]
 [ext_resource type="Script" uid="uid://bsp7uk58xytxa" path="res://Framework/GodotUtils/ModLoader/ModLoader.cs" id="1_xqxxn"]
 
 [node name="ModLoader" type="PanelContainer"]
@@ -9,7 +8,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = ExtResource("1_22r32")
 script = ExtResource("1_xqxxn")
 metadata/_edit_lock_ = true
 

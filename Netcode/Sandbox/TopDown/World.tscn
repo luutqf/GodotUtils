@@ -1,7 +1,14 @@
-[gd_scene load_steps=3 format=3 uid="uid://btwdcgmbvwyid"]
+[gd_scene load_steps=4 format=3 uid="uid://btwdcgmbvwyid"]
 
 [ext_resource type="Script" uid="uid://bvuoljdc6j7td" path="res://Framework/GodotUtils/Netcode/Sandbox/TopDown/NetControlPanel.cs" id="1_8p5wx"]
 [ext_resource type="PackedScene" uid="uid://c6pism2kgjr5c" path="res://Framework/Scenes/PopupMenu/PopupMenu.tscn" id="2_pk5r8"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pk5r8"]
+bg_color = Color(0.0223606, 0, 0.333594, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
 
 [node name="World" type="Node2D"]
 
@@ -13,6 +20,7 @@ visible = false
 [node name="Multiplayer" type="PanelContainer" parent="CanvasLayer" node_paths=PackedStringArray("_usernameLineEdit", "_ipLineEdit", "_startServerBtn", "_stopServerBtn", "_startClientBtn", "_stopClientBtn")]
 offset_right = 40.0
 offset_bottom = 40.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_pk5r8")
 script = ExtResource("1_8p5wx")
 _usernameLineEdit = NodePath("MarginContainer/HBoxContainer/VBoxContainer/Username")
 _ipLineEdit = NodePath("MarginContainer/HBoxContainer/VBoxContainer/Ip")
