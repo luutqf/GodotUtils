@@ -193,4 +193,21 @@ public static class ExtensionsNode
             node.RemoveFromGroup(groups[i]);
         }
     }
+
+    /// <summary>
+    /// Recursively traverse the tree, executing <paramref name="code"/> for this <paramref name="node"/> and all its children.
+    /// </summary>
+    /// <param name="node">The starting node for traversal.</param>
+    /// <param name="code">Action to execute for each node.</param>
+    public static void TraverseNodes(this Node node, Action<Node> code)
+    {
+        // Execute the action on the current node
+        code(node);
+
+        // Recurse into children
+        foreach (Node child in node.GetChildren())
+        {
+            TraverseNodes(child, code);
+        }
+    }
 }
