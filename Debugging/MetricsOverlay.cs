@@ -21,7 +21,8 @@ public class MetricsOverlay : IDisposable
     private const string LabelVariables  = "Variables";
     private const string LabelFpsGraph   = "##FPSGraph"; // The ## hides the text
 
-    private Dictionary<string, Func<object>> _trackingVariables = [];
+    // This was made static to allow tracking variables even before metrics overlay instance gets initialized
+    private static Dictionary<string, Func<object>> _trackingVariables = [];
     private Dictionary<string, Func<string>> _currentMetrics = [];
 
     private static MetricsOverlay _instance;
@@ -90,12 +91,12 @@ public class MetricsOverlay : IDisposable
 
     public static void StartTracking(string key, Func<object> function)
     {
-        _instance._trackingVariables.Add(key, function);
+        _trackingVariables.Add(key, function);
     }
 
     public static void StopTracking(string key)
     {
-        _instance._trackingVariables.Remove(key);
+        _trackingVariables.Remove(key);
     }
 
     private static void RenderPerformanceMetrics(Dictionary<string, Func<string>> metrics, float[] fpsBuffer, ref int fpsIndex, ref float cachedFps)
@@ -144,10 +145,10 @@ public class MetricsOverlay : IDisposable
 
     private static void RenderUserDefinedVariables()
     {
-        if (_instance._trackingVariables.Count == 0 || !ImGui.CollapsingHeader(LabelVariables, ImGuiTreeNodeFlags.DefaultOpen))
+        if (_trackingVariables.Count == 0 || !ImGui.CollapsingHeader(LabelVariables, ImGuiTreeNodeFlags.DefaultOpen))
             return;
 
-        foreach (KeyValuePair<string, Func<object>> kvp in _instance._trackingVariables)
+        foreach (KeyValuePair<string, Func<object>> kvp in _trackingVariables)
         {
             string name = kvp.Key;
             string value = kvp.Value().ToString();
